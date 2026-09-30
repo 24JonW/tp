@@ -276,14 +276,26 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| Priority | User story |
+| -------- | ---------- |
+| `***` | As a photographer, I can add a new contact with their name, event type, and event date, so that I have a record of every client I am working with. |
+| `***` | As a photographer, I can tag a contact's stage of engagement, such as enquiry, booked, shot completed, awaiting payment, or delivered, so that I always know what needs to happen next. |
+| `***` | As a photographer, I can edit a contact's details, so that I can keep information accurate as things change. |
+| `***` | As a photographer, I can delete a contact, so that my contact list does not fill up with irrelevant clients. |
+| `***` | As a photographer, I can search by phone number or email address, so that I can identify a client even when I do not remember their name. |
+| `***` | As a photographer, I can search for clients by event type, so that I can quickly locate clients associated with specific types of shoots. |
+| `***` | As a photographer, I can view contacts sorted by upcoming event date, so that I can prioritise the most time-sensitive clients first. |
+| `***` | As a photographer, I can filter contacts by engagement stage, so that I can quickly find everyone who requires follow-up. |
+| `***` | As a photographer, I can view all contacts with events happening within the next seven days, so that I can prepare logistics in advance. |
+| `***` | As a fast typist, I can add, edit, and find contacts by typing commands, so that I can manage clients faster than with a form. |
+| `***` | As a photographer, I can type `help` to list all available commands and their syntax, so that I do not need to consult external documentation while using the application. |
+| `**` | As a photographer, I can link multiple events to the same repeat client, so that I can see their full history in one place. |
+| `**` | As a photographer, I can add free-text notes to a contact, such as the shoot location, package, or special requests, so that I do not lose important context. |
+| `**` | As a photographer, I can attach specific event requirements to a client's profile, such as “Needs drone shots”, so that I have all the necessary information before contacting them. |
+| `**` | As a photographer, I can record how a client found me, such as through a referral, Instagram, or my website, so that I can track which channels bring in the most business. |
+| `*` | As a photographer, I can archive completed contacts, so that my active list stays focused on current work. |
+| `*` | As a photographer, I can flag a contact as a possible duplicate when adding one with a similar name or email address, so that I do not accidentally create redundant entries. |
+
 
 *{More to be added}*
 
