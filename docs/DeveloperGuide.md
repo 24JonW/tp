@@ -261,13 +261,15 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
+* is a freelance photographer who handles event-based jobs
+* has a need to manage a significant number of clients and photography jobs
+* needs to track client contact details, event details, and job progress from enquiry to delivery
 * prefers desktop apps over other types of applications
 * can type fast
 * prefers typing to mouse interactions
 * is reasonably comfortable using CLI apps
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Manage photography clients and jobs from enquiry to delivery faster than with a typical mouse-driven GUI application.
 
 
 ### User stories
