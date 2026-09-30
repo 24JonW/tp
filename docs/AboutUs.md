@@ -29,11 +29,11 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Team Lead
 * Responsibilities: UI
 
-### Johnny Doe
+### Vu Dang Khoa
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/chalasdk22.jpg" width="200px">
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+[[github](https://github.com/ChalasDK22)]
 
 * Role: Developer
 * Responsibilities: Data
@@ -48,11 +48,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### Vu Dang Khoa
+### James Doe
 
-<img src="images/chalasdk22.jpg" width="200px">
+<img src="images/johndoe.png" width="200px">
 
-[[github](https://github.com/ChalasDK22)]
+[[github](http://github.com/johndoe)]
+[[portfolio](team/johndoe.md)]
 
 * Role: Developer
 * Responsibilities: UI
