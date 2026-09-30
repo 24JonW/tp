@@ -20,12 +20,11 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Product engineer
 * Responsibilities: UX
 
-### Jane Doe
+### Le Xuan Son
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/sonlexuan3000.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/sonlexuan3000)]
 
 * Role: Team Lead
 * Responsibilities: UI
@@ -36,25 +35,23 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 [[github](https://github.com/ChalasDK22)]
 
-* Role: Developer
-* Responsibilities: Data
+* Role: Student Developer
+* Responsibilities: Full Stack
 
-### Jean Doe
+### Jonathan Wong
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/jonathanwong.jpg" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
-
-### James Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/24JonW)]
 
 * Role: Developer
-* Responsibilities: UI
+* Responsibilities: Software engineer
+
+### Yu Ke Mi
+
+<img src="images/yukemii.png" width="200px">
+
+[[github](https://github.com/yukemii)]
+
+* Role: Developer
+* Responsibilities: UI and UX
