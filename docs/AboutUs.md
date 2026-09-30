@@ -35,8 +35,8 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 [[github](https://github.com/ChalasDK22)]
 
-* Role: Developer
-* Responsibilities: Data
+* Role: Student Developer
+* Responsibilities: Full Stack
 
 ### Jean Doe
 
