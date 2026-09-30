@@ -17,4 +17,3 @@ ShutterLink is a desktop contact and engagement manager for independent event ph
 - View events taking place within the next seven calendar days.
 - Automatically save contacts and restore them when the application starts.
 - View supported commands through the in-app help panel.
-
