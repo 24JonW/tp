@@ -301,16 +301,82 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `ShutterLink` and the **Actor** is the `user`, a freelance event photographer, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: UC01 - Add a contact**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  User requests to add a contact, giving the client's name, phone number and/or email address, event type and event date.
+2.  ShutterLink adds the contact with the stage _Enquiry_ and shows the full contact list.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. A required detail (name, event type or event date) is missing, or a given detail is invalid.
+
+    * 1a1. ShutterLink shows an error message describing the first problem found.
+    * 1a2. User requests to add the contact again with corrected details.
+
+      Steps 1a1-1a2 are repeated until the details are valid.<br>
+      Use case resumes from step 2.
+
+* 1b. Neither a phone number nor an email address is given.
+
+    * 1b1. ShutterLink shows an error message asking for at least one of them.
+
+      Use case resumes at step 1.
+
+* 1c. A contact with exactly the same name, phone number, email address, event type and event date already exists.
+
+    * 1c1. ShutterLink informs the user that the contact already exists and does not add it.
+
+      Use case ends.
+
+* 1d. ShutterLink is unable to save the data.
+
+    * 1d1. ShutterLink shows an error message and does not add the contact.
+
+      Use case ends.
+
+**Use case: UC02 - Find contacts by name, contact detail or event type**
+
+**MSS**
+
+1.  User requests to find contacts, giving one name, phone number, email address or event type.
+2.  ShutterLink shows all contacts that exactly match the given value.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. User gives no search value, or more than one.
+
+    * 1a1. ShutterLink shows an error message asking for exactly one search value.
+
+      Use case resumes at step 1.
+
+* 1b. The given value is invalid (e.g., an incomplete email address).
+
+    * 1b1. ShutterLink shows an error message.
+
+      Use case resumes at step 1.
+
+* 2a. No contact matches the given value.
+
+    * 2a1. ShutterLink informs the user that no contacts were found.
+
+      Use case ends.
+
+**Use case: UC03 - Update the engagement stage of a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to change the stage of a specific contact in the list to a new stage.
+4.  ShutterLink updates the stage of the contact and shows the full contact list.
 
     Use case ends.
 
@@ -322,11 +388,159 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. The given index is invalid.
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. ShutterLink shows an error message.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+* 3b. The given stage is not one of the supported stages.
+
+    * 3b1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 2.
+
+* 3c. The contact already has the given stage.
+
+    * 3c1. ShutterLink informs the user that the stage is unchanged and keeps the current list.
+
+      Use case ends.
+
+* 3d. ShutterLink is unable to save the data.
+
+    * 3d1. ShutterLink shows an error message and does not change the stage.
+
+      Use case ends.
+
+**Use case: UC04 - Edit the details of a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to edit a specific contact in the list, giving the new values of one or more details.
+4.  ShutterLink updates the contact and shows the full contact list.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. User does not give any detail to edit, or a given detail is invalid.
+
+    * 3b1. ShutterLink shows an error message and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3c. The edit would leave the contact with neither a phone number nor an email address.
+
+    * 3c1. ShutterLink shows an error message and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3d. The edited contact would be identical to another existing contact.
+
+    * 3d1. ShutterLink informs the user that the edit would create a duplicate and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3e. All given values are the same as the current details.
+
+    * 3e1. ShutterLink informs the user that no changes were made and keeps the current list.
+
+      Use case ends.
+
+* 3f. ShutterLink is unable to save the data.
+
+    * 3f1. ShutterLink shows an error message and does not change the contact.
+
+      Use case ends.
+
+**Use case: UC05 - Delete a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to delete a specific contact in the list.
+4.  ShutterLink deletes the contact immediately and shows the remaining contacts.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. ShutterLink is unable to save the data.
+
+    * 3b1. ShutterLink shows an error message and keeps the contact.
+
+      Use case ends.
+
+**Use case: UC06 - Follow up on engagements at a stage**
+
+**MSS**
+
+1.  User requests to list the contacts at a specific stage (e.g., _Awaiting Payment_).
+2.  ShutterLink shows the contacts at that stage.
+3.  User follows up with a client in the list outside ShutterLink.
+4.  User updates the stage of that contact (UC03).
+
+    Steps 3-4 are repeated for each client the user follows up with.<br>
+    Use case ends.
+
+**Extensions**
+
+* 1a. The given stage is not one of the supported stages.
+
+    * 1a1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 1.
+
+* 2a. No contact is at the given stage.
+
+    * 2a1. ShutterLink informs the user that no contacts were found at that stage.
+
+      Use case ends.
+
+**Use case: UC07 - Prepare for upcoming events**
+
+**MSS**
+
+1.  User requests to view upcoming events.
+2.  ShutterLink shows the contacts whose event dates fall within today and the next six days, sorted by event date.
+3.  User reviews the events and edits the details of a contact if needed (UC04).
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. ShutterLink is unable to determine today's date.
+
+    * 1a1. ShutterLink shows an error message and keeps the current list.
+
+      Use case ends.
+
+* 2a. No event falls within the next seven days.
+
+    * 2a1. ShutterLink informs the user that no events are scheduled in that period.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
