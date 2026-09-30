@@ -326,11 +326,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-**Use case: UC02 - Find contacts by a contact detail or event type**
+**Use case: UC02 - Find contacts by name, contact detail or event type**
 
 **MSS**
 
-1.  User requests to find contacts, giving one phone number, email address or event type.
+1.  User requests to find contacts, giving one name, phone number, email address or event type.
 2.  ShutterLink shows all contacts that exactly match the given value.
 
     Use case ends.
