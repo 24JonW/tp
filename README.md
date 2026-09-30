@@ -1,4 +1,4 @@
-[![CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/se-edu/addressbook-level3/actions)
+git[![CI Status](https://github.com/se-edu/addressbook-level3/workflows/Java%20CI/badge.svg)](https://github.com/se-edu/addressbook-level3/actions)
 
 ![Ui](docs/images/Ui.png)
 
@@ -13,6 +13,28 @@
 * For the detailed documentation of this project, see the **[Address Book Product Website](https://se-education.org/addressbook-level3)**.
 * This project is a **part of the se-education.org** initiative. If you would like to contribute code to this project, see [se-education.org](https://se-education.org/#contributing-to-se-edu) for more info.
 
+
+## Getting started
+
+1. Download the latest `.jar` file from the project releases page.
+2. Run it with:
+
+   ```bash
+   java -jar shutterlink.jar
+   ```
+
+## Example commands
+
+```text
+add n/John Tan p/+65 9123 4567 e/john.tan@example.com t/Wedding d/2026-12-20
+stage 1 s/Booked
+edit 1 d/2026-12-25
+find t/Wedding
+list sort/date
+list stage/Awaiting Payment
+upcoming
+help
+```
 
 ## Acknowledgements
 
