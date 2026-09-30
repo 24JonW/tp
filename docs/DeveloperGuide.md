@@ -316,11 +316,54 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+These requirements describe the intended quality of ShutterLink for an independent freelance event photographer.
+They apply to the full product direction, including features introduced after the MVP, where relevant;
+they do not assert that every requirement is already implemented.
+A **contact record** represents one client engagement for one event, so repeat clients may have multiple records.
 
-*{More to be added}*
+1. **Platform compatibility (NFR-01).** ShutterLink shall run on Windows, Linux and macOS with Java 25 installed,
+   without requiring another Java version. Supported operations shall have the same behaviour across these platforms.
+2. **Portable distribution (NFR-02).** Users shall be able to run ShutterLink from a single downloadable JAR
+   without an application installer or separately installed dependencies other than the required Java runtime.
+3. **Independent, offline operation (NFR-03).** Client and event management, searching, sorting, filtering,
+   upcoming-event views, command help, and saving/loading shall remain available without an Internet connection.
+   Normal use shall not require an account, a shared data service, or a remote server.
+   Each installation is intended for one photographer managing their own records; concurrent users and shared-file
+   collaboration are outside the supported operating environment.
+4. **Local data ownership and privacy (NFR-04).** Client records shall be stored locally in a human-editable UTF-8
+   text format, without a database server. Valid manual edits made while the application is closed shall be loaded
+   on the next launch. Normal operation shall not transmit client records to external services.
+   Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
+   responsibility. Any future export feature shall retain this local-data model.
+5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
+   and restored after a normal shutdown and restart, preserving all supported field values and record order.
+   This assumes writable storage with sufficient space and excludes external file modification or disk failure.
+6. **Failure safety (NFR-06).** Invalid commands shall leave records, the active filter/sort, and displayed indexes
+   unchanged. A failed save shall not be reported as success: the application shall preserve the prior in-memory
+   state and last valid saved data, and give an actionable error. A malformed data file shall not be silently
+   overwritten with empty or sample data. These guarantees cover validation and ordinary file-I/O failures;
+   recovery from physical storage failure is outside scope.
+7. **Keyboard usability (NFR-07).** All supported contact-management and query operations shall be available through
+   typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
+   on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
+   This also applies to later contact-management features, such as notes or reminders, if implemented.
+8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
+   alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
+   At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
+   without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
+   scaling, allowing scrolling where necessary.
+9. **Capacity and responsiveness (NFR-09, proposed target).** ShutterLink shall support at least 1,000 contact records
+   across all engagement stages. With up to this volume, at least 95% of a 100-command test sequence shall complete
+   within 2 seconds per command, measured from submission to updated feedback and results, including saving for
+   data-changing commands. The sequence shall exercise adding, editing, deleting, stage changes, finding, listing,
+   sorting, filtering, and upcoming-event queries with valid data. Measure after application startup on a computer
+   with at least two CPU cores, 8 GB RAM, SSD storage and Java 25, without other resource-intensive applications
+   running. Record the OS, hardware and dataset with the results. This is a proposed acceptance target for team
+   review, not an existing benchmark result.
+
+The platform, distribution, local-storage and display requirements reflect the relevant
+[tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
+Course process requirements, such as incremental delivery, are not product NFRs.
 
 ### Glossary
 
