@@ -326,6 +326,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Engagement**: A client relationship record containing contact details and information about a specific event.
+* **Engagement stage**: The current progress of an engagement, such as `Enquiry`, `Booked`, or `Awaiting Payment`.
+* **Event type**: The category of event associated with an engagement, such as a wedding or birthday celebration.
+* **Current displayed list**: The contacts currently visible to the user after applying a search, filter, or sort. Command indexes refer to this list.
+* **Upcoming events**: Events scheduled from today through the next six calendar days, inclusive.
+* **Exact matching**: A search method that matches the complete normalized value rather than a partial substring.
 
 --------------------------------------------------------------------------------------------------------------------
 
