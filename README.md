@@ -17,3 +17,14 @@ ShutterLink is a desktop contact and engagement manager for independent event ph
 - View events taking place within the next seven calendar days.
 - Automatically save contacts and restore them when the application starts.
 - View supported commands through the in-app help panel.
+
+## Documentation
+
+- [User Guide](docs/UserGuide.md)
+- [Developer Guide](docs/DeveloperGuide.md)
+- [About Us](docs/AboutUs.md)
+- [Address Book Product Website](https://se-education.org/addressbook-level3)
+
+## Acknowledgements
+
+This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
