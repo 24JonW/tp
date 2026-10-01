@@ -261,42 +261,122 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
+* is a freelance photographer who handles event-based jobs
+* has a need to manage a significant number of clients and photography jobs
+* needs to track client contact details, event details, and job progress from enquiry to delivery
 * prefers desktop apps over other types of applications
 * can type fast
 * prefers typing to mouse interactions
 * is reasonably comfortable using CLI apps
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Manage photography clients and jobs from enquiry to delivery faster than with a typical mouse-driven GUI application.
 
 
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| Priority | User story |
+| -------- | ---------- |
+| `***` | As a photographer, I can add a new contact with their name, event type, and event date, so that I have a record of every client I am working with. |
+| `***` | As a photographer, I can tag a contact's stage of engagement, such as enquiry, booked, shot completed, awaiting payment, or delivered, so that I always know what needs to happen next. |
+| `***` | As a photographer, I can edit a contact's details, so that I can keep information accurate as things change. |
+| `***` | As a photographer, I can delete a contact, so that my contact list does not fill up with irrelevant clients. |
+| `***` | As a photographer, I can search by phone number or email address, so that I can identify a client even when I do not remember their name. |
+| `***` | As a photographer, I can search for clients by event type, so that I can quickly locate clients associated with specific types of shoots. |
+| `***` | As a photographer, I can view contacts sorted by upcoming event date, so that I can prioritise the most time-sensitive clients first. |
+| `***` | As a photographer, I can filter contacts by engagement stage, so that I can quickly find everyone who requires follow-up. |
+| `***` | As a photographer, I can view all contacts with events happening within the next seven days, so that I can prepare logistics in advance. |
+| `***` | As a fast typist, I can add, edit, and find contacts by typing commands, so that I can manage clients faster than with a form. |
+| `***` | As a photographer, I can type `help` to list all available commands and their syntax, so that I do not need to consult external documentation while using the application. |
+| `**` | As a photographer, I can link multiple events to the same repeat client, so that I can see their full history in one place. |
+| `**` | As a photographer, I can add free-text notes to a contact, such as the shoot location, package, or special requests, so that I do not lose important context. |
+| `**` | As a photographer, I can attach specific event requirements to a client's profile, such as “Needs drone shots”, so that I have all the necessary information before contacting them. |
+| `**` | As a photographer, I can record how a client found me, such as through a referral, Instagram, or my website, so that I can track which channels bring in the most business. |
+| `*` | As a photographer, I can archive completed contacts, so that my active list stays focused on current work. |
+| `*` | As a photographer, I can flag a contact as a possible duplicate when adding one with a similar name or email address, so that I do not accidentally create redundant entries. |
+
 
 *{More to be added}*
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `ShutterLink` and the **Actor** is the `user`, a freelance event photographer, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: UC01 - Add a contact**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  User requests to add a contact, giving the client's name, phone number and/or email address, event type and event date.
+2.  ShutterLink adds the contact with the stage _Enquiry_ and shows the full contact list.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. A required detail (name, event type or event date) is missing, or a given detail is invalid.
+
+    * 1a1. ShutterLink shows an error message describing the first problem found.
+    * 1a2. User requests to add the contact again with corrected details.
+
+      Steps 1a1-1a2 are repeated until the details are valid.<br>
+      Use case resumes from step 2.
+
+* 1b. Neither a phone number nor an email address is given.
+
+    * 1b1. ShutterLink shows an error message asking for at least one of them.
+
+      Use case resumes at step 1.
+
+* 1c. A contact with exactly the same name, phone number, email address, event type and event date already exists.
+
+    * 1c1. ShutterLink informs the user that the contact already exists and does not add it.
+
+      Use case ends.
+
+* 1d. ShutterLink is unable to save the data.
+
+    * 1d1. ShutterLink shows an error message and does not add the contact.
+
+      Use case ends.
+
+**Use case: UC02 - Find contacts by name, contact detail or event type**
+
+**MSS**
+
+1.  User requests to find contacts, giving one name, phone number, email address or event type.
+2.  ShutterLink shows all contacts that exactly match the given value.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. User gives no search value, or more than one.
+
+    * 1a1. ShutterLink shows an error message asking for exactly one search value.
+
+      Use case resumes at step 1.
+
+* 1b. The given value is invalid (e.g., an incomplete email address).
+
+    * 1b1. ShutterLink shows an error message.
+
+      Use case resumes at step 1.
+
+* 2a. No contact matches the given value.
+
+    * 2a1. ShutterLink informs the user that no contacts were found.
+
+      Use case ends.
+
+**Use case: UC03 - Update the engagement stage of a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to change the stage of a specific contact in the list to a new stage.
+4.  ShutterLink updates the stage of the contact and shows the full contact list.
 
     Use case ends.
 
@@ -308,24 +388,221 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. The given index is invalid.
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. ShutterLink shows an error message.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+* 3b. The given stage is not one of the supported stages.
+
+    * 3b1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 2.
+
+* 3c. The contact already has the given stage.
+
+    * 3c1. ShutterLink informs the user that the stage is unchanged and keeps the current list.
+
+      Use case ends.
+
+* 3d. ShutterLink is unable to save the data.
+
+    * 3d1. ShutterLink shows an error message and does not change the stage.
+
+      Use case ends.
+
+**Use case: UC04 - Edit the details of a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to edit a specific contact in the list, giving the new values of one or more details.
+4.  ShutterLink updates the contact and shows the full contact list.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. User does not give any detail to edit, or a given detail is invalid.
+
+    * 3b1. ShutterLink shows an error message and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3c. The edit would leave the contact with neither a phone number nor an email address.
+
+    * 3c1. ShutterLink shows an error message and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3d. The edited contact would be identical to another existing contact.
+
+    * 3d1. ShutterLink informs the user that the edit would create a duplicate and does not change the contact.
+
+      Use case resumes at step 2.
+
+* 3e. All given values are the same as the current details.
+
+    * 3e1. ShutterLink informs the user that no changes were made and keeps the current list.
+
+      Use case ends.
+
+* 3f. ShutterLink is unable to save the data.
+
+    * 3f1. ShutterLink shows an error message and does not change the contact.
+
+      Use case ends.
+
+**Use case: UC05 - Delete a contact**
+
+**MSS**
+
+1.  User requests to list contacts, or finds the relevant contacts (UC02).
+2.  ShutterLink shows a list of contacts.
+3.  User requests to delete a specific contact in the list.
+4.  ShutterLink deletes the contact immediately and shows the remaining contacts.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. ShutterLink is unable to save the data.
+
+    * 3b1. ShutterLink shows an error message and keeps the contact.
+
+      Use case ends.
+
+**Use case: UC06 - Follow up on engagements at a stage**
+
+**MSS**
+
+1.  User requests to list the contacts at a specific stage (e.g., _Awaiting Payment_).
+2.  ShutterLink shows the contacts at that stage.
+3.  User follows up with a client in the list outside ShutterLink.
+4.  User updates the stage of that contact (UC03).
+
+    Steps 3-4 are repeated for each client the user follows up with.<br>
+    Use case ends.
+
+**Extensions**
+
+* 1a. The given stage is not one of the supported stages.
+
+    * 1a1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 1.
+
+* 2a. No contact is at the given stage.
+
+    * 2a1. ShutterLink informs the user that no contacts were found at that stage.
+
+      Use case ends.
+
+**Use case: UC07 - Prepare for upcoming events**
+
+**MSS**
+
+1.  User requests to view upcoming events.
+2.  ShutterLink shows the contacts whose event dates fall within today and the next six days, sorted by event date.
+3.  User reviews the events and edits the details of a contact if needed (UC04).
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. ShutterLink is unable to determine today's date.
+
+    * 1a1. ShutterLink shows an error message and keeps the current list.
+
+      Use case ends.
+
+* 2a. No event falls within the next seven days.
+
+    * 2a1. ShutterLink informs the user that no events are scheduled in that period.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+These requirements describe the intended quality of ShutterLink for an independent freelance event photographer.
+They apply to the full product direction, including features introduced after the MVP, where relevant;
+they do not assert that every requirement is already implemented.
+A **contact record** represents one client engagement for one event, so repeat clients may have multiple records.
 
-*{More to be added}*
+1. **Platform compatibility (NFR-01).** ShutterLink shall run on Windows, Linux and macOS with Java 25 installed,
+   without requiring another Java version. Supported operations shall have the same behaviour across these platforms.
+2. **Portable distribution (NFR-02).** Users shall be able to run ShutterLink from a single downloadable JAR
+   without an application installer or separately installed dependencies other than the required Java runtime.
+3. **Independent, offline operation (NFR-03).** Client and event management, searching, sorting, filtering,
+   upcoming-event views, command help, and saving/loading shall remain available without an Internet connection.
+   Normal use shall not require an account, a shared data service, or a remote server.
+   Each installation is intended for one photographer managing their own records; concurrent users and shared-file
+   collaboration are outside the supported operating environment.
+4. **Local data ownership and privacy (NFR-04).** Client records shall be stored locally in a human-editable UTF-8
+   text format, without a database server. Valid manual edits made while the application is closed shall be loaded
+   on the next launch. Normal operation shall not transmit client records to external services.
+   Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
+   responsibility. Any future export feature shall retain this local-data model.
+5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
+   and restored after a normal shutdown and restart, preserving all supported field values and record order.
+   This assumes writable storage with sufficient space and excludes external file modification or disk failure.
+6. **Failure safety (NFR-06).** Invalid commands shall leave records, the active filter/sort, and displayed indexes
+   unchanged. A failed save shall not be reported as success: the application shall preserve the prior in-memory
+   state and last valid saved data, and give an actionable error. A malformed data file shall not be silently
+   overwritten with empty or sample data. These guarantees cover validation and ordinary file-I/O failures;
+   recovery from physical storage failure is outside scope.
+7. **Keyboard usability (NFR-07).** All supported contact-management and query operations shall be available through
+   typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
+   on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
+   This also applies to later contact-management features, such as notes or reminders, if implemented.
+8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
+   alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
+   At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
+   without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
+   scaling, allowing scrolling where necessary.
+9. **Capacity and responsiveness (NFR-09, proposed target).** ShutterLink shall support at least 1,000 contact records
+   across all engagement stages. With up to this volume, at least 95% of a 100-command test sequence shall complete
+   within 2 seconds per command, measured from submission to updated feedback and results, including saving for
+   data-changing commands. The sequence shall exercise adding, editing, deleting, stage changes, finding, listing,
+   sorting, filtering, and upcoming-event queries with valid data. Measure after application startup on a computer
+   with at least two CPU cores, 8 GB RAM, SSD storage and Java 25, without other resource-intensive applications
+   running. Record the OS, hardware and dataset with the results. This is a proposed acceptance target for team
+   review, not an existing benchmark result.
+
+The platform, distribution, local-storage and display requirements reflect the relevant
+[tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
+Course process requirements, such as incremental delivery, are not product NFRs.
 
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Engagement**: A client relationship record containing contact details and information about a specific event.
+* **Engagement stage**: The current progress of an engagement, such as `Enquiry`, `Booked`, or `Awaiting Payment`.
+* **Event type**: The category of event associated with an engagement, such as a wedding or birthday celebration.
+* **Current displayed list**: The contacts currently visible to the user after applying a search, filter, or sort. Command indexes refer to this list.
+* **Upcoming events**: Events scheduled from today through the next six calendar days, inclusive.
+* **Exact matching**: A search method that matches the complete normalized value rather than a partial substring.
 
 --------------------------------------------------------------------------------------------------------------------
 
