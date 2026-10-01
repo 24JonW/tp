@@ -40,7 +40,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ### Jonathan Wong
 
-<img src="images/jonathanwong.jpg" width="200px">
+<img src="images/24jonw.png" width="200px">
 
 [[github](http://github.com/24JonW)]
 
