@@ -139,22 +139,36 @@ Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
-### Locating persons by name: `find`
+### Finding contacts: `find`
 
-Finds persons whose names contain any of the given keywords.
+Find contacts by name, phone number, email address, or event type.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format:
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+```text
+find n/SEARCH_TEXT
+find p/SEARCH_TEXT
+find e/SEARCH_TEXT
+find t/SEARCH_TEXT
+```
+Where:
+* n/ searches contact names.
+* p/ searches phone numbers.
+* e/ searches email addresses.
+* t/ searches event types.
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* find n/Jonathan finds `Jonathan Wong` and `Jonathan Tan`.
+* find p/9123 finds phone numbers containing `9123`.
+* find e/jonathan finds email addresses containing `jonathan`.
+* find t/Wed finds event types containing `Wed`.
+
+| Invalid input | Reason |
+| --- | --- |
+| `find` | No search field was provided |
+| `find n/` | The search value is empty |
+| `find n/Jonathan p/9123` | More than one search field was provided |
+| `find n/Jonathan n/Tan` | The same search field was repeated |
 
 ### Deleting a person: `delete`
 
