@@ -1,35 +1,67 @@
-#helpPanel, #helpMessageContainer, #helpScrollPane, #helpScrollPane > .viewport {
-    -fx-background-color: #383838;
+#helpPanel {
+    -fx-background-color: #0f172a;
+}
+
+#helpMessageContainer, #helpScrollPane, #helpScrollPane > .viewport {
+    -fx-background-color: #111827;
 }
 
 #helpTitle {
     -fx-font-family: "Segoe UI Semibold";
     -fx-font-size: 22px;
-    -fx-text-fill: white;
+    -fx-text-fill: #7dd3fc;
 }
 
 #helpMessage {
     -fx-font-family: monospace;
     -fx-font-size: 14px;
     -fx-line-spacing: 2px;
-    -fx-text-fill: white;
+    -fx-text-fill: #e2e8f0;
 }
 
 #helpScrollPane {
-    -fx-border-color: #555555;
+    -fx-background-radius: 6px;
+    -fx-border-color: #334155;
+    -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 0;
 }
 
 #closeButton {
-    -fx-background-color: dimgray;
-    -fx-text-fill: white;
+    -fx-padding: 7px 18px;
+    -fx-background-color: #164e63;
+    -fx-background-radius: 5px;
+    -fx-border-color: #38bdf8;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: #cffafe;
 }
 
 #closeButton:hover {
-    -fx-background-color: gray;
+    -fx-background-color: #0e7490;
+    -fx-text-fill: white;
 }
 
 #closeButton:armed {
-    -fx-background-color: darkgray;
+    -fx-background-color: #155e75;
+}
+
+.scroll-bar {
+    -fx-background-color: #0f172a;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #334155;
+    -fx-background-radius: 5px;
+    -fx-background-insets: 3px;
+}
+
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+    -fx-shape: " ";
 }
