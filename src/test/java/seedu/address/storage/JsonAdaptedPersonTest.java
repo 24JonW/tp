@@ -117,4 +117,19 @@ public class JsonAdaptedPersonTest {
 
         assertEquals(Stage.BOOKED, person.toModelType().getStage());
     }
+
+    @Test
+    public void toModelType_invalidStage_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME,
+                VALID_PHONE,
+                VALID_EMAIL,
+                VALID_EVENT_TYPE,
+                VALID_EVENT_DATE,
+                "Unknown Stage");
+
+        assertThrows(IllegalValueException.class,
+                "Invalid engagement stage.",
+                person::toModelType);
+    }
 }
