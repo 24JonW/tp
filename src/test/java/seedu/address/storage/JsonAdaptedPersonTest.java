@@ -86,6 +86,20 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_eventTypeWithUnsupportedSymbol_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_EMAIL, "Wedding!", VALID_EVENT_DATE);
+        assertThrows(IllegalValueException.class, EventType.MESSAGE_CONSTRAINTS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_eventTypeWithExtraWhitespace_returnsNormalizedPerson() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_EMAIL, " Corporate  \t2026 ", VALID_EVENT_DATE);
+        assertEquals(new EventType("Corporate 2026"), person.toModelType().getEventType());
+    }
+
+    @Test
     public void toModelType_nullEventType_throwsIllegalValueException() {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 VALID_NAME, VALID_PHONE, VALID_EMAIL, null, VALID_EVENT_DATE);
@@ -97,6 +111,13 @@ public class JsonAdaptedPersonTest {
     public void toModelType_invalidEventDate_throwsIllegalValueException() {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_EVENT_TYPE, INVALID_EVENT_DATE);
+        assertThrows(IllegalValueException.class, EventDate.MESSAGE_CONSTRAINTS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_eventDateWithYearZero_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_EVENT_TYPE, "0000-01-01");
         assertThrows(IllegalValueException.class, EventDate.MESSAGE_CONSTRAINTS, person::toModelType);
     }
 

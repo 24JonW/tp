@@ -13,6 +13,19 @@ import java.util.Arrays;
 public class StringUtil {
 
     /**
+     * Returns {@code s} with leading and trailing whitespace removed, and each run of consecutive spaces or tabs
+     * replaced by a single space.
+     *   <br>examples:<pre>
+     *       normalizeWhitespace("  Corporate \t  2026 ") == "Corporate 2026"
+     *       </pre>
+     * @param s cannot be null
+     */
+    public static String normalizeWhitespace(String s) {
+        requireNonNull(s);
+        return s.trim().replaceAll("[ \\t]+", " ");
+    }
+
+    /**
      * Returns true if the {@code sentence} contains the {@code word}.
      *   Ignores case, but a full word match is required.
      *   <br>examples:<pre>

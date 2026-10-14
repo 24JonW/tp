@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.util.StringUtil;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
@@ -82,10 +83,11 @@ class JsonAdaptedPerson {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
                     EventType.class.getSimpleName()));
         }
-        if (!EventType.isValidEventType(eventType)) {
+        final String normalizedEventType = StringUtil.normalizeWhitespace(eventType);
+        if (!EventType.isValidEventType(normalizedEventType)) {
             throw new IllegalValueException(EventType.MESSAGE_CONSTRAINTS);
         }
-        final EventType modelEventType = new EventType(eventType);
+        final EventType modelEventType = new EventType(normalizedEventType);
         if (eventDate == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
                     EventDate.class.getSimpleName()));
