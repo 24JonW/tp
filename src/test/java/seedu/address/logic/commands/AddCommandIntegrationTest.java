@@ -39,6 +39,20 @@ public class AddCommandIntegrationTest {
     }
 
     @Test
+    public void execute_personWithSimilarContactDetails_successWithWarning() {
+        Person firstPerson = model.getFilteredPersonList().get(0);
+        Person validPerson = new PersonBuilder().withPhone(firstPerson.getPhone().value).build();
+
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.addPerson(validPerson);
+
+        String expectedMessage = String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson))
+                + String.format(SimilarContactWarning.MESSAGE_WARNING,
+                        "#1 " + firstPerson.getName() + " (same phone)");
+        assertCommandSuccess(new AddCommand(validPerson), model, expectedMessage, expectedModel);
+    }
+
+    @Test
     public void execute_duplicatePerson_throwsCommandException() {
         Person personInList = model.getAddressBook().getPersonList().get(0);
         assertCommandFailure(new AddCommand(personInList), model,
