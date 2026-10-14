@@ -1,5 +1,8 @@
 package seedu.address.model.person;
 
+/**
+ * Represents the current engagement stage of a photography client.
+ */
 public enum Stage {
     ENQUIRY("Enquiry"),
     BOOKED("Booked"),
@@ -13,6 +16,13 @@ public enum Stage {
         this.value = value;
     }
 
+    /**
+     * Converts text into the corresponding engagement stage.
+     *
+     * @param input stage text to convert
+     * @return the matching engagement stage
+     * @throws IllegalArgumentException if the input is not a supported stage
+     */
     public static Stage fromString(String input) {
         for (Stage stage : values()) {
             if (stage.value.equalsIgnoreCase(input.trim())) {

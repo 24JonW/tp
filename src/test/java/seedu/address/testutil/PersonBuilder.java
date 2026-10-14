@@ -1,6 +1,12 @@
 package seedu.address.testutil;
 
-import seedu.address.model.person.*;
+import seedu.address.model.person.Email;
+import seedu.address.model.person.EventDate;
+import seedu.address.model.person.EventType;
+import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
+import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * A utility class to help with building Person objects.
@@ -84,6 +90,12 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the engagement stage of the {@code Person} being built.
+     *
+     * @param stage engagement stage to assign
+     * @return this builder
+     */
     public PersonBuilder withStage(String stage) {
         this.stage = Stage.fromString(stage);
         return this;
