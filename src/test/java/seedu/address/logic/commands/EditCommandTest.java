@@ -27,6 +27,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
+import seedu.address.model.person.Stage;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for EditCommand.
@@ -127,6 +128,26 @@ public class EditCommandTest {
         EditCommand editCommand = new EditCommand(outOfBoundIndex, descriptor);
 
         assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_editPhone_preservesStage() throws Exception {
+        Person original = new PersonBuilder()
+                .withStage("Booked")
+                .build();
+
+        model.addPerson(original);
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withPhone("91234567")
+                .build();
+
+        EditCommand command = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        command.execute(model);
+
+        Person edited = model.getFilteredPersonList().get(0);
+
+        assertEquals(Stage.BOOKED, edited.getStage());
     }
 
     /**

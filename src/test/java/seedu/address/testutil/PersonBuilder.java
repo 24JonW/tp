@@ -1,11 +1,6 @@
 package seedu.address.testutil;
 
-import seedu.address.model.person.Email;
-import seedu.address.model.person.EventDate;
-import seedu.address.model.person.EventType;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
+import seedu.address.model.person.*;
 
 /**
  * A utility class to help with building Person objects.
@@ -23,6 +18,7 @@ public class PersonBuilder {
     private Email email;
     private EventType eventType;
     private EventDate eventDate;
+    private Stage stage;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -33,6 +29,7 @@ public class PersonBuilder {
         email = new Email(DEFAULT_EMAIL);
         eventType = new EventType(DEFAULT_EVENT_TYPE);
         eventDate = new EventDate(DEFAULT_EVENT_DATE);
+        stage = Stage.ENQUIRY;
     }
 
     /**
@@ -44,6 +41,7 @@ public class PersonBuilder {
         email = personToCopy.getEmail();
         eventType = personToCopy.getEventType();
         eventDate = personToCopy.getEventDate();
+        stage = personToCopy.getStage();
     }
 
     /**
@@ -86,8 +84,14 @@ public class PersonBuilder {
         return this;
     }
 
+    public PersonBuilder withStage(String stage) {
+        this.stage = Stage.fromString(stage);
+        return this;
+    }
+
+
     public Person build() {
-        return new Person(name, phone, email, eventType, eventDate);
+        return new Person(name, phone, email, eventType, eventDate, stage);
     }
 
 }

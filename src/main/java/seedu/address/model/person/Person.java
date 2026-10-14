@@ -22,8 +22,8 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, EventType eventType, EventDate eventDate) {
-        requireAllNonNull(name, phone, email, eventType, eventDate, Stage.ENQUIRY);
+    public Person(Name name, Phone phone, Email email, EventType eventType, EventDate eventDate, Stage stage) {
+        requireAllNonNull(name, phone, email, eventType, eventDate, stage);
         this.name = name;
         this.phone = phone;
         this.email = email;

@@ -24,6 +24,7 @@ import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Edits the details of an existing person in the address book.
@@ -97,8 +98,9 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         EventType updatedEventType = editPersonDescriptor.getEventType().orElse(personToEdit.getEventType());
         EventDate updatedEventDate = editPersonDescriptor.getEventDate().orElse(personToEdit.getEventDate());
+        Stage updatedStage = personToEdit.getStage();
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedEventType, updatedEventDate);
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedEventType, updatedEventDate, updatedStage);
     }
 
     @Override

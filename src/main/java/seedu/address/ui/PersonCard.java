@@ -37,6 +37,8 @@ public class PersonCard extends UiPart<Region> {
     private Label email;
     @FXML
     private Label eventDate;
+    @FXML
+    private Label stage;
 
     /**
      * Creates a {@code PersonCard} with the given {@code Person} and index to display.
@@ -50,5 +52,6 @@ public class PersonCard extends UiPart<Region> {
         eventType.setText(person.getEventType().value);
         email.setText(person.getEmail().value);
         eventDate.setText(person.getEventDate().toString());
+        stage.setText("Stage: " + person.getStage());
     }
 }
