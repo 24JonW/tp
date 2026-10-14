@@ -11,16 +11,18 @@
   <GridPane hgap="16" styleClass="contact-column-header">
     <columnConstraints>
       <ColumnConstraints percentWidth="22" />
-      <ColumnConstraints percentWidth="15" />
-      <ColumnConstraints percentWidth="28" />
-      <ColumnConstraints percentWidth="20" />
-      <ColumnConstraints percentWidth="15" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="24" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="13" />
+      <ColumnConstraints percentWidth="13" />
     </columnConstraints>
     <Label text="Contact" GridPane.columnIndex="0" />
     <Label text="Phone" GridPane.columnIndex="1" />
     <Label text="Email" GridPane.columnIndex="2" />
     <Label text="Event type" GridPane.columnIndex="3" />
-    <Label text="Event date" GridPane.columnIndex="4" />
+    <Label text="Event stage" GridPane.columnIndex="4" />
+    <Label text="Event date" GridPane.columnIndex="5" />
   </GridPane>
   <ListView fx:id="personListView" VBox.vgrow="ALWAYS">
     <placeholder>
