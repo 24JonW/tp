@@ -48,6 +48,20 @@ public class SimilarContactWarningTest {
     }
 
     @Test
+    public void generate_clientWithSeveralRecords_listedOnce() {
+        Person aliceWedding = new PersonBuilder(ALICE).withEventType("Wedding")
+                .withEventDate("2026-12-20").build();
+        Person aliceBirthday = new PersonBuilder(ALICE).withEventType("Birthday")
+                .withEventDate("2027-03-01").build();
+        Person target = new PersonBuilder(BENSON).withPhone(ALICE_PHONE).build();
+        List<Person> displayedPersons = List.of(CARL, aliceWedding, aliceBirthday);
+
+        String expectedContacts = "#2 " + ALICE.getName() + " (same phone)";
+        assertEquals(String.format(SimilarContactWarning.MESSAGE_WARNING, expectedContacts),
+                SimilarContactWarning.generate(displayedPersons, target));
+    }
+
+    @Test
     public void generate_moreThanMaxSimilarContacts_summarizesRemainder() {
         Person first = new PersonBuilder().withName("Amy Bee").withPhone(ALICE_PHONE).build();
         Person second = new PersonBuilder().withName("Ben Cee").withPhone(ALICE_PHONE).build();

@@ -24,15 +24,19 @@ public class SimilarContactWarning {
     /**
      * Returns a warning that lists the contacts in {@code displayedPersons} with similar contact details to
      * {@code target}, using their displayed indexes, or an empty string if there are none.
+     * A client with several records is listed once, at the index of its first record.
      */
     public static String generate(List<Person> displayedPersons, Person target) {
         requireNonNull(displayedPersons);
         requireNonNull(target);
 
+        List<Person> listedClients = new ArrayList<>();
         List<String> similarContacts = new ArrayList<>();
         for (int i = 0; i < displayedPersons.size(); i++) {
             Person person = displayedPersons.get(i);
-            if (person.hasSimilarContactDetails(target)) {
+            boolean isListedClient = listedClients.stream().anyMatch(person::isSameClient);
+            if (person.hasSimilarContactDetails(target) && !isListedClient) {
+                listedClients.add(person);
                 similarContacts.add(describe(Index.fromZeroBased(i), person, target));
             }
         }

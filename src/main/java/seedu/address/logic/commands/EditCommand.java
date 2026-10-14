@@ -82,7 +82,10 @@ public class EditCommand extends Command {
 
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        String warning = SimilarContactWarning.generate(model.getFilteredPersonList(), editedPerson);
+        boolean hasChangedClientDetails = !personToEdit.isSameClient(editedPerson);
+        String warning = hasChangedClientDetails
+                ? SimilarContactWarning.generate(model.getFilteredPersonList(), editedPerson)
+                : "";
         String successMessage = String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
         return new CommandResult(successMessage + warning);
     }

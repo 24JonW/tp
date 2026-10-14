@@ -93,9 +93,10 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same name (ignoring case), phone and email.
+     * Returns true if both persons have the same name (ignoring case), phone and email,
+     * i.e., they are records of the same client.
      */
-    private boolean isSameClient(Person otherPerson) {
+    public boolean isSameClient(Person otherPerson) {
         return name.fullName.equalsIgnoreCase(otherPerson.name.fullName)
                 && hasSamePhone(otherPerson)
                 && hasSameEmail(otherPerson);
