@@ -123,6 +123,30 @@ but the command must occupy one line. Stage filtering is not available in v1.2.
 
 Unsupported prefixes are rejected. Invalid list commands leave both the data and current view unchanged.
 
+### Viewing upcoming events: `upcoming`
+
+Shows all client engagements scheduled for **today and the following six calendar dates**, inclusive.
+This is seven calendar days in total, using your computer's local date and timezone when you run the command.
+
+Format: `upcoming`
+
+* Results start from all saved contacts, replacing any previous search or sort.
+* Events are sorted from earliest to latest; events on the same date retain insertion order.
+* Past events and events seven or more days after today are excluded.
+* Displayed indexes start at 1. Edit and delete use the indexes in this view.
+* The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming contacts.`
+* With no matching events, the list is empty and feedback is `No events scheduled from START_DATE to END_DATE.`
+* Records are not changed or saved by this command. Use `list` to restore all contacts in insertion order.
+
+For example, running `upcoming` on **2026-10-14** includes dates **2026-10-14 through 2026-10-20**.
+An event on 2026-10-21 is outside that window. With two matches, the heading is
+`Upcoming: 2026-10-14 to 2026-10-20 (2)` and the feedback is `Showing 2 upcoming contacts.`
+
+The command is case-insensitive and takes no arguments: `UPCOMING` works, but `upcoming 7` and
+`upcoming sort/date` return `Invalid command format. Usage: upcoming` without changing the current view.
+The date window does not advance automatically at midnight; run `upcoming` again to refresh it.
+If the date window cannot be calculated, ShutterLink asks you to check the system date and leaves the view unchanged.
+
 ### Editing a person: `edit`
 
 Edits an existing person in the address book.
@@ -239,4 +263,5 @@ Action | Format, Examples
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list` or `list sort/date`
+**Upcoming events** | `upcoming`
 **Help** | `help`

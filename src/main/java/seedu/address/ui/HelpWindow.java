@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import seedu.address.commons.core.LogsCenter;
 
@@ -18,11 +19,13 @@ public class HelpWindow extends UiPart<Stage> {
     public static final String USERGUIDE_URL = "https://se-education.org/addressbook-level3/UserGuide.html";
 
     public static final String HELP_MESSAGE = """
-            add n/NAME [p/PHONE] [e/EMAIL] t/EVENT_TYPE d/EVENT_DATE
+            All parameters shown below are required.
+
+            add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
                 Add a contact with event details.
 
-            edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE]
-                Update the supplied details of the contact at INDEX.
+            edit INDEX n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
+                Update all details of the contact at INDEX.
 
             delete INDEX
                 Immediately delete the contact at INDEX.
@@ -72,6 +75,15 @@ public class HelpWindow extends UiPart<Stage> {
         helpMessage.setText(HELP_MESSAGE);
         getRoot().getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
         getRoot().setOnHidden(event -> this.onHidden.run());
+    }
+
+    /**
+     * Creates a new HelpWindow owned by the supplied stage.
+     */
+    public HelpWindow(Stage root, Stage owner, Runnable onHidden) {
+        this(root, onHidden);
+        root.initOwner(owner);
+        root.initModality(Modality.WINDOW_MODAL);
     }
 
     /**

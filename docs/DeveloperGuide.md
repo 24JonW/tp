@@ -151,6 +151,24 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Viewing upcoming events
+
+`UpcomingCommandParser` accepts the case-insensitive, argument-free `upcoming` command. Invalid arguments,
+including line breaks, are rejected before execution. `UpcomingCommand` obtains the current local date from a
+`Clock` at execution time and calculates the inclusive end date with `plusDays(6)`. Tests supply fixed or mutable
+clocks to cover timezone differences, daylight-saving transitions, leap years and rerunning after midnight.
+Both boundaries are calculated before changing the model, so a date failure leaves the previous view intact.
+
+`Model#showUpcomingPersons` replaces the existing filter with an inclusive date-range predicate over all saved
+contacts, then reuses the list feature's date sorter with insertion-order ties. The model retains the date window
+for the `Upcoming: START_DATE to END_DATE (N)` heading. Other view updates clear that window. The existing list
+panel displays the heading and renumbers cards; index-based commands therefore use the upcoming view.
+No stage restriction is applied. The selected window stays fixed until the command is executed again.
+
+`LogicManager` skips storage writes for `UpcomingCommand`, just as it does for `ListCommand`. Tests verify that
+the command works without writable storage, neither changes existing files nor creates missing files, and
+preserves the previous view on invalid input. The persistent insertion order is unchanged.
+
 ### Listing contacts and sorting by event date
 
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
@@ -645,6 +663,19 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Viewing upcoming events
+
+1. In a disposable dataset, add engagements dated yesterday, today, today + 6 days and today + 7 days.
+   Add another engagement for today, after the first one, to check insertion-order ties.
+2. Run `upcoming`. Expect only the two engagements for today and the one for today + 6 days, in date order.
+   The two engagements for today must remain in insertion order. Check the heading's dates and count.
+3. Run `upcoming 7`. Expect a usage error with the same displayed contacts and heading.
+4. Run `list`, search for one contact, then run `upcoming` again. Expect all matching engagements, regardless
+   of the preceding search results. Run `list` again to restore the complete insertion-ordered list.
+5. With no engagements in the window, expect an empty list and feedback naming the start and end dates.
+6. For midnight behaviour, use the automated mutable-clock test rather than changing the operating system clock.
+   The window stays unchanged until the next execution, then advances to the new local date.
 
 ### Listing and sorting contacts
 
