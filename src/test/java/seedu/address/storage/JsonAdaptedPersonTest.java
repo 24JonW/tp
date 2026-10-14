@@ -13,6 +13,7 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -106,5 +107,14 @@ public class JsonAdaptedPersonTest {
                 VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_EVENT_TYPE, null);
         String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, EventDate.class.getSimpleName());
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_validStage_returnsStage() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_EVENT_TYPE, VALID_EVENT_DATE, "Booked");
+
+        assertEquals(Stage.BOOKED, person.toModelType().getStage());
     }
 }

@@ -10,6 +10,7 @@ import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Jackson-friendly version of {@link Person}.
@@ -23,6 +24,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String eventType;
     private final String eventDate;
+    private final String stage;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -30,12 +32,23 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("eventType") String eventType,
-            @JsonProperty("eventDate") String eventDate) {
+            @JsonProperty("eventDate") String eventDate, @JsonProperty("stage") String stage) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.eventType = eventType;
         this.eventDate = eventDate;
+        this.stage = stage;
+    }
+
+    /**
+     * Constructs a {@code JsonAdaptedPerson} without a stage.
+     *
+     * <p>Used for compatibility with older saved data and existing tests.</p>
+     */
+    public JsonAdaptedPerson(String name, String phone, String email,
+                             String eventType, String eventDate) {
+        this(name, phone, email, eventType, eventDate, null);
     }
 
     /**
@@ -47,6 +60,7 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         eventType = source.getEventType().value;
         eventDate = source.getEventDate().toString();
+        stage = source.getStage().toString();
     }
 
     /**
@@ -94,7 +108,17 @@ class JsonAdaptedPerson {
             throw new IllegalValueException(EventDate.MESSAGE_CONSTRAINTS);
         }
         final EventDate modelEventDate = new EventDate(eventDate);
-        return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate);
+        final Stage modelStage;
+        if (stage == null) {
+            modelStage = Stage.ENQUIRY;
+        } else {
+            try {
+                modelStage = Stage.fromString(stage);
+            } catch (IllegalArgumentException exception) {
+                throw new IllegalValueException("Invalid engagement stage.");
+            }
+        }
+        return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate, modelStage);
     }
 
 }

@@ -29,7 +29,12 @@ public class Person {
         this.email = email;
         this.eventType = eventType;
         this.eventDate = eventDate;
-        this.stage = Stage.ENQUIRY;
+        this.stage = stage;
+    }
+
+    public Person(Name name, Phone phone, Email email,
+                  EventType eventType, EventDate eventDate) {
+        this(name, phone, email, eventType, eventDate, Stage.ENQUIRY);
     }
 
     public Name getName() {

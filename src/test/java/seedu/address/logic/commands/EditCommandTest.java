@@ -138,14 +138,17 @@ public class EditCommandTest {
 
         model.addPerson(original);
 
+        Index originalIndex = Index.fromOneBased(model.getFilteredPersonList().size());
+
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
                 .withPhone("91234567")
                 .build();
 
-        EditCommand command = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        EditCommand command = new EditCommand(originalIndex, descriptor);
         command.execute(model);
 
-        Person edited = model.getFilteredPersonList().get(0);
+        Person edited = model.getFilteredPersonList()
+                .get(originalIndex.getZeroBased());
 
         assertEquals(Stage.BOOKED, edited.getStage());
     }
