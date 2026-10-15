@@ -4,6 +4,7 @@ title: ShutterLink
 ---
 
 [![CI Status](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions/workflows/gradle.yml/badge.svg)](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions)
+[![codecov](https://codecov.io/gh/AY2627S1-CS2103T-T08-3/tp/branch/master/graph/badge.svg)](https://codecov.io/gh/AY2627S1-CS2103T-T08-3/tp)
 
 ![Ui](images/Ui.png)
 
