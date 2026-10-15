@@ -16,16 +16,20 @@ import seedu.address.commons.core.LogsCenter;
  */
 public class HelpWindow extends UiPart<Stage> {
 
-    public static final String USERGUIDE_URL = "https://se-education.org/addressbook-level3/UserGuide.html";
+    public static final String USERGUIDE_URL =
+            "https://ay2627s1-cs2103t-t08-3.github.io/tp/UserGuide.html";
 
     public static final String HELP_MESSAGE = """
-            All parameters shown below are required.
+            Parameters in square brackets are optional.
 
-            add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
+            add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE [s/STAGE]
                 Add a contact with event details.
 
-            edit INDEX n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
-                Update all details of the contact at INDEX.
+            edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]
+                Update one or more details of the contact at INDEX.
+
+            advance INDEX
+                Advance the contact at INDEX to the next engagement stage.
 
             delete INDEX
                 Immediately delete the contact at INDEX.

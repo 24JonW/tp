@@ -33,11 +33,6 @@ public class Person {
         this.stage = stage;
     }
 
-    public Person(Name name, Phone phone, Email email,
-                  EventType eventType, EventDate eventDate) {
-        this(name, phone, email, eventType, eventDate, Stage.ENQUIRY);
-    }
-
     public Name getName() {
         return name;
     }

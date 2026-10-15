@@ -20,10 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AdvanceStageCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -69,6 +71,18 @@ public class LogicManagerTest {
     public void execute_validCommand_success() throws Exception {
         String listCommand = ListCommand.COMMAND_WORD;
         assertCommandSuccess(listCommand, ListCommand.MESSAGE_EMPTY, model);
+    }
+
+    @Test
+    public void execute_advanceStage_success() throws Exception {
+        Person original = new PersonBuilder().build();
+        model.addPerson(original);
+        Person advanced = new PersonBuilder(original).withStage("Booked").build();
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(original, advanced);
+
+        String expectedMessage = String.format(AdvanceStageCommand.MESSAGE_SUCCESS, Messages.format(advanced));
+        assertCommandSuccess("advance 1", expectedMessage, expectedModel);
     }
 
     @Test

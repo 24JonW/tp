@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditCommand;
@@ -27,7 +28,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                        PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+                        PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
 
         Index index;
 
@@ -38,7 +39,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
@@ -56,6 +57,9 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
         if (argMultimap.getValue(PREFIX_EVENT_DATE).isPresent()) {
             editPersonDescriptor.setEventDate(ParserUtil.parseEventDate(argMultimap.getValue(PREFIX_EVENT_DATE).get()));
+        }
+        if (argMultimap.getValue(PREFIX_STAGE).isPresent()) {
+            editPersonDescriptor.setStage(ParserUtil.parseStage(argMultimap.getValue(PREFIX_STAGE).get()));
         }
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {

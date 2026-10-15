@@ -196,6 +196,21 @@ public class EditCommandTest {
         assertEquals(Stage.BOOKED, edited.getStage());
     }
 
+    @Test
+    public void execute_editStage_updatesStage() {
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person editedPerson = new PersonBuilder(original).withStage("Delivered").build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withStage("Delivered").build();
+        EditCommand command = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS,
+                Messages.format(editedPerson));
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(original, editedPerson);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+    }
+
     /**
      * Edit filtered list where index is larger than size of filtered list,
      * but smaller than size of address book

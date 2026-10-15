@@ -8,12 +8,12 @@ ShutterLink is a desktop contact and engagement manager for independent event ph
 
 ## Features
 
-- Add client engagements with contact information, event type, and event date.
-- Edit contact and event details while preserving the engagement stage.
-- Track stages such as `Enquiry`, `Booked`, and `Awaiting Payment`.
+- Add client engagements at any stage, defaulting to `Enquiry` when no stage is supplied.
+- Edit contact, event, and engagement-stage details.
+- Advance an engagement to its next workflow stage with one command.
 - Delete contacts immediately when they are no longer needed.
 - Find engagements by exact name, phone number, email address, or event type.
-- List all contacts, sort them by event date, or filter them by stage.
+- List all contacts or sort them by event date.
 - View events taking place within the next seven calendar days.
 - Automatically save contacts and restore them when the application starts.
 - View supported commands through the in-app help panel.
@@ -30,12 +30,11 @@ ShutterLink is a desktop contact and engagement manager for independent event ph
 ## Example commands
 
 ```text
-add n/John Tan p/+65 9123 4567 e/john.tan@example.com t/Wedding d/2026-12-20
-stage 1 s/Booked
-edit 1 d/2026-12-25
+add n/John Tan p/+65 9123 4567 e/john.tan@example.com t/Wedding d/2026-12-20 s/Booked
+edit 1 d/2026-12-25 s/Enquiry
+advance 1
 find t/Wedding
 list sort/date
-list stage/Awaiting Payment
 upcoming
 help
 ```

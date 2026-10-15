@@ -124,7 +124,7 @@ The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * represents each `Person` as one photography engagement containing a client's `Name`, `Phone`, `Email`,
-  `EventType`, and `EventDate`.
+  `EventType`, `EventDate`, and `Stage`.
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
@@ -138,7 +138,8 @@ The `Model` component,
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
-* converts each `Person` to and from a `JsonAdaptedPerson`, including its event type and ISO-8601 event date.
+* converts each `Person` to and from a `JsonAdaptedPerson`, including its event type, ISO-8601 event date,
+  and engagement stage.
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
@@ -406,7 +407,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1.  User requests to list contacts, or finds the relevant contacts (UC02).
 2.  ShutterLink shows a list of contacts.
-3.  User requests to change the stage of a specific contact in the list to a new stage.
+3.  User either edits the stage directly or advances the contact to the next stage.
 4.  ShutterLink updates the stage of the contact and shows the full contact list.
 
     Use case ends.
@@ -429,9 +430,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 3c. The contact already has the given stage.
+* 3c. User requests to advance a contact that is already at _Delivered_.
 
-    * 3c1. ShutterLink informs the user that the stage is unchanged and keeps the current list.
+    * 3c1. ShutterLink informs the user that the final stage cannot be advanced and keeps the current list.
 
       Use case ends.
 
@@ -524,6 +525,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case ends.
 
 **Use case: UC06 - Follow up on engagements at a stage**
+
+_Planned for a future iteration; not implemented in v1.2._
 
 **MSS**
 

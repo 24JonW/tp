@@ -1,5 +1,7 @@
 package seedu.address.model.person;
 
+import java.util.Optional;
+
 /**
  * Represents the current engagement stage of a photography client.
  */
@@ -9,6 +11,9 @@ public enum Stage {
     SHOT_COMPLETED("Shot Completed"),
     AWAITING_PAYMENT("Awaiting Payment"),
     DELIVERED("Delivered");
+
+    public static final String MESSAGE_CONSTRAINTS = "Stage must be one of: Enquiry, Booked, Shot Completed, "
+            + "Awaiting Payment, Delivered.";
 
     private final String value;
 
@@ -30,6 +35,19 @@ public enum Stage {
             }
         }
         throw new IllegalArgumentException("Invalid engagement stage.");
+    }
+
+    /**
+     * Returns the next stage in the engagement workflow, or an empty value when this is the final stage.
+     */
+    public Optional<Stage> getNextStage() {
+        return switch (this) {
+            case ENQUIRY -> Optional.of(BOOKED);
+            case BOOKED -> Optional.of(SHOT_COMPLETED);
+            case SHOT_COMPLETED -> Optional.of(AWAITING_PAYMENT);
+            case AWAITING_PAYMENT -> Optional.of(DELIVERED);
+            case DELIVERED -> Optional.empty();
+        };
     }
 
     @Override
