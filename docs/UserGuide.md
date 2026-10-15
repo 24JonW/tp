@@ -24,7 +24,7 @@ engagement record.
 
 1. Copy the file to the folder you want to use as the _home folder_ for ShutterLink.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar shutterlink.jar`.<br>
    The ShutterLink window should appear in a few seconds with sample engagement data.
    ![Ui](images/Ui.png)
 

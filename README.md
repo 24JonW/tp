@@ -26,7 +26,7 @@ through post-event delivery.
 2. Run it with:
 
    ```bash
-   java -jar addressbook.jar
+   java -jar shutterlink.jar
    ```
 
 ## Example commands
