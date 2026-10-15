@@ -4,12 +4,14 @@
     "phone": "94351253",
     "email": "alice@example.com",
     "eventType": "Wedding",
-    "eventDate": "2026-01-01"
+    "eventDate": "2026-01-01",
+    "stage": "Enquiry"
   }, {
     "name": "alice pauline",
     "phone": "94351253",
     "email": "alice@example.com",
     "eventType": "wedding",
-    "eventDate": "2026-01-01"
+    "eventDate": "2026-01-01",
+    "stage": "Enquiry"
   } ]
 }

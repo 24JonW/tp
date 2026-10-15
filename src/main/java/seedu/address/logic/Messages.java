@@ -44,7 +44,9 @@ public class Messages {
                 .append("; Event Type: ")
                 .append(person.getEventType())
                 .append("; Event Date: ")
-                .append(person.getEventDate());
+                .append(person.getEventDate())
+                .append("; Stage: ")
+                .append(person.getStage());
         return builder.toString();
     }
 

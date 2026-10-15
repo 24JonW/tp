@@ -15,10 +15,11 @@
     </padding>
     <columnConstraints>
       <ColumnConstraints percentWidth="22" />
-      <ColumnConstraints percentWidth="15" />
-      <ColumnConstraints percentWidth="28" />
-      <ColumnConstraints percentWidth="20" />
-      <ColumnConstraints percentWidth="15" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="24" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="13" />
+      <ColumnConstraints percentWidth="13" />
     </columnConstraints>
     <HBox alignment="CENTER_LEFT" spacing="6" GridPane.columnIndex="0">
       <Label fx:id="id" styleClass="cell_big_label">
@@ -33,6 +34,7 @@
     <Label fx:id="phone" styleClass="contact-phone" text="\$phone" GridPane.columnIndex="1" />
     <Label fx:id="email" styleClass="contact-email" text="\$email" GridPane.columnIndex="2" />
     <Label fx:id="eventType" styleClass="contact-event-type" text="\$eventType" GridPane.columnIndex="3" />
-    <Label fx:id="eventDate" styleClass="contact-event-date" text="\$eventDate" GridPane.columnIndex="4" />
+    <Label fx:id="stage" styleClass="cell_small_label" text="\$stage" GridPane.columnIndex="4" />
+    <Label fx:id="eventDate" styleClass="contact-event-date" text="\$eventDate" GridPane.columnIndex="5" />
   </GridPane>
 </HBox>

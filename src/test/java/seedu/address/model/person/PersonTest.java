@@ -146,10 +146,43 @@ public class PersonTest {
     }
 
     @Test
+    public void constructor_withoutStage_defaultsToEnquiry() {
+        Person person = new Person(
+                new Name("Test Person"),
+                new Phone("91234567"),
+                new Email("test@example.com"),
+                new EventType("Wedding"),
+                new EventDate("2026-12-01"));
+
+        assertEquals(Stage.ENQUIRY, person.getStage());
+    }
+
+    @Test
+    public void equals_differentStage_returnsFalse() {
+        Person bookedPerson = new PersonBuilder(ALICE)
+                .withStage("Booked")
+                .build();
+
+        assertFalse(ALICE.equals(bookedPerson));
+    }
+
+    @Test
+    public void hashCode_samePerson_returnsSameHashCode() {
+        Person aliceCopy = new PersonBuilder(ALICE).build();
+
+        assertEquals(ALICE.hashCode(), aliceCopy.hashCode());
+    }
+
+    @Test
     public void toStringMethod() {
-        String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
-                + ", email=" + ALICE.getEmail() + ", eventType=" + ALICE.getEventType()
-                + ", eventDate=" + ALICE.getEventDate() + "}";
+        String expected = Person.class.getCanonicalName()
+                + "{name=" + ALICE.getName()
+                + ", phone=" + ALICE.getPhone()
+                + ", email=" + ALICE.getEmail()
+                + ", eventType=" + ALICE.getEventType()
+                + ", eventDate=" + ALICE.getEventDate()
+                + ", stage=" + ALICE.getStage()
+                + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

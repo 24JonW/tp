@@ -17,6 +17,7 @@ import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Parses input arguments and creates a new AddCommand object
@@ -47,7 +48,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         EventType eventType = ParserUtil.parseEventType(argMultimap.getValue(PREFIX_EVENT_TYPE).get());
         EventDate eventDate = ParserUtil.parseEventDate(argMultimap.getValue(PREFIX_EVENT_DATE).get());
 
-        Person person = new Person(name, phone, email, eventType, eventDate);
+        Person person = new Person(name, phone, email, eventType, eventDate, Stage.ENQUIRY);
 
         return new AddCommand(person);
     }
