@@ -57,7 +57,7 @@ public class Person {
      * event type and event date. Name, email and event type are compared case-insensitively.
      * This defines a weaker notion of equality between two persons.
      */
-    public boolean isSamePerson(Person otherPerson) {
+    public boolean isSameEngagement(Person otherPerson) {
         if (otherPerson == this) {
             return true;
         }
