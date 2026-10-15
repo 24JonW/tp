@@ -19,50 +19,50 @@ import seedu.address.testutil.PersonBuilder;
 public class PersonTest {
 
     @Test
-    public void isSamePerson() {
+    public void isSameEngagement() {
         // same object -> returns true
-        assertTrue(ALICE.isSamePerson(ALICE));
+        assertTrue(ALICE.isSameEngagement(ALICE));
 
         // null -> returns false
-        assertFalse(ALICE.isSamePerson(null));
+        assertFalse(ALICE.isSameEngagement(null));
 
         // all fields same -> returns true
-        assertTrue(ALICE.isSamePerson(new PersonBuilder(ALICE).build()));
+        assertTrue(ALICE.isSameEngagement(new PersonBuilder(ALICE).build()));
 
         // name, email and event type differ only in case -> returns true
         Person editedBob = new PersonBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase())
                 .withEmail(VALID_EMAIL_BOB.toUpperCase()).withEventType(VALID_EVENT_TYPE_BOB.toUpperCase()).build();
-        assertTrue(BOB.isSamePerson(editedBob));
+        assertTrue(BOB.isSameEngagement(editedBob));
 
         // same client, different event type and date (repeat client) -> returns false
         Person editedAlice = new PersonBuilder(ALICE).withEventType(VALID_EVENT_TYPE_BOB)
                 .withEventDate(VALID_EVENT_DATE_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // different name, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // different phone, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withPhone(VALID_PHONE_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // different email, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withEmail(VALID_EMAIL_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // different event type, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withEventType(VALID_EVENT_TYPE_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // different event date, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withEventDate(VALID_EVENT_DATE_BOB).build();
-        assertFalse(ALICE.isSamePerson(editedAlice));
+        assertFalse(ALICE.isSameEngagement(editedAlice));
 
         // name has trailing spaces, all other attributes same -> returns false
         String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
         editedBob = new PersonBuilder(BOB).withName(nameWithTrailingSpaces).build();
-        assertFalse(BOB.isSamePerson(editedBob));
+        assertFalse(BOB.isSameEngagement(editedBob));
     }
 
     @Test

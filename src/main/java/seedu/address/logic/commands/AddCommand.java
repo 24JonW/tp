@@ -58,6 +58,8 @@ public class AddCommand extends Command {
         }
 
         model.addPerson(toAdd);
+        // Show all contacts so that the displayed list contains every contact, and the indexes in the warning
+        // match what the user sees.
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         String warning = SimilarContactWarning.generate(model.getFilteredPersonList(), toAdd);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.formatSummary(toAdd)) + warning);
