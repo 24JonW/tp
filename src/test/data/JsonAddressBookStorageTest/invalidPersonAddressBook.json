@@ -4,6 +4,7 @@
     "phone": "94824240",
     "email": "hans@example.com",
     "eventType": "Wedding",
-    "eventDate": "2026-10-07"
+    "eventDate": "2026-10-07",
+    "stage": "Enquiry"
   } ]
 }

@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class CommandTestUtil {
     public static final String VALID_EVENT_TYPE_BOB = "Portrait";
     public static final String VALID_EVENT_DATE_AMY = "2026-11-01";
     public static final String VALID_EVENT_DATE_BOB = "2026-12-02";
+    public static final String VALID_STAGE_AMY = "Booked";
+    public static final String VALID_STAGE_BOB = "Delivered";
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;
@@ -46,12 +49,15 @@ public class CommandTestUtil {
     public static final String EVENT_TYPE_DESC_BOB = " " + PREFIX_EVENT_TYPE + VALID_EVENT_TYPE_BOB;
     public static final String EVENT_DATE_DESC_AMY = " " + PREFIX_EVENT_DATE + VALID_EVENT_DATE_AMY;
     public static final String EVENT_DATE_DESC_BOB = " " + PREFIX_EVENT_DATE + VALID_EVENT_DATE_BOB;
+    public static final String STAGE_DESC_AMY = " " + PREFIX_STAGE + VALID_STAGE_AMY;
+    public static final String STAGE_DESC_BOB = " " + PREFIX_STAGE + VALID_STAGE_BOB;
 
     public static final String INVALID_NAME_DESC = " " + PREFIX_NAME + "James&"; // '&' not allowed in names
     public static final String INVALID_PHONE_DESC = " " + PREFIX_PHONE + "911a"; // 'a' not allowed in phones
     public static final String INVALID_EMAIL_DESC = " " + PREFIX_EMAIL + "bob!yahoo"; // missing '@' symbol
     public static final String INVALID_EVENT_TYPE_DESC = " " + PREFIX_EVENT_TYPE;
     public static final String INVALID_EVENT_DATE_DESC = " " + PREFIX_EVENT_DATE + "2026-02-30";
+    public static final String INVALID_STAGE_DESC = " " + PREFIX_STAGE + "Unknown";
 
     public static final String PREAMBLE_WHITESPACE = "\t  \r  \n";
     public static final String PREAMBLE_NON_EMPTY = "NonEmptyPreamble";

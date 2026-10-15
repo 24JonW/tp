@@ -12,12 +12,15 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_EVENT_DATE_DE
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_EVENT_TYPE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_STAGE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_NON_EMPTY;
 import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
+import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_DATE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_TYPE_BOB;
@@ -28,6 +31,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalPersons.BOB;
@@ -41,6 +45,8 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
+import seedu.address.testutil.PersonBuilder;
 
 public class AddCommandParserTest {
     private AddCommandParser parser = new AddCommandParser();
@@ -49,6 +55,13 @@ public class AddCommandParserTest {
     public void parse_allFieldsPresent_success() {
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB, new AddCommand(BOB));
+    }
+
+    @Test
+    public void parse_stagePresent_success() {
+        String userInput = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB + STAGE_DESC_AMY;
+        assertParseSuccess(parser, userInput, new AddCommand(new PersonBuilder(BOB).withStage("Booked").build()));
     }
 
     @Test
@@ -66,6 +79,8 @@ public class AddCommandParserTest {
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EVENT_TYPE));
         assertParseFailure(parser, EVENT_DATE_DESC_AMY + validPerson,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EVENT_DATE));
+        assertParseFailure(parser, STAGE_DESC_AMY + validPerson + STAGE_DESC_BOB,
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_STAGE));
     }
 
     @Test
@@ -96,6 +111,8 @@ public class AddCommandParserTest {
                 + INVALID_EVENT_TYPE_DESC + EVENT_DATE_DESC_BOB, EventType.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + EVENT_TYPE_DESC_BOB + INVALID_EVENT_DATE_DESC, EventDate.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB + INVALID_STAGE_DESC, Stage.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                         + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));

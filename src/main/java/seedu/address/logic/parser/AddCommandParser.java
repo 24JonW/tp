@@ -6,6 +6,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public AddCommand parse(String args) throws ParseException {
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                        PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+                        PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
 
         if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
                 PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE)
@@ -41,14 +42,18 @@ public class AddCommandParser implements Parser<AddCommand> {
         }
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
         Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get());
         EventType eventType = ParserUtil.parseEventType(argMultimap.getValue(PREFIX_EVENT_TYPE).get());
         EventDate eventDate = ParserUtil.parseEventDate(argMultimap.getValue(PREFIX_EVENT_DATE).get());
+        Stage stage = Stage.ENQUIRY;
+        if (argMultimap.getValue(PREFIX_STAGE).isPresent()) {
+            stage = ParserUtil.parseStage(argMultimap.getValue(PREFIX_STAGE).get());
+        }
 
-        Person person = new Person(name, phone, email, eventType, eventDate, Stage.ENQUIRY);
+        Person person = new Person(name, phone, email, eventType, eventDate, stage);
 
         return new AddCommand(person);
     }

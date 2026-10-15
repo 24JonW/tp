@@ -11,9 +11,12 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_EVENT_DATE_DE
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_EVENT_TYPE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_STAGE_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_DATE_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_TYPE_AMY;
@@ -24,6 +27,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -41,6 +45,7 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 
 public class EditCommandParserTest {
@@ -71,6 +76,7 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "1" + INVALID_EMAIL_DESC, Email.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "1" + INVALID_EVENT_TYPE_DESC, EventType.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "1" + INVALID_EVENT_DATE_DESC, EventDate.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1" + INVALID_STAGE_DESC, Stage.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "1" + INVALID_PHONE_DESC + EMAIL_DESC_AMY, Phone.MESSAGE_CONSTRAINTS);
     }
 
@@ -78,10 +84,10 @@ public class EditCommandParserTest {
     public void parse_allFieldsSpecified_success() {
         Index targetIndex = INDEX_SECOND_PERSON;
         String userInput = targetIndex.getOneBased() + PHONE_DESC_BOB + EMAIL_DESC_AMY
-                + EVENT_TYPE_DESC_AMY + EVENT_DATE_DESC_AMY + NAME_DESC_AMY;
+                + EVENT_TYPE_DESC_AMY + EVENT_DATE_DESC_AMY + STAGE_DESC_AMY + NAME_DESC_AMY;
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_AMY).withEventType(VALID_EVENT_TYPE_AMY)
-                .withEventDate(VALID_EVENT_DATE_AMY).build();
+                .withEventDate(VALID_EVENT_DATE_AMY).withStage("Booked").build();
 
         assertParseSuccess(parser, userInput, new EditCommand(targetIndex, descriptor));
     }
@@ -112,15 +118,18 @@ public class EditCommandParserTest {
         assertParseSuccess(parser, targetIndex.getOneBased() + EVENT_DATE_DESC_AMY,
                 new EditCommand(targetIndex,
                         new EditPersonDescriptorBuilder().withEventDate(VALID_EVENT_DATE_AMY).build()));
+        assertParseSuccess(parser, targetIndex.getOneBased() + STAGE_DESC_AMY,
+                new EditCommand(targetIndex, new EditPersonDescriptorBuilder().withStage("Booked").build()));
     }
 
     @Test
     public void parse_multipleRepeatedFields_failure() {
         Index targetIndex = INDEX_FIRST_PERSON;
         String userInput = targetIndex.getOneBased() + PHONE_DESC_AMY + EVENT_TYPE_DESC_AMY + EMAIL_DESC_AMY
-                + PHONE_DESC_BOB + EVENT_TYPE_DESC_BOB + EMAIL_DESC_AMY + EVENT_DATE_DESC_AMY + EVENT_DATE_DESC_BOB;
+                + PHONE_DESC_BOB + EVENT_TYPE_DESC_BOB + EMAIL_DESC_AMY + EVENT_DATE_DESC_AMY + EVENT_DATE_DESC_BOB
+                + STAGE_DESC_AMY + STAGE_DESC_BOB;
 
         assertParseFailure(parser, userInput, Messages.getErrorMessageForDuplicatePrefixes(
-                PREFIX_PHONE, PREFIX_EMAIL, PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE));
+                PREFIX_PHONE, PREFIX_EMAIL, PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE));
     }
 }

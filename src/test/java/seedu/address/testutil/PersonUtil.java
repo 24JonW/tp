@@ -5,6 +5,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -32,6 +33,7 @@ public class PersonUtil {
         sb.append(PREFIX_EMAIL + person.getEmail().value + " ");
         sb.append(PREFIX_EVENT_TYPE + person.getEventType().value + " ");
         sb.append(PREFIX_EVENT_DATE + person.getEventDate().toString() + " ");
+        sb.append(PREFIX_STAGE + person.getStage().toString() + " ");
         return sb.toString();
     }
 
@@ -47,6 +49,7 @@ public class PersonUtil {
                 .ifPresent(eventType -> sb.append(PREFIX_EVENT_TYPE).append(eventType.value).append(" "));
         descriptor.getEventDate()
                 .ifPresent(eventDate -> sb.append(PREFIX_EVENT_DATE).append(eventDate).append(" "));
+        descriptor.getStage().ifPresent(stage -> sb.append(PREFIX_STAGE).append(stage).append(" "));
         return sb.toString();
     }
 }

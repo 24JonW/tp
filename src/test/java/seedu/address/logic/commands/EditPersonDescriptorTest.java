@@ -10,6 +10,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_DATE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_TYPE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_STAGE_BOB;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,10 @@ public class EditPersonDescriptorTest {
         // different event date -> returns false
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withEventDate(VALID_EVENT_DATE_BOB).build();
         assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different stage -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withStage(VALID_STAGE_BOB).build();
+        assertFalse(DESC_AMY.equals(editedAmy));
     }
 
     @Test
@@ -65,7 +70,8 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getPhone().orElse(null) + ", email="
                 + editPersonDescriptor.getEmail().orElse(null) + ", eventType="
                 + editPersonDescriptor.getEventType().orElse(null) + ", eventDate="
-                + editPersonDescriptor.getEventDate().orElse(null) + "}";
+                + editPersonDescriptor.getEventDate().orElse(null) + ", stage="
+                + editPersonDescriptor.getStage().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }

@@ -13,6 +13,7 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
@@ -92,5 +93,12 @@ public class ParserUtilTest {
         EventDate expected = new EventDate(VALID_EVENT_DATE);
         assertEquals(expected, ParserUtil.parseEventDate(VALID_EVENT_DATE));
         assertEquals(expected, ParserUtil.parseEventDate(WHITESPACE + VALID_EVENT_DATE + WHITESPACE));
+    }
+
+    @Test
+    public void parseStage_valuesHandled() throws Exception {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseStage(null));
+        assertThrows(ParseException.class, Stage.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseStage("Unknown"));
+        assertEquals(Stage.AWAITING_PAYMENT, ParserUtil.parseStage(" awaiting payment "));
     }
 }

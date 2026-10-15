@@ -16,40 +16,53 @@ import seedu.address.commons.core.LogsCenter;
  */
 public class HelpWindow extends UiPart<Stage> {
 
-    public static final String USERGUIDE_URL = "https://se-education.org/addressbook-level3/UserGuide.html";
+    public static final String USERGUIDE_URL =
+            "https://ay2627s1-cs2103t-t08-3.github.io/tp/UserGuide.html";
 
     public static final String HELP_MESSAGE = """
-            All parameters shown below are required.
+            Parameters in square brackets are optional.
 
-            add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
-                Add a contact with event details.
+            add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE [s/STAGE]
+                Add an engagement. STAGE defaults to Enquiry.
 
-            edit INDEX n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE
-                Update all details of the contact at INDEX.
+            edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]
+                Update one or more details of the engagement at INDEX.
+
+            advance INDEX
+                Advance the engagement at INDEX to the next stage.
 
             delete INDEX
-                Immediately delete the contact at INDEX.
+                Immediately delete the engagement at INDEX.
 
-            find p/PHONE
-                Show contacts whose phone number exactly matches PHONE.
+            find n/SEARCH_TEXT
+                Show engagements whose client name contains SEARCH_TEXT.
 
-            find e/EMAIL
-                Show contacts whose email address exactly matches EMAIL.
+            find p/SEARCH_TEXT
+                Show engagements whose stored phone number contains SEARCH_TEXT.
 
-            find t/EVENT_TYPE
-                Show contacts whose event type exactly matches EVENT_TYPE.
+            find e/SEARCH_TEXT
+                Show engagements whose email address contains SEARCH_TEXT.
+
+            find t/SEARCH_TEXT
+                Show engagements whose event type contains SEARCH_TEXT.
 
             list
-                Show all contacts.
+                Show all engagements in insertion order.
 
             list sort/date
-                Show all contacts sorted by event date.
+                Show all engagements sorted by event date.
 
             upcoming
                 Show events taking place today or within the next six dates.
 
+            clear
+                Delete every engagement.
+
             help
                 Open this Help panel.
+
+            exit
+                Exit ShutterLink.
             """
             + "\nRefer to the user guide: " + USERGUIDE_URL;
 

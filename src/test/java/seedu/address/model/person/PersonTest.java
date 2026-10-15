@@ -146,15 +146,14 @@ public class PersonTest {
     }
 
     @Test
-    public void constructor_withoutStage_defaultsToEnquiry() {
-        Person person = new Person(
+    public void constructor_nullStage_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new Person(
                 new Name("Test Person"),
                 new Phone("91234567"),
                 new Email("test@example.com"),
                 new EventType("Wedding"),
-                new EventDate("2026-12-01"));
-
-        assertEquals(Stage.ENQUIRY, person.getStage());
+                new EventDate("2026-12-01"),
+                null));
     }
 
     @Test
