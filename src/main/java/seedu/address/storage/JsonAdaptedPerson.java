@@ -41,15 +41,6 @@ class JsonAdaptedPerson {
         this.stage = stage;
     }
 
-    /**
-     * Constructs a {@code JsonAdaptedPerson} without a stage.
-     *
-     * <p>Used for compatibility with older saved data and existing tests.</p>
-     */
-    public JsonAdaptedPerson(String name, String phone, String email,
-                             String eventType, String eventDate) {
-        this(name, phone, email, eventType, eventDate, null);
-    }
 
     /**
      * Converts a given {@code Person} into this class for Jackson use.
@@ -110,13 +101,13 @@ class JsonAdaptedPerson {
         final EventDate modelEventDate = new EventDate(eventDate);
         final Stage modelStage;
         if (stage == null) {
-            modelStage = Stage.ENQUIRY;
-        } else {
-            try {
-                modelStage = Stage.fromString(stage);
-            } catch (IllegalArgumentException exception) {
-                throw new IllegalValueException("Invalid engagement stage.");
-            }
+            throw new IllegalValueException(String.format(
+                    MISSING_FIELD_MESSAGE_FORMAT, Stage.class.getSimpleName()));
+        }
+        try {
+            modelStage = Stage.fromString(stage);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalValueException("Invalid engagement stage.");
         }
         return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate, modelStage);
     }
