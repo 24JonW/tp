@@ -76,13 +76,20 @@ public class EditCommand extends Command {
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
-        if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
+        if (!personToEdit.isSameEngagement(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
         model.setPerson(personToEdit, editedPerson);
+        // Show all contacts so that the displayed list contains every contact, and the indexes in the warning
+        // match what the user sees.
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
+        boolean hasChangedClientDetails = !personToEdit.isSameClient(editedPerson);
+        String warning = hasChangedClientDetails
+                ? SimilarContactWarning.generate(model.getFilteredPersonList(), editedPerson)
+                : "";
+        String successMessage = String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+        return new CommandResult(successMessage + warning);
     }
 
     /**

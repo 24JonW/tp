@@ -1,5 +1,6 @@
 package seedu.address.model.person;
 
+import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Objects;
@@ -56,17 +57,49 @@ public class Person {
      * event type and event date. Name, email and event type are compared case-insensitively.
      * This defines a weaker notion of equality between two persons.
      */
-    public boolean isSamePerson(Person otherPerson) {
+    public boolean isSameEngagement(Person otherPerson) {
         if (otherPerson == this) {
             return true;
         }
 
         return otherPerson != null
-                && name.fullName.equalsIgnoreCase(otherPerson.name.fullName)
-                && phone.equals(otherPerson.phone)
-                && email.value.equalsIgnoreCase(otherPerson.email.value)
+                && isSameClient(otherPerson)
                 && eventType.value.equalsIgnoreCase(otherPerson.eventType.value)
                 && eventDate.equals(otherPerson.eventDate);
+    }
+
+    /**
+     * Returns true if both persons share a phone number or email, but are not the same client
+     * (i.e., their names, phones and emails are not all the same). Such records may contain a typo.
+     */
+    public boolean hasSimilarContactDetails(Person otherPerson) {
+        requireNonNull(otherPerson);
+        boolean hasSharedContact = hasSamePhone(otherPerson) || hasSameEmail(otherPerson);
+        return hasSharedContact && !isSameClient(otherPerson);
+    }
+
+    /**
+     * Returns true if both persons have the same phone number.
+     */
+    public boolean hasSamePhone(Person otherPerson) {
+        return phone.equals(otherPerson.phone);
+    }
+
+    /**
+     * Returns true if both persons have the same email, ignoring case.
+     */
+    public boolean hasSameEmail(Person otherPerson) {
+        return email.value.equalsIgnoreCase(otherPerson.email.value);
+    }
+
+    /**
+     * Returns true if both persons have the same name (ignoring case), phone and email,
+     * i.e., they are records of the same client.
+     */
+    public boolean isSameClient(Person otherPerson) {
+        return name.fullName.equalsIgnoreCase(otherPerson.name.fullName)
+                && hasSamePhone(otherPerson)
+                && hasSameEmail(otherPerson);
     }
 
     /**
