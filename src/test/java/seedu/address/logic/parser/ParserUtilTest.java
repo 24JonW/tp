@@ -60,6 +60,7 @@ public class ParserUtilTest {
         Phone expected = new Phone(VALID_PHONE);
         assertEquals(expected, ParserUtil.parsePhone(VALID_PHONE));
         assertEquals(expected, ParserUtil.parsePhone(WHITESPACE + VALID_PHONE + WHITESPACE));
+        assertEquals(new Phone("+6591234567"), ParserUtil.parsePhone(" +65 9123-4567 "));
     }
 
     @Test
