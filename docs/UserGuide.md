@@ -5,6 +5,11 @@ title: User Guide
 
 ShutterLink is a **desktop application for managing photography client engagements, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, ShutterLink can help you manage engagements faster than traditional GUI applications.
 
+ShutterLink manages **engagements**, not separate client profiles. Each engagement contains a client's name, phone
+number, and email address together with one event type, event date, and workflow stage. A repeat client can therefore
+appear in multiple engagement records. Some current UI messages still use the legacy word “contact” to mean an
+engagement record.
+
 * Table of Contents
 {:toc}
 
@@ -20,19 +25,19 @@ ShutterLink is a **desktop application for managing photography client engagemen
 1. Copy the file to the folder you want to use as the _home folder_ for ShutterLink.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
+   The ShutterLink window should appear in a few seconds with sample engagement data.
    ![Ui](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all contacts.
+   * `list` : Lists all engagements.
 
    * `add n/John Doe p/98765432 e/johnd@example.com t/Wedding d/2026-12-20` : Adds an engagement for `John Doe` at the `Enquiry` stage.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete 3` : Deletes the 3rd engagement shown in the current list.
 
-   * `clear` : Deletes all contacts.
+   * `clear` : Deletes all engagements.
 
    * `exit` : Exits the app.
 
@@ -52,8 +57,15 @@ ShutterLink is a **desktop application for managing photography client engagemen
 * Items in square brackets are optional.<br>
   For example, `edit INDEX [n/NAME]` can be used as `edit 1 n/John Doe` or with another editable field.
 
-* Parameters can be in any order.<br>
+* Prefixed parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For `edit`, the `INDEX` must appear before the prefixed parameters.
+
+* Command words and prefixes are case-sensitive, except that `list`, `upcoming`, and the `sort/date` option are
+  case-insensitive. Stage values are also case-insensitive.<br>
+  For example, `add ... s/booked` is accepted, while `ADD ...` and `N/John Doe` are not.
+
+* Do not repeat a prefix in the same command. A repeated prefix is rejected instead of silently choosing one value.
 
 * Commands that take no parameters reject unexpected input unless their command section states otherwise.<br>
   For example, `help 123` is rejected because `help` takes no parameters.
@@ -61,16 +73,32 @@ ShutterLink is a **desktop application for managing photography client engagemen
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
+### Field formats
+
+Leading and trailing whitespace around values is ignored when commands are parsed. The following constraints apply:
+
+| Field | Prefix | Accepted format and stored value |
+| --- | --- | --- |
+| Name | `n/` | One or more alphanumeric characters or spaces; the first character must be alphanumeric. |
+| Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
+| Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
+| Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
+| Event date | `d/` | A real calendar date in `YYYY-MM-DD` format, with a year from `0001` to `9999`. |
+| Stage | `s/` | `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, or `Delivered`. Matching ignores capitalization, and the canonical spelling is displayed. |
+
+An `INDEX` is a positive integer referring to the numbering in the list currently displayed. Search, sort, and
+upcoming views can therefore change which engagement an index identifies.
+
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens a concise in-app command reference and provides a link to this User Guide.
 
 ![help message](images/helpMessage.png)
 
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding an engagement: `add`
 
 Adds a client engagement to ShutterLink. The stage is optional and defaults to `Enquiry`.
 
@@ -81,20 +109,29 @@ Examples:
 * `add n/Betsy Crowe p/+65 9123 4567 e/betsycrowe@example.com t/Portrait d/2027-01-15 s/Booked`
 
 Supported stages are `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, and `Delivered`.
+Stage matching is case-insensitive, so `s/booked` is stored and displayed as `Booked`.
 
-### Listing and sorting contacts: `list`
+An engagement is considered a duplicate when its name, normalized phone number, email address, event type, and event
+date match an existing engagement; the stage is not part of duplicate identity. Name, email, and event type comparisons
+ignore capitalization. A repeat client can still have multiple engagements with different event types or dates.
+
+After a successful add, the complete list is displayed in insertion order. If the new engagement shares a phone
+number or email address with another client identity, ShutterLink also displays a possible-typo warning.
+
+### Listing and sorting engagements: `list`
 
 Use `list` to return to all client engagements after a search or sorted view.
 Use `list sort/date` to review all engagements from the earliest event date to the latest.
 Past events are included. Engagements on the same date stay in the order they were added.
 
 Formats:
-* `list` — all contacts in insertion order.
-* `list sort/date` — all contacts by ascending event date.
+* `list` — all engagements in insertion order.
+* `list sort/date` — all engagements by ascending event date.
 
 The heading is `All contacts (N)` or `All contacts by event date (N)`, respectively.
-The result panel reports `Showing N contacts.` With no saved contacts, it reports `No contacts to display.`
-Here, `N` is the number of displayed contacts.
+The result panel reports `Showing N contacts.` With no saved engagements, it reports `No contacts to display.`
+Here, `N` is the number of displayed engagements. The word “contacts” in these UI messages refers to engagement
+records, not separate client profiles.
 
 Examples:
 * `list sort/date` brings earlier shoots to the top, including completed dates.
@@ -106,7 +143,7 @@ Displayed indexes are recalculated; subsequent edit, advance, and delete command
 Sorting does not change the saved records or their insertion order. Restarting restores insertion order.
 
 Only the `sort/` prefix and the value `date` are supported. Spaces and tabs may separate arguments,
-but the command must occupy one line. Stage filtering is not available in v1.2.
+but the command must occupy one line. Stage filtering is not available in the current version.
 
 | Invalid input | Feedback |
 | --- | --- |
@@ -125,13 +162,13 @@ This is seven calendar days in total, using your computer's local date and timez
 
 Format: `upcoming`
 
-* Results start from all saved contacts, replacing any previous search or sort.
+* Results start from all saved engagements, replacing any previous search or sort.
 * Events are sorted from earliest to latest; events on the same date retain insertion order.
 * Past events and events seven or more days after today are excluded.
-* Displayed indexes start at 1. Edit and delete use the indexes in this view.
+* Displayed indexes start at 1. Edit, advance, and delete use the indexes in this view.
 * The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming contacts.`
 * With no matching events, the list is empty and feedback is `No events scheduled from START_DATE to END_DATE.`
-* Records are not changed or saved by this command. Use `list` to restore all contacts in insertion order.
+* Records are not changed or saved by this command. Use `list` to restore all engagements in insertion order.
 
 For example, running `upcoming` on **2026-10-14** includes dates **2026-10-14 through 2026-10-20**.
 An event on 2026-10-21 is outside that window. With two matches, the heading is
@@ -148,13 +185,15 @@ Edits one or more details of an existing engagement. Use `s/STAGE` to correct or
 
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the engagement at the specified `INDEX`. The index refers to the number shown in the current list and must be a positive integer.
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * The stage may be moved forward or backward to any supported value.
+* Supplying a value identical to the current value is accepted and reported as a successful edit.
+* A successful edit returns to the complete list in insertion order.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 1 p/91234567 e/johndoe@example.com` edits the phone number and email address of the first engagement.
 *  `edit 2 n/Betsy Crower t/Corporate d/2027-03-01 s/Awaiting Payment` edits the name, event details,
    and stage of the 2nd engagement.
 
@@ -166,12 +205,15 @@ Format: `advance INDEX`
 
 The stage progression is `Enquiry` → `Booked` → `Shot Completed` → `Awaiting Payment` → `Delivered`.
 An engagement already at `Delivered` cannot be advanced. Use `edit INDEX s/STAGE` when a stage needs correction.
+A successful advance returns to the complete list in insertion order. Attempting to advance `Delivered` leaves the
+current view unchanged.
 
 Example: `advance 2` advances the second displayed engagement by one stage.
 
-### Finding contacts: `find`
+### Finding engagements: `find`
 
-Find contacts by name, phone number, email address, or event type.
+Find engagements whose selected field contains the search text. Matching is case-insensitive and accepts partial
+values; the search text itself is not required to satisfy that field's add/edit format.
 
 Format:
 
@@ -182,16 +224,20 @@ find e/SEARCH_TEXT
 find t/SEARCH_TEXT
 ```
 Where:
-* n/ searches contact names.
-* p/ searches phone numbers.
-* e/ searches email addresses.
-* t/ searches event types.
+* `n/` searches client names.
+* `p/` searches stored phone numbers.
+* `e/` searches email addresses.
+* `t/` searches event types.
 
 Examples:
-* find n/Jonathan finds `Jonathan Wong` and `Jonathan Tan`.
-* find p/9123 finds phone numbers containing `9123`.
-* find e/jonathan finds email addresses containing `jonathan`.
-* find t/Wed finds event types containing `Wed`.
+* `find n/Jonathan` finds `Jonathan Wong` and `Jonathan Tan`.
+* `find p/9123` finds normalized phone numbers containing `9123`.
+* `find e/jonathan` finds email addresses containing `jonathan`.
+* `find t/Wed` finds event types containing `Wed`.
+
+Phone numbers are stored without spaces or hyphens, so searching with digits only is recommended. Each search starts
+from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
+advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
 | Invalid input | Reason |
 | --- | --- |
@@ -200,25 +246,30 @@ Examples:
 | `find n/Jonathan p/9123` | More than one search field was provided |
 | `find n/Jonathan n/Tan` | The same search field was repeated |
 
-### Deleting a person: `delete`
+### Deleting an engagement: `delete`
 
-Deletes the specified person from the address book.
+Deletes the specified engagement from ShutterLink.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
+* Deletes the engagement at the specified `INDEX`.
+* The index refers to the number shown in the current list and must be a positive integer.
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete 2` deletes the second engagement in insertion order.
+* `find n/Betsy` followed by `delete 1` deletes the first engagement in those search results.
+
+After deletion from a search, the remaining matching results stay visible. Deleting from a date-sorted or upcoming
+view returns to the complete list in insertion order.
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Clears all engagements from ShutterLink.
 
 Format: `clear`
+
+In the current version, trailing text after `clear` is ignored. Use the documented argument-free form to avoid
+accidentally clearing data.
 
 ### Exiting the program: `exit`
 
@@ -226,16 +277,43 @@ Exits the program.
 
 Format: `exit`
 
+In the current version, trailing text after `exit` is ignored.
+
 ### Saving the data
 
-ShutterLink automatically saves data after every command. You do not need to save manually.
+ShutterLink attempts to save after every successfully executed command except `list` and `upcoming`, which only change
+the view. You do not need to save manually. If saving fails after a data-changing command, ShutterLink reports an
+error, but the change remains in memory for the current session; the file keeps its last successfully saved contents.
 
 ### Editing the data file
 
-ShutterLink data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file. Every engagement must include a `stage` whose value is `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, or `Delivered`.
+ShutterLink data is saved automatically as `data/addressbook.json`, relative to the folder from which the app is
+launched (normally the JAR file's folder). Advanced users can update this file while ShutterLink is closed. Each
+object in the `persons` array represents one engagement and must contain all six fields:
+
+```json
+{
+  "persons": [
+    {
+      "name": "John Doe",
+      "phone": "+6591234567",
+      "email": "john@example.com",
+      "eventType": "Wedding",
+      "eventDate": "2026-12-20",
+      "stage": "Booked"
+    }
+  ]
+}
+```
+
+Use the formats in [Field formats](#field-formats). In particular, `eventDate` must use `YYYY-MM-DD`, and `stage`
+must be `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, or `Delivered`. Duplicate engagement identities
+also make the file invalid.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, ShutterLink starts with an empty address book at the next run. The invalid file remains on disk until you run a command (ShutterLink saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, ShutterLink starts with an empty address book at the next run. The invalid
+file remains on disk until a command that triggers saving succeeds; `list` and `upcoming` do not overwrite it. Still,
+we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -248,14 +326,15 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous ShutterLink home folder.
+**A**: Close ShutterLink on both computers. In the folder from which ShutterLink will be launched on the new computer,
+create a `data` folder if needed and copy the old `addressbook.json` into it. The resulting path should be
+`data/addressbook.json` relative to that launch folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -272,3 +351,4 @@ Action | Format, Examples
 **List** | `list` or `list sort/date`
 **Upcoming events** | `upcoming`
 **Help** | `help`
+**Exit** | `exit`

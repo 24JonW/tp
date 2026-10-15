@@ -4,27 +4,29 @@
 
 # ShutterLink
 
-ShutterLink is a desktop contact and engagement manager for independent event photographers. It keeps each client connected to their event details and engagement stage, helping photographers manage relationships from the initial enquiry through post-event follow-up.
+ShutterLink is a desktop engagement manager for independent event photographers. Each engagement combines a client's
+contact details with an event and its workflow stage, helping photographers manage work from the initial enquiry
+through post-event delivery.
 
 ## Features
 
 - Add client engagements at any stage, defaulting to `Enquiry` when no stage is supplied.
-- Edit contact, event, and engagement-stage details.
+- Edit client, event, and engagement-stage details.
 - Advance an engagement to its next workflow stage with one command.
-- Delete contacts immediately when they are no longer needed.
-- Find engagements by exact name, phone number, email address, or event type.
-- List all contacts or sort them by event date.
+- Delete engagements immediately when they are no longer needed.
+- Find engagements using a partial, case-insensitive name, phone number, email address, or event type.
+- List all engagements or sort them by event date.
 - View events taking place within the next seven calendar days.
-- Automatically save contacts and restore them when the application starts.
+- Automatically save engagements and restore them when the application starts.
 - View supported commands through the in-app help panel.
 
 ## Getting started
 
-1. Download the latest `.jar` file from the project releases page.
+1. Install Java 25 or later and download the latest `.jar` file from the project releases page.
 2. Run it with:
 
    ```bash
-   java -jar shutterlink.jar
+   java -jar addressbook.jar
    ```
 
 ## Example commands
@@ -44,7 +46,7 @@ help
 - [User Guide](docs/UserGuide.md)
 - [Developer Guide](docs/DeveloperGuide.md)
 - [About Us](docs/AboutUs.md)
-- [Address Book Product Website](https://se-education.org/addressbook-level3)
+- [ShutterLink Product Website](https://ay2627s1-cs2103t-t08-3.github.io/tp/)
 
 ## Acknowledgements
 

@@ -23,37 +23,46 @@ public class HelpWindow extends UiPart<Stage> {
             Parameters in square brackets are optional.
 
             add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE [s/STAGE]
-                Add a contact with event details.
+                Add an engagement. STAGE defaults to Enquiry.
 
             edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]
-                Update one or more details of the contact at INDEX.
+                Update one or more details of the engagement at INDEX.
 
             advance INDEX
-                Advance the contact at INDEX to the next engagement stage.
+                Advance the engagement at INDEX to the next stage.
 
             delete INDEX
-                Immediately delete the contact at INDEX.
+                Immediately delete the engagement at INDEX.
 
-            find p/PHONE
-                Show contacts whose phone number exactly matches PHONE.
+            find n/SEARCH_TEXT
+                Show engagements whose client name contains SEARCH_TEXT.
 
-            find e/EMAIL
-                Show contacts whose email address exactly matches EMAIL.
+            find p/SEARCH_TEXT
+                Show engagements whose stored phone number contains SEARCH_TEXT.
 
-            find t/EVENT_TYPE
-                Show contacts whose event type exactly matches EVENT_TYPE.
+            find e/SEARCH_TEXT
+                Show engagements whose email address contains SEARCH_TEXT.
+
+            find t/SEARCH_TEXT
+                Show engagements whose event type contains SEARCH_TEXT.
 
             list
-                Show all contacts.
+                Show all engagements in insertion order.
 
             list sort/date
-                Show all contacts sorted by event date.
+                Show all engagements sorted by event date.
 
             upcoming
                 Show events taking place today or within the next six dates.
 
+            clear
+                Delete every engagement.
+
             help
                 Open this Help panel.
+
+            exit
+                Exit ShutterLink.
             """
             + "\nRefer to the user guide: " + USERGUIDE_URL;
 
