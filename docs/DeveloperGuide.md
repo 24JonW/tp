@@ -264,11 +264,19 @@ from a search leaves the remaining search matches visible.
 
 ### Persistence after commands
 
+The sequence diagram below shows how `LogicManager` saves the data after a command that may change it.
+
+![Saving the address book after a command](images/PersistenceSequenceDiagram.png)
+
+`StorageManager` delegates to `JsonAddressBookStorage`, which converts the address book into a
+`JsonSerializableAddressBook` (one `JsonAdaptedPerson` per engagement) and writes it to the data file using `JsonUtil`.
+The whole address book is rewritten on every save.
+
 `LogicManager#execute` parses and executes a command before deciding whether to save. `ListCommand` and
 `UpcomingCommand` are the only commands that skip `Storage#saveAddressBook`, because they change only the view.
 All other successfully executed commands currently attempt a write, including `find`, `help`, and `exit`.
 
-If a storage write fails, `LogicManager` returns a `CommandException`. The command has already executed, however, so
+If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no
 rollback; the data file retains its last successfully written state. On startup, a missing file loads sample data,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
