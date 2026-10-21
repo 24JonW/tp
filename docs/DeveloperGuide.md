@@ -168,10 +168,6 @@ This section describes some noteworthy details on how certain features are imple
 
 ### Viewing upcoming events
 
-The sequence below shows successful command execution and heading retrieval. Parser interactions are collapsed into a reference frame; date-calculation failures occur before the model's view is changed.
-
-![Upcoming command execution through MainWindow, LogicManager, UpcomingCommand, and ModelManager.](images/UpcomingSequenceDiagram.png)
-
 `UpcomingCommandParser` accepts the case-insensitive, argument-free `upcoming` command. Invalid arguments,
 including line breaks, are rejected before execution. `UpcomingCommand` obtains the current local date from a
 `Clock` at execution time and calculates the inclusive end date with `plusDays(6)`. Tests supply fixed or mutable
@@ -189,6 +185,10 @@ the command works without writable storage, neither changes existing files nor c
 preserves the previous view on invalid input. The persistent insertion order is unchanged.
 
 ### Listing engagements and sorting by event date
+
+The sequence below shows `list` and `list sort/date`, including the display's `FilteredList` and `SortedList` interactions. Parsing is summarized in a reference frame; invalid arguments are rejected before the model calls shown here. `allPersons` denotes `PREDICATE_SHOW_ALL_PERSONS`. The comparator expression is abbreviated: its secondary key is the engagement's saved insertion position.
+
+![List command execution, optional date sorting, and the filtered-to-sorted display pipeline.](images/ListSortSequenceDiagram.png)
 
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.
