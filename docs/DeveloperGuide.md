@@ -241,6 +241,12 @@ Executing `find` removes date sorting, replaces the previous predicate, and assi
 Index-based commands operate on that view. A successful add, edit, or advance restores the complete list; deleting
 from a search leaves the remaining search matches visible.
 
+The [Find command sequence diagram](diagrams/FindCommandSequenceDiagram.puml)
+shows how a search command is parsed, converted into a `PersonSearchPredicate`,
+used to filter the model, and displayed in the UI.
+
+![Find command sequence diagram](images/FindCommandSequenceDiagram.png)
+
 ### Persistence after commands
 
 `LogicManager#execute` parses and executes a command before deciding whether to save. `ListCommand` and

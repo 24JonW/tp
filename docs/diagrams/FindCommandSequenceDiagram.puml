@@ -1,0 +1,85 @@
+@startuml
+!include style.puml
+
+skinparam ArrowFontStyle plain
+
+actor User
+
+box "UI" UI_COLOR_T1
+participant ":CommandBox" as CommandBox UI_COLOR
+participant ":MainWindow" as MainWindow UI_COLOR
+participant ":ResultDisplay" as ResultDisplay UI_COLOR
+participant ":PersonListPanel" as PersonListPanel UI_COLOR
+end box
+
+box "Logic" LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":FindCommandParser" as FindCommandParser LOGIC_COLOR
+participant "f:FindCommand" as FindCommand LOGIC_COLOR
+end box
+
+box "Model" MODEL_COLOR_T1
+participant "p:PersonSearchPredicate" as Predicate MODEL_COLOR
+participant ":ModelManager" as ModelManager MODEL_COLOR
+end box
+
+User -> CommandBox : enter find command
+activate CommandBox
+
+CommandBox -> MainWindow : executeCommand(commandText)
+activate MainWindow
+
+MainWindow -> LogicManager : execute(commandText)
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand(commandText)
+activate AddressBookParser
+
+AddressBookParser -> FindCommandParser : parse(arguments)
+activate FindCommandParser
+
+FindCommandParser -> FindCommandParser : validate search field\nand search value
+
+create Predicate
+FindCommandParser -> Predicate : new PersonSearchPredicate(field, value)
+
+create FindCommand
+FindCommandParser -> FindCommand : new FindCommand(predicate)
+
+FindCommandParser --> AddressBookParser : FindCommand
+deactivate FindCommandParser
+
+AddressBookParser --> LogicManager : Command
+deactivate AddressBookParser
+
+LogicManager -> FindCommand : execute(Model)
+activate FindCommand
+
+FindCommand -> ModelManager : updateFilteredPersonList(predicate)
+activate ModelManager
+
+ModelManager -> Predicate : test each Person
+Predicate --> ModelManager : match / no match
+
+ModelManager --> FindCommand : filtered contacts
+deactivate ModelManager
+
+FindCommand -> ModelManager : getFilteredPersonList().size()
+ModelManager --> FindCommand : match count
+
+FindCommand --> LogicManager : CommandResult
+deactivate FindCommand
+
+LogicManager --> MainWindow : CommandResult
+deactivate LogicManager
+
+MainWindow -> ResultDisplay : setFeedbackToUser(result)
+MainWindow -> PersonListPanel : filtered list is updated
+PersonListPanel -> PersonListPanel : display matching contacts
+
+deactivate MainWindow
+CommandBox --> User : display result
+deactivate CommandBox
+
+@enduml
