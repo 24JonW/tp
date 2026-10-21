@@ -29,9 +29,10 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ### Architecture
 
-<img src="images/ArchitectureDiagram.png" width="280" />
+<img src="images/ArchitectureDiagram.png" width="500" />
 
-The ***Architecture Diagram*** given above explains the high-level design of the App.
+The ***Architecture Diagram*** above explains the high-level design of ShutterLink. Solid arrows show runtime
+collaboration, while dotted arrows show dependencies on shared types or external actors and files.
 
 The following provides a quick overview of the main components and their interactions.
 
@@ -55,7 +56,9 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
+The *Sequence Diagram* below shows how the components interact when the user issues `delete 1`. It includes the
+successful JSON save and the subsequent refresh of the list heading. The UI observes the model's displayed list, so
+individual list-change notifications are omitted.
 
 <img src="images/ArchitectureSequenceDiagram.png" width="574" />
 
@@ -183,6 +186,12 @@ No stage restriction is applied. The selected window stays fixed until the comma
 `LogicManager` skips storage writes for `UpcomingCommand`, just as it does for `ListCommand`. Tests verify that
 the command works without writable storage, neither changes existing files nor creates missing files, and
 preserves the previous view on invalid input. The persistent insertion order is unchanged.
+
+The sequence diagram below summarizes the successful command path. It focuses on parsing, calculating the inclusive
+date range, filtering and sorting the displayed list, and returning feedback. Calls used only to construct the date
+predicate or format the feedback are omitted.
+
+![Interactions for the `upcoming` Command](images/UpcomingSequenceDiagram.png)
 
 ### Listing engagements and sorting by event date
 
@@ -345,8 +354,34 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 ### \[Proposed\] Data archiving
 
-Data archiving is not implemented in the current version. Its storage representation and command workflow are still
-to be decided.
+Data archiving is not implemented in the current version. The proposed feature hides completed engagements from the
+active list without deleting their client or event history. An `archive INDEX` command would accept the index in the
+current displayed list and archive only an engagement at the `Delivered` stage. A separate archived view would allow
+the user to inspect archived engagements and restore one that was archived accidentally.
+
+#### Proposed implementation
+
+The proposed model adds an `isArchived` state to each engagement. `ArchiveCommand` and `RestoreCommand` create a new
+immutable `Person` with the state changed and replace the previous object through `Model#setPerson`. The default
+model predicate excludes archived engagements; the archived view selects only those engagements. The state is
+serialized as part of `JsonAdaptedPerson`, so archiving survives a restart without moving records between files.
+
+An archive or restore is a data-changing command. After a successful model update, `LogicManager` saves the complete
+address book through the existing storage path. If the proposed undo/redo feature is also implemented, both commands
+commit a new address-book state and can be undone like add, edit, advance, delete, and clear.
+
+#### Design considerations
+
+**Aspect: How archived engagements are represented:**
+
+* **Alternative 1 (proposed choice):** Store an `isArchived` state with each engagement.
+  * Pros: Preserves one source of truth, reuses existing JSON conversion and duplicate checks, and makes restoration a
+    state change rather than a cross-file transfer.
+  * Cons: Every default query must consistently exclude archived engagements.
+* **Alternative 2:** Move archived engagements to a separate archive file.
+  * Pros: Keeps the active data file smaller and makes archived data easy to copy independently.
+  * Cons: Moving and restoring records requires coordinated writes to two files; a partial write failure can leave
+    records duplicated or missing.
 
 
 --------------------------------------------------------------------------------------------------------------------
