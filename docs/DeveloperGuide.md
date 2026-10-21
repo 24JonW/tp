@@ -117,6 +117,18 @@ How the `Logic` component works:
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an engagement).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
+1. Unless the command only changes the view (`list` and `upcoming`), `LogicManager` then saves the address book
+   through `Storage` (see [Persistence after commands](#persistence-after-commands)).
+
+The sequence diagram below shows the execution portion for a command that modifies data, using `add` as an example.
+Parsing works the same way as in the `delete 1` example above, so it is omitted.
+
+![Interactions Inside the Logic Component for an `add` Command](images/AddSequenceDiagram.png)
+
+`AddCommand` first asks the `Model` whether the new engagement duplicates an existing one, and fails with a
+`CommandException` if so. Otherwise, it adds the engagement, shows all engagements so that the displayed indexes cover
+every engagement, and asks `SimilarContactWarning` for a possible-typo warning about engagements of other clients that
+share the same phone number or email. The warning, if any, is appended to the result message.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 
@@ -125,6 +137,8 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+* Commands that take no arguments (e.g., `clear`, `help`, `exit`) are created by `AddressBookParser` directly, without
+  an `XYZCommandParser`.
 
 ### Model component
 **API**:
@@ -138,7 +152,16 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * represents each `Person` as one photography engagement containing a client's `Name`, `Phone`, `Email`,
   `EventType`, `EventDate`, and `Stage`.
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* represents the engagement stage as the `Stage` enum, whose values are ordered from `Enquiry` to `Delivered` so that
+  `advance` can move an engagement to the next stage.
+* treats two `Person` objects as the same engagement (`Person#isSameEngagement`) when their name, phone, email, event
+  type and event date all match, ignoring case for the name, email and event type. The stage is not part of this
+  identity. `UniquePersonList` uses this check to reject duplicates.
+* maintains the _displayed_ list of `Person` objects in two layers: a `FilteredList` that selects which engagements
+  are shown (e.g., search results or the upcoming-events window), wrapped by a `SortedList` that optionally orders them
+  by event date (e.g., `list sort/date`). `getFilteredPersonList()` returns this displayed list as an unmodifiable
+  `ObservableList<Person>` that the UI observes, so the UI updates when the list changes. Command indexes such as
+  `edit 2` refer to positions in this displayed list.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
