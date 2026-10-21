@@ -9,7 +9,7 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-ShutterLink is based on [AddressBook-Level3](https://github.com/se-edu/addressbook-level3) by the SE-EDU initiative.
+This project (ShutterLink) is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org).
 It uses JavaFX for the UI, Jackson for JSON serialization, JUnit 5 for testing, and Gradle for builds.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -29,29 +29,28 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ### Architecture
 
+The application is called **ShutterLink**. It helps photographers manage client contacts and their associated photography events.
+
 <img src="images/ArchitectureDiagram.png" width="280" />
 
 The ***Architecture Diagram*** given above explains the high-level design of the App.
 
-The following provides a quick overview of the main components and their interactions.
+* [**`UI`**](#ui-component): Displays the application window and contact information.
+* [**`Logic`**](#logic-component): Parses and executes user commands.
+* [**`Model`**](#model-component): Stores contacts and their event details in memory.
+* [**`Storage`**](#storage-component): Saves and loads contact data from the local JSON file.
+
+[**`Commons`**](#common-classes) contains utility classes shared by multiple components.
+
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes
-[`Main`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/java/seedu/address/Main.java) and
-[`MainApp`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/java/seedu/address/MainApp.java)) is in
-charge of app launch and shutdown.
-* At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
-* At shut down, it shuts down the other components and invokes cleanup methods where necessary.
+**`Main`** and **`MainApp`** initialise the application, connect the components, and handle application shutdown.
 
-The bulk of the app's work is done by the following four components:
+The `Logic` component receives commands from the UI. It parses commands such as adding, editing, deleting, listing, and finding contacts, then executes them using the `Model`. The `Model` updates its filtered contact list, which the UI observes and displays.
 
-* [**`UI`**](#ui-component): The UI of the App.
-* [**`Logic`**](#logic-component): The command executor.
-* [**`Model`**](#model-component): Holds the data of the App in memory.
-* [**`Storage`**](#storage-component): Reads data from, and writes data to, the hard disk.
+Each contact is represented by a `Person` object containing the contact's name, phone number, email address, event type, event date, and engagement stage.
 
-[**`Commons`**](#common-classes) represents a collection of classes used by multiple other components.
 
 **How the architecture components interact with each other**
 
@@ -77,20 +76,23 @@ The **API** of this component is specified in
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+The UI is implemented using JavaFX. Its main parts include:
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files
-in `src/main/resources/view`. For example,
-[`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/resources/view/MainWindow.fxml)
-specifies the layout of
-[`MainWindow`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
+* `MainWindow`, which contains the main application layout.
+* `CommandBox`, which accepts user commands.
+* `ResultDisplay`, which displays feedback messages.
+* `PersonListPanel`, which displays the filtered list of contacts.
+* `PersonCard`, which displays an individual contact.
+* `StatusBarFooter`, which displays the data file location.
+
+The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example, `PersonListCard.fxml` defines the layout for an individual contact card.
 
 The `UI` component,
 
-* executes user commands using the `Logic` component.
-* listens for changes to `Model` data so that the UI can be updated with the modified data.
-* keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+* sends user commands to the `Logic` component;
+* displays command results returned by `Logic`;
+* observes the filtered contact list maintained by `Model`;
+* updates the displayed contacts whenever the model changes.
 
 ### Logic component
 
