@@ -6,6 +6,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -27,13 +28,15 @@ public class AddCommand extends Command {
             + PREFIX_PHONE + "PHONE "
             + PREFIX_EMAIL + "EMAIL "
             + PREFIX_EVENT_TYPE + "EVENT_TYPE "
-            + PREFIX_EVENT_DATE + "EVENT_DATE\n"
+            + PREFIX_EVENT_DATE + "EVENT_DATE "
+            + "[" + PREFIX_STAGE + "STAGE]\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
             + PREFIX_PHONE + "98765432 "
             + PREFIX_EMAIL + "johnd@example.com "
             + PREFIX_EVENT_TYPE + "Wedding "
-            + PREFIX_EVENT_DATE + "2026-12-20";
+            + PREFIX_EVENT_DATE + "2026-12-20 "
+            + PREFIX_STAGE + "Booked";
 
     public static final String MESSAGE_SUCCESS = "New contact added: %1$s.";
     public static final String MESSAGE_DUPLICATE_PERSON =

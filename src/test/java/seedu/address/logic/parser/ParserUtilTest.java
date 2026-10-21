@@ -13,6 +13,7 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
@@ -21,7 +22,7 @@ public class ParserUtilTest {
     private static final String INVALID_EVENT_TYPE = " ";
     private static final String INVALID_EVENT_DATE = "2026-02-30";
     private static final String VALID_NAME = "Rachel Walker";
-    private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE = "12345678";
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_EVENT_TYPE = "Wedding";
     private static final String VALID_EVENT_DATE = "2026-10-07";
@@ -60,6 +61,7 @@ public class ParserUtilTest {
         Phone expected = new Phone(VALID_PHONE);
         assertEquals(expected, ParserUtil.parsePhone(VALID_PHONE));
         assertEquals(expected, ParserUtil.parsePhone(WHITESPACE + VALID_PHONE + WHITESPACE));
+        assertEquals(new Phone("+6591234567"), ParserUtil.parsePhone(" +65 9123-4567 "));
     }
 
     @Test
@@ -75,17 +77,28 @@ public class ParserUtilTest {
     public void parseEventType_valuesHandled() throws Exception {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseEventType(null));
         assertThrows(ParseException.class, () -> ParserUtil.parseEventType(INVALID_EVENT_TYPE));
+        assertThrows(ParseException.class, () -> ParserUtil.parseEventType("Wedding!"));
+        assertThrows(ParseException.class, () -> ParserUtil.parseEventType("a".repeat(EventType.MAX_LENGTH + 1)));
         EventType expected = new EventType(VALID_EVENT_TYPE);
         assertEquals(expected, ParserUtil.parseEventType(VALID_EVENT_TYPE));
         assertEquals(expected, ParserUtil.parseEventType(WHITESPACE + VALID_EVENT_TYPE + WHITESPACE));
+        assertEquals(new EventType("Corporate 2026"), ParserUtil.parseEventType("Corporate \t  2026"));
     }
 
     @Test
     public void parseEventDate_valuesHandled() throws Exception {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseEventDate(null));
         assertThrows(ParseException.class, () -> ParserUtil.parseEventDate(INVALID_EVENT_DATE));
+        assertThrows(ParseException.class, () -> ParserUtil.parseEventDate("0000-01-01"));
         EventDate expected = new EventDate(VALID_EVENT_DATE);
         assertEquals(expected, ParserUtil.parseEventDate(VALID_EVENT_DATE));
         assertEquals(expected, ParserUtil.parseEventDate(WHITESPACE + VALID_EVENT_DATE + WHITESPACE));
+    }
+
+    @Test
+    public void parseStage_valuesHandled() throws Exception {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseStage(null));
+        assertThrows(ParseException.class, Stage.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseStage("Unknown"));
+        assertEquals(Stage.AWAITING_PAYMENT, ParserUtil.parseStage(" awaiting payment "));
     }
 }

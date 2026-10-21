@@ -10,6 +10,7 @@ import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -63,17 +64,17 @@ public class ParserUtil {
 
     /**
      * Parses a {@code String eventType} into an {@code EventType}.
-     * Leading and trailing whitespaces will be trimmed.
+     * Leading and trailing whitespaces will be trimmed, and consecutive spaces or tabs will be replaced by one space.
      *
      * @throws ParseException if the given {@code eventType} is invalid.
      */
     public static EventType parseEventType(String eventType) throws ParseException {
         requireNonNull(eventType);
-        String trimmedEventType = eventType.trim();
-        if (!EventType.isValidEventType(trimmedEventType)) {
+        String normalizedEventType = StringUtil.normalizeWhitespace(eventType);
+        if (!EventType.isValidEventType(normalizedEventType)) {
             throw new ParseException(EventType.MESSAGE_CONSTRAINTS);
         }
-        return new EventType(trimmedEventType);
+        return new EventType(normalizedEventType);
     }
 
     /**
@@ -104,5 +105,20 @@ public class ParserUtil {
             throw new ParseException(EventDate.MESSAGE_CONSTRAINTS);
         }
         return new EventDate(trimmedEventDate);
+    }
+
+    /**
+     * Parses a {@code String stage} into a {@code Stage}.
+     * Leading and trailing whitespaces will be trimmed, and matching is case-insensitive.
+     *
+     * @throws ParseException if the given {@code stage} is invalid.
+     */
+    public static Stage parseStage(String stage) throws ParseException {
+        requireNonNull(stage);
+        try {
+            return Stage.fromString(stage);
+        } catch (IllegalArgumentException exception) {
+            throw new ParseException(Stage.MESSAGE_CONSTRAINTS);
+        }
     }
 }

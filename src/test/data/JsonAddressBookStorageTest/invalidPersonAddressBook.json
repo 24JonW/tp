@@ -1,9 +1,10 @@
 {
   "persons": [ {
     "name": "Person with invalid name field: Ha!ns Mu@ster",
-    "phone": "9482424",
+    "phone": "94824240",
     "email": "hans@example.com",
     "eventType": "Wedding",
-    "eventDate": "2026-10-07"
+    "eventDate": "2026-10-07",
+    "stage": "Enquiry"
   } ]
 }

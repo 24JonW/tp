@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.commons.util.StringUtil;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.EventDate;
 import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Jackson-friendly version of {@link Person}.
@@ -23,6 +25,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String eventType;
     private final String eventDate;
+    private final String stage;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -30,13 +33,15 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("eventType") String eventType,
-            @JsonProperty("eventDate") String eventDate) {
+            @JsonProperty("eventDate") String eventDate, @JsonProperty("stage") String stage) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.eventType = eventType;
         this.eventDate = eventDate;
+        this.stage = stage;
     }
+
 
     /**
      * Converts a given {@code Person} into this class for Jackson use.
@@ -47,6 +52,7 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         eventType = source.getEventType().value;
         eventDate = source.getEventDate().toString();
+        stage = source.getStage().toString();
     }
 
     /**
@@ -82,10 +88,11 @@ class JsonAdaptedPerson {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
                     EventType.class.getSimpleName()));
         }
-        if (!EventType.isValidEventType(eventType)) {
+        final String normalizedEventType = StringUtil.normalizeWhitespace(eventType);
+        if (!EventType.isValidEventType(normalizedEventType)) {
             throw new IllegalValueException(EventType.MESSAGE_CONSTRAINTS);
         }
-        final EventType modelEventType = new EventType(eventType);
+        final EventType modelEventType = new EventType(normalizedEventType);
         if (eventDate == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT,
                     EventDate.class.getSimpleName()));
@@ -94,7 +101,17 @@ class JsonAdaptedPerson {
             throw new IllegalValueException(EventDate.MESSAGE_CONSTRAINTS);
         }
         final EventDate modelEventDate = new EventDate(eventDate);
-        return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate);
+        final Stage modelStage;
+        if (stage == null) {
+            throw new IllegalValueException(String.format(
+                    MISSING_FIELD_MESSAGE_FORMAT, Stage.class.getSimpleName()));
+        }
+        try {
+            modelStage = Stage.fromString(stage);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalValueException("Invalid engagement stage.");
+        }
+        return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate, modelStage);
     }
 
 }

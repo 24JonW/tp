@@ -1,5 +1,6 @@
 package seedu.address.model;
 
+import java.time.LocalDate;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -65,6 +66,15 @@ public interface Model {
      * Does not reorder the underlying address book.
      */
     void showAllPersons(boolean isSortedByDate);
+
+    /**
+     * Shows all persons whose event dates fall within the inclusive range, in ascending date order.
+     * Preserves insertion order for ties and does not change stored records.
+     *
+     * @throws NullPointerException if either boundary is null.
+     * @throws IllegalArgumentException if the end precedes the start.
+     */
+    void showUpcomingPersons(LocalDate startDate, LocalDate endDate);
 
     /**
      * Returns a heading describing the current person view and its count.

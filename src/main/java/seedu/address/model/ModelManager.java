@@ -1,9 +1,12 @@
 package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -24,6 +27,8 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final SortedList<Person> displayedPersons;
+    private LocalDate upcomingStartDate;
+    private LocalDate upcomingEndDate;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -115,6 +120,8 @@ public class ModelManager implements Model {
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
+        upcomingStartDate = null;
+        upcomingEndDate = null;
         displayedPersons.setComparator(null);
         filteredPersons.setPredicate(predicate);
     }
@@ -123,17 +130,37 @@ public class ModelManager implements Model {
     public void showAllPersons(boolean isSortedByDate) {
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         if (isSortedByDate) {
-            // Explicitly break ties by saved insertion position, never by a previous display order.
-            Comparator<Person> byDate = Comparator.comparing(person -> person.getEventDate().value);
-            displayedPersons.setComparator(byDate.thenComparingInt(addressBook.getPersonList()::indexOf));
+            sortPersonsByEventDate();
         }
         logger.fine("Showing all contacts; sorted by event date: " + isSortedByDate);
     }
 
     @Override
+    public void showUpcomingPersons(LocalDate startDate, LocalDate endDate) {
+        requireAllNonNull(startDate, endDate);
+        checkArgument(!endDate.isBefore(startDate), "End date must not precede start date");
+        updateFilteredPersonList(person -> !person.getEventDate().value.isBefore(startDate)
+                && !person.getEventDate().value.isAfter(endDate));
+        sortPersonsByEventDate();
+        upcomingStartDate = startDate;
+        upcomingEndDate = endDate;
+        logger.fine("Showing upcoming events from " + startDate + " to " + endDate);
+    }
+
+    /**
+     * Sorts only the display, using saved insertion positions to break equal-date ties.
+     */
+    private void sortPersonsByEventDate() {
+        Comparator<Person> byDate = Comparator.comparing(person -> person.getEventDate().value);
+        displayedPersons.setComparator(byDate.thenComparingInt(addressBook.getPersonList()::indexOf));
+    }
+
+    @Override
     public String getPersonListHeading() {
         String heading;
-        if (displayedPersons.getComparator() != null) {
+        if (upcomingStartDate != null) {
+            heading = "Upcoming: " + upcomingStartDate + " to " + upcomingEndDate;
+        } else if (displayedPersons.getComparator() != null) {
             heading = "All contacts by event date";
         } else if (filteredPersons.getPredicate() == null
                 || filteredPersons.getPredicate() == PREDICATE_SHOW_ALL_PERSONS) {
@@ -158,6 +185,8 @@ public class ModelManager implements Model {
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && displayedPersons.equals(otherModelManager.displayedPersons)
+                && Objects.equals(upcomingStartDate, otherModelManager.upcomingStartDate)
+                && Objects.equals(upcomingEndDate, otherModelManager.upcomingEndDate)
                 && ((displayedPersons.getComparator() != null)
                 == (otherModelManager.displayedPersons.getComparator() != null));
     }

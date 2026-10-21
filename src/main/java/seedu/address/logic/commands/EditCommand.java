@@ -6,6 +6,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EVENT_TYPE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_STAGE;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * Edits the details of an existing person in the address book.
@@ -40,7 +42,8 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_EVENT_TYPE + "EVENT_TYPE] "
-            + "[" + PREFIX_EVENT_DATE + "EVENT_DATE]\n"
+            + "[" + PREFIX_EVENT_DATE + "EVENT_DATE] "
+            + "[" + PREFIX_STAGE + "STAGE]\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -111,8 +114,9 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         EventType updatedEventType = editPersonDescriptor.getEventType().orElse(personToEdit.getEventType());
         EventDate updatedEventDate = editPersonDescriptor.getEventDate().orElse(personToEdit.getEventDate());
+        Stage updatedStage = editPersonDescriptor.getStage().orElse(personToEdit.getStage());
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedEventType, updatedEventDate);
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedEventType, updatedEventDate, updatedStage);
     }
 
     @Override
@@ -148,6 +152,7 @@ public class EditCommand extends Command {
         private Email email;
         private EventType eventType;
         private EventDate eventDate;
+        private Stage stage;
 
         public EditPersonDescriptor() {}
 
@@ -158,13 +163,14 @@ public class EditCommand extends Command {
             setEmail(toCopy.email);
             setEventType(toCopy.eventType);
             setEventDate(toCopy.eventDate);
+            setStage(toCopy.stage);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, eventType, eventDate);
+            return CollectionUtil.isAnyNonNull(name, phone, email, eventType, eventDate, stage);
         }
 
         public void setName(Name name) {
@@ -207,6 +213,14 @@ public class EditCommand extends Command {
             return Optional.ofNullable(eventDate);
         }
 
+        public void setStage(Stage stage) {
+            this.stage = stage;
+        }
+
+        public Optional<Stage> getStage() {
+            return Optional.ofNullable(stage);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -222,7 +236,8 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditPersonDescriptor.phone)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
                     && Objects.equals(eventType, otherEditPersonDescriptor.eventType)
-                    && Objects.equals(eventDate, otherEditPersonDescriptor.eventDate);
+                    && Objects.equals(eventDate, otherEditPersonDescriptor.eventDate)
+                    && Objects.equals(stage, otherEditPersonDescriptor.stage);
         }
 
         @Override
@@ -233,6 +248,7 @@ public class EditCommand extends Command {
                     .add("email", email)
                     .add("eventType", eventType)
                     .add("eventDate", eventDate)
+                    .add("stage", stage)
                     .toString();
         }
     }

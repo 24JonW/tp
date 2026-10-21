@@ -26,6 +26,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Stage;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
 
@@ -181,6 +182,44 @@ public class EditCommandTest {
         EditCommand editCommand = new EditCommand(outOfBoundIndex, descriptor);
 
         assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_editPhone_preservesStage() throws Exception {
+        Person original = new PersonBuilder()
+                .withStage("Booked")
+                .build();
+
+        model.addPerson(original);
+
+        Index originalIndex = Index.fromOneBased(model.getFilteredPersonList().size());
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withPhone("91234567")
+                .build();
+
+        EditCommand command = new EditCommand(originalIndex, descriptor);
+        command.execute(model);
+
+        Person edited = model.getFilteredPersonList()
+                .get(originalIndex.getZeroBased());
+
+        assertEquals(Stage.BOOKED, edited.getStage());
+    }
+
+    @Test
+    public void execute_editStage_updatesStage() {
+        Person original = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person editedPerson = new PersonBuilder(original).withStage("Delivered").build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withStage("Delivered").build();
+        EditCommand command = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS,
+                Messages.format(editedPerson));
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(original, editedPerson);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
     /**

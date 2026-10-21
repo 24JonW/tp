@@ -18,17 +18,19 @@ public class Person {
     private final Email email;
     private final EventType eventType;
     private final EventDate eventDate;
+    private final Stage stage;
 
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, EventType eventType, EventDate eventDate) {
-        requireAllNonNull(name, phone, email, eventType, eventDate);
+    public Person(Name name, Phone phone, Email email, EventType eventType, EventDate eventDate, Stage stage) {
+        requireAllNonNull(name, phone, email, eventType, eventDate, stage);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.eventType = eventType;
         this.eventDate = eventDate;
+        this.stage = stage;
     }
 
     public Name getName() {
@@ -45,6 +47,10 @@ public class Person {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     /** Returns the date of the photography event. */
@@ -121,13 +127,14 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && eventType.equals(otherPerson.eventType)
-                && eventDate.equals(otherPerson.eventDate);
+                && eventDate.equals(otherPerson.eventDate)
+                && stage.equals(otherPerson.stage);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, eventType, eventDate);
+        return Objects.hash(name, phone, email, eventType, eventDate, stage);
     }
 
     @Override
@@ -138,6 +145,7 @@ public class Person {
                 .add("email", email)
                 .add("eventType", eventType)
                 .add("eventDate", eventDate)
+                .add("stage", stage)
                 .toString();
     }
 

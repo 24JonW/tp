@@ -5,42 +5,49 @@
     "phone" : "94351253",
     "email" : "alice@example.com",
     "eventType" : "Wedding",
-    "eventDate" : "2026-01-01"
+    "eventDate" : "2026-01-01",
+    "stage" : "Enquiry"
   }, {
     "name" : "Benson Meier",
     "phone" : "98765432",
     "email" : "johnd@example.com",
     "eventType" : "Portrait",
-    "eventDate" : "2026-02-02"
+    "eventDate" : "2026-02-02",
+    "stage" : "Enquiry"
   }, {
     "name" : "Carl Kurz",
     "phone" : "95352563",
     "email" : "heinz@example.com",
     "eventType" : "Corporate",
-    "eventDate" : "2026-03-03"
+    "eventDate" : "2026-03-03",
+    "stage" : "Enquiry"
   }, {
     "name" : "Daniel Meier",
     "phone" : "87652533",
     "email" : "cornelia@example.com",
     "eventType" : "Wedding",
-    "eventDate" : "2026-04-04"
+    "eventDate" : "2026-04-04",
+    "stage" : "Enquiry"
   }, {
     "name" : "Elle Meyer",
-    "phone" : "9482224",
+    "phone" : "94822240",
     "email" : "werner@example.com",
     "eventType" : "Portrait",
-    "eventDate" : "2026-05-05"
+    "eventDate" : "2026-05-05",
+    "stage" : "Enquiry"
   }, {
     "name" : "Fiona Kunz",
-    "phone" : "9482427",
+    "phone" : "94824270",
     "email" : "lydia@example.com",
     "eventType" : "Corporate",
-    "eventDate" : "2026-06-06"
+    "eventDate" : "2026-06-06",
+    "stage" : "Enquiry"
   }, {
     "name" : "George Best",
-    "phone" : "9482442",
+    "phone" : "94824420",
     "email" : "anna@example.com",
     "eventType" : "Wedding",
-    "eventDate" : "2026-07-07"
+    "eventDate" : "2026-07-07",
+    "stage" : "Enquiry"
   } ]
 }

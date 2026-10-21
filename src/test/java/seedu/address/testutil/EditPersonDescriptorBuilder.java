@@ -7,6 +7,7 @@ import seedu.address.model.person.EventType;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Stage;
 
 /**
  * A utility class to help with building EditPersonDescriptor objects.
@@ -33,6 +34,7 @@ public class EditPersonDescriptorBuilder {
         descriptor.setEmail(person.getEmail());
         descriptor.setEventType(person.getEventType());
         descriptor.setEventDate(person.getEventDate());
+        descriptor.setStage(person.getStage());
     }
 
     /**
@@ -72,6 +74,14 @@ public class EditPersonDescriptorBuilder {
      */
     public EditPersonDescriptorBuilder withEventDate(String eventDate) {
         descriptor.setEventDate(new EventDate(eventDate));
+        return this;
+    }
+
+    /**
+     * Sets the {@code Stage} of the {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withStage(String stage) {
+        descriptor.setStage(Stage.fromString(stage));
         return this;
     }
 

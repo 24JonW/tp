@@ -10,7 +10,9 @@ import java.time.format.DateTimeParseException;
  * Represents the date of a photography event in ISO-8601 format.
  */
 public class EventDate {
-    public static final String MESSAGE_CONSTRAINTS = "Event date should be a valid date in YYYY-MM-DD format";
+    public static final String MESSAGE_CONSTRAINTS =
+            "Invalid date. Enter a valid calendar date in YYYY-MM-DD format.";
+    public static final String VALIDATION_REGEX = "\\d{4}-\\d{2}-\\d{2}";
     public final LocalDate value;
 
     /**
@@ -23,12 +25,14 @@ public class EventDate {
     }
 
     /**
-     * Returns true if the value is a valid date in canonical ISO-8601 form.
+     * Returns true if the given string is a valid calendar date in YYYY-MM-DD format, with a year from 0001 to 9999.
      */
     public static boolean isValidEventDate(String test) {
+        if (!test.matches(VALIDATION_REGEX)) {
+            return false;
+        }
         try {
-            LocalDate parsedDate = LocalDate.parse(test);
-            return test.equals(parsedDate.toString());
+            return LocalDate.parse(test).getYear() >= 1;
         } catch (DateTimeParseException exception) {
             return false;
         }

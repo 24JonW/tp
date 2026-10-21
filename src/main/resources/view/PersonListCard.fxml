@@ -6,30 +6,35 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
 
 <HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <GridPane HBox.hgrow="ALWAYS">
+  <GridPane alignment="CENTER_LEFT" hgap="16" maxWidth="1.7976931348623157E308" minHeight="62"
+            HBox.hgrow="ALWAYS">
+    <padding>
+      <Insets top="10" right="12" bottom="10" left="12" />
+    </padding>
     <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
+      <ColumnConstraints percentWidth="22" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="24" />
+      <ColumnConstraints percentWidth="14" />
+      <ColumnConstraints percentWidth="13" />
+      <ColumnConstraints percentWidth="13" />
     </columnConstraints>
-    <VBox alignment="CENTER_LEFT" minHeight="105" GridPane.columnIndex="0">
-      <padding>
-        <Insets top="5" right="5" bottom="5" left="15" />
-      </padding>
-      <HBox spacing="0.5" alignment="CENTER_LEFT">
-        <Label fx:id="id" styleClass="cell_big_label">
-          <minWidth>
-            <!-- Ensures that the label text is never truncated -->
-            <Region fx:constant="USE_PREF_SIZE" />
-          </minWidth>
-        </Label>
-        <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
-      </HBox>
-      <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
-      <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
-      <Label fx:id="eventType" styleClass="cell_small_label" text="\$eventType" />
-      <Label fx:id="eventDate" styleClass="cell_small_label" text="\$eventDate" />
-    </VBox>
+    <HBox alignment="CENTER_LEFT" spacing="6" GridPane.columnIndex="0">
+      <Label fx:id="id" styleClass="cell_big_label">
+        <minWidth>
+          <!-- Ensures that the label text is never truncated -->
+          <Region fx:constant="USE_PREF_SIZE" />
+        </minWidth>
+      </Label>
+      <Label fx:id="name" maxWidth="1.7976931348623157E308" styleClass="cell_big_label" text="\$first"
+             HBox.hgrow="ALWAYS" />
+    </HBox>
+    <Label fx:id="phone" styleClass="contact-phone" text="\$phone" GridPane.columnIndex="1" />
+    <Label fx:id="email" styleClass="contact-email" text="\$email" GridPane.columnIndex="2" />
+    <Label fx:id="eventType" styleClass="contact-event-type" text="\$eventType" GridPane.columnIndex="3" />
+    <Label fx:id="stage" styleClass="cell_small_label" text="\$stage" GridPane.columnIndex="4" />
+    <Label fx:id="eventDate" styleClass="contact-event-date" text="\$eventDate" GridPane.columnIndex="5" />
   </GridPane>
 </HBox>

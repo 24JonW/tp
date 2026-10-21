@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -140,6 +141,11 @@ public class AddCommandTest {
 
         @Override
         public void showAllPersons(boolean isSortedByDate) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void showUpcomingPersons(LocalDate startDate, LocalDate endDate) {
             throw new AssertionError("This method should not be called.");
         }
 

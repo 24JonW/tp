@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AdvanceStageCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
@@ -17,6 +18,7 @@ import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.UpcomingCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -31,6 +33,9 @@ public class AddressBookParser {
     private static final Pattern LIST_COMMAND_FORMAT = Pattern.compile(
             "[ \t]*" + ListCommand.COMMAND_WORD + "(?=$|[\\s\\p{Cntrl}\\p{Zl}\\p{Zp}])([\\s\\S]*)",
             Pattern.CASE_INSENSITIVE);
+    private static final Pattern UPCOMING_COMMAND_FORMAT = Pattern.compile(
+            "[ \t]*" + UpcomingCommand.COMMAND_WORD + "(?=$|[\\s\\p{Cntrl}\\p{Zl}\\p{Zp}])([\\s\\S]*)",
+            Pattern.CASE_INSENSITIVE);
     private static final Logger logger = LogsCenter.getLogger(AddressBookParser.class);
 
     /**
@@ -41,6 +46,10 @@ public class AddressBookParser {
      * @throws ParseException if the user input does not conform to the expected format
      */
     public Command parseCommand(String userInput) throws ParseException {
+        Matcher upcomingMatcher = UPCOMING_COMMAND_FORMAT.matcher(userInput);
+        if (upcomingMatcher.matches()) {
+            return new UpcomingCommandParser().parse(upcomingMatcher.group(1));
+        }
         // Preserve list arguments verbatim so its parser can reject control characters.
         Matcher listMatcher = LIST_COMMAND_FORMAT.matcher(userInput);
         if (listMatcher.matches()) {
@@ -61,6 +70,7 @@ public class AddressBookParser {
 
         return switch (commandWord) {
             case AddCommand.COMMAND_WORD -> new AddCommandParser().parse(arguments);
+            case AdvanceStageCommand.COMMAND_WORD -> new AdvanceStageCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
