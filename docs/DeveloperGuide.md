@@ -130,7 +130,7 @@ How the parsing works:
 **API**:
 [`Model.java`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" width="900" alt="Model classes and the JavaFX filtered and sorted display pipeline" />
 
 
 The `Model` component,
@@ -138,7 +138,7 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * represents each `Person` as one photography engagement containing a client's `Name`, `Phone`, `Email`,
   `EventType`, `EventDate`, and `Stage`.
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* applies a `FilteredList<Person>` to the saved insertion-ordered list, then exposes a `SortedList<Person>` over that filter as the unmodifiable observable display. List, search, and upcoming commands update this view without reordering the saved records. The UI and index-based commands use the displayed order.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -167,6 +167,10 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 This section describes some noteworthy details on how certain features are implemented.
 
 ### Viewing upcoming events
+
+The sequence below shows successful command execution and heading retrieval. Parser interactions are collapsed into a reference frame; date-calculation failures occur before the model's view is changed.
+
+![Upcoming command execution through MainWindow, LogicManager, UpcomingCommand, and ModelManager.](images/UpcomingSequenceDiagram.png)
 
 `UpcomingCommandParser` accepts the case-insensitive, argument-free `upcoming` command. Invalid arguments,
 including line breaks, are rejected before execution. `UpcomingCommand` obtains the current local date from a
