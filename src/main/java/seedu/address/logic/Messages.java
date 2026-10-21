@@ -33,10 +33,11 @@ public class Messages {
 
     /**
      * Returns a one-line summary of the {@code person} for result messages, in the form
-     * {@code NAME | EVENT_TYPE | EVENT_DATE}.
+     * {@code NAME | EVENT_TYPE | EVENT_DATE | STAGE}.
      */
     public static String formatSummary(Person person) {
-        return person.getName() + " | " + person.getEventType() + " | " + person.getEventDate();
+        return person.getName() + " | " + person.getEventType() + " | " + person.getEventDate()
+                + " | " + person.getStage();
     }
 
     /**
