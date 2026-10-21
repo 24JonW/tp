@@ -61,6 +61,7 @@ public class AdvanceStageCommand extends Command {
                     + ": engagement is already at the final stage");
             throw new CommandException(MESSAGE_ALREADY_AT_FINAL_STAGE);
         }
+        assert nextStage.isPresent();
 
         Person advancedPerson = new Person(personToAdvance.getName(), personToAdvance.getPhone(),
                 personToAdvance.getEmail(), personToAdvance.getEventType(), personToAdvance.getEventDate(),
