@@ -223,6 +223,12 @@ It constructs a new immutable `Person` with the same client and event fields, re
 `Model#setPerson`, and returns to the complete insertion-ordered list. `Delivered` has no successor and produces a
 command error without modifying the model or view. Direct editing can move a stage either forward or backward.
 
+The following sequence diagram shows the parsing and execution of a successful `advance 1` command up to the model
+update. As with the delete-command sequence diagram, the subsequent storage write is covered by the architecture
+sequence diagram.
+
+![Interactions for the `advance 1` Command](images/AdvanceStageSequenceDiagram.png)
+
 Stage is deliberately excluded from `Person#isSameEngagement`, so changing only the stage cannot create a distinct
 duplicate. Engagement identity uses name, normalized phone, normalized email, event type, and event date; name,
 email, and event type comparisons are case-insensitive.

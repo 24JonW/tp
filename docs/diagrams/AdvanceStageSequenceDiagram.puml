@@ -1,0 +1,93 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":AdvanceStageCommandParser" as AdvanceStageCommandParser LOGIC_COLOR
+participant "ParserUtil" as ParserUtil LOGIC_COLOR
+participant "a:AdvanceStageCommand" as AdvanceStageCommand LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+participant "personToAdvance:Person" as Person MODEL_COLOR
+participant "currentStage:Stage" as Stage MODEL_COLOR
+end box
+
+[-> LogicManager : execute("advance 1")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("advance 1")
+activate AddressBookParser
+
+create AdvanceStageCommandParser
+AddressBookParser -> AdvanceStageCommandParser
+activate AdvanceStageCommandParser
+
+AdvanceStageCommandParser --> AddressBookParser
+deactivate AdvanceStageCommandParser
+
+AddressBookParser -> AdvanceStageCommandParser : parse("1")
+activate AdvanceStageCommandParser
+
+AdvanceStageCommandParser -> ParserUtil : parseIndex("1")
+activate ParserUtil
+ParserUtil --> AdvanceStageCommandParser : targetIndex
+deactivate ParserUtil
+
+create AdvanceStageCommand
+AdvanceStageCommandParser -> AdvanceStageCommand : AdvanceStageCommand(targetIndex)
+activate AdvanceStageCommand
+AdvanceStageCommand --> AdvanceStageCommandParser
+deactivate AdvanceStageCommand
+
+AdvanceStageCommandParser --> AddressBookParser : a
+deactivate AdvanceStageCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.
+AdvanceStageCommandParser -[hidden]-> AddressBookParser
+destroy AdvanceStageCommandParser
+
+AddressBookParser --> LogicManager : a
+deactivate AddressBookParser
+
+LogicManager -> AdvanceStageCommand : execute(m)
+activate AdvanceStageCommand
+
+AdvanceStageCommand -> Model : getFilteredPersonList()
+activate Model
+Model --> AdvanceStageCommand : lastShownList
+deactivate Model
+
+AdvanceStageCommand -> AdvanceStageCommand : validate targetIndex against\nlastShownList.size()
+AdvanceStageCommand -> AdvanceStageCommand : personToAdvance = lastShownList.get(\ntargetIndex.getZeroBased())
+
+AdvanceStageCommand -> Person : getStage()
+activate Person
+Person --> AdvanceStageCommand : currentStage
+deactivate Person
+
+AdvanceStageCommand -> Stage : getNextStage()
+activate Stage
+Stage --> AdvanceStageCommand : nextStage
+deactivate Stage
+
+AdvanceStageCommand -> AdvanceStageCommand : create advancedPerson using existing\nfields and nextStage.get()
+
+AdvanceStageCommand -> Model : setPerson(personToAdvance, advancedPerson)
+activate Model
+Model --> AdvanceStageCommand
+deactivate Model
+
+AdvanceStageCommand -> Model : updateFilteredPersonList(\nPREDICATE_SHOW_ALL_PERSONS)
+activate Model
+Model --> AdvanceStageCommand
+deactivate Model
+
+AdvanceStageCommand --> LogicManager : r:CommandResult
+deactivate AdvanceStageCommand
+
+[<-- LogicManager
+deactivate LogicManager
+@enduml
