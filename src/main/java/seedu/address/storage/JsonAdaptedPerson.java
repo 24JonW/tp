@@ -1,8 +1,11 @@
 package seedu.address.storage;
 
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.model.person.Email;
@@ -20,12 +23,15 @@ class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
 
+    private static final Logger logger = LogsCenter.getLogger(JsonAdaptedPerson.class);
+
     private final String name;
     private final String phone;
     private final String email;
     private final String eventType;
     private final String eventDate;
     private final String stage;
+
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -109,7 +115,9 @@ class JsonAdaptedPerson {
         try {
             modelStage = Stage.fromString(stage);
         } catch (IllegalArgumentException exception) {
-            throw new IllegalValueException("Invalid engagement stage.");
+            logger.warning("Rejected contact record with an invalid engagement stage.");
+            throw new IllegalValueException("Invalid engagement stage.", exception);
+
         }
         return new Person(modelName, modelPhone, modelEmail, modelEventType, modelEventDate, modelStage);
     }
