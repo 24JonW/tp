@@ -241,9 +241,8 @@ Executing `find` removes date sorting, replaces the previous predicate, and assi
 Index-based commands operate on that view. A successful add, edit, or advance restores the complete list; deleting
 from a search leaves the remaining search matches visible.
 
-The [Find command sequence diagram](diagrams/FindCommandSequenceDiagram.puml)
-shows how a search command is parsed, converted into a `PersonSearchPredicate`,
-used to filter the model, and displayed in the UI.
+The following sequence diagram shows how a search command is parsed, converted into a
+`PersonSearchPredicate`, and used to filter the model.
 
 ![Find command sequence diagram](images/FindCommandSequenceDiagram.png)
 
