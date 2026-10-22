@@ -61,11 +61,12 @@ public class AdvanceStageCommand extends Command {
                     + ": engagement is already at the final stage");
             throw new CommandException(MESSAGE_ALREADY_AT_FINAL_STAGE);
         }
-        assert nextStage.isPresent();
 
         Person advancedPerson = new Person(personToAdvance.getName(), personToAdvance.getPhone(),
                 personToAdvance.getEmail(), personToAdvance.getEventType(), personToAdvance.getEventDate(),
                 nextStage.get());
+        assert advancedPerson.getStage() != personToAdvance.getStage()
+                : "Advancing an engagement must change its stage";
         model.setPerson(personToAdvance, advancedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(advancedPerson)));
