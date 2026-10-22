@@ -23,6 +23,7 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
+        assert !(showHelp && exit) : "A command result cannot show help and exit simultaneously";
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
