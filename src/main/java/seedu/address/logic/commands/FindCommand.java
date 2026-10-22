@@ -54,7 +54,6 @@ public class FindCommand extends Command {
         logger.info("Find command completed with " + matchCount + " matching contact(s).");
 
         if (matchCount == 0) {
-            logger.info("Find command returned no matching contacts.");
             return new CommandResult(MESSAGE_NO_MATCHING_CONTACTS);
         }
 
