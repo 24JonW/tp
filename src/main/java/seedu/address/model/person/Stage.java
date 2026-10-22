@@ -2,9 +2,6 @@ package seedu.address.model.person;
 
 
 import java.util.Optional;
-import java.util.logging.Logger;
-
-import seedu.address.commons.core.LogsCenter;
 
 /**
  * Represents the current engagement stage of a photography client.
@@ -18,8 +15,6 @@ public enum Stage {
 
     public static final String MESSAGE_CONSTRAINTS = "Stage must be one of: Enquiry, Booked, Shot Completed, "
             + "Awaiting Payment, Delivered.";
-
-    private static final Logger logger = LogsCenter.getLogger(Stage.class);
 
     private final String value;
 
@@ -40,7 +35,6 @@ public enum Stage {
                 return stage;
             }
         }
-        logger.warning("Rejected unsupported engagement stage input.");
         throw new IllegalArgumentException("Invalid engagement stage.");
     }
 
