@@ -1,0 +1,76 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+hide footbox
+
+participant ":LogicManager" as logic LOGIC_COLOR
+participant "command:ListCommand" as command LOGIC_COLOR
+participant ":ModelManager" as model MODEL_COLOR
+participant "filteredPersons:\nFilteredList" as filtered MODEL_COLOR
+participant "displayedPersons:\nSortedList" as sorted MODEL_COLOR
+
+[-> logic : execute(commandText)
+activate logic
+ref over logic
+  AddressBookParser delegates to ListCommandParser.
+  "list" produces ListCommand(false).
+  "list sort/date" produces ListCommand(true).
+end ref
+logic -> command : execute(model)
+activate command
+command -> model : showAllPersons(isSortedByDate)
+activate model
+model -> model : updateFilteredPersonList(allPersons)
+model -> sorted : setComparator(null)
+activate sorted
+sorted --> model
+deactivate sorted
+model -> filtered : setPredicate(allPersons)
+activate filtered
+filtered --> model
+deactivate filtered
+note over filtered, sorted
+  All saved engagements are visible again.
+  The display returns to insertion order.
+end note
+alt isSortedByDate
+  model -> model : sortPersonsByEventDate()
+  model -> sorted : setComparator(byDate.thenComparingInt(...))
+  activate sorted
+  note over filtered, sorted
+    Sort by ascending event date.
+    Break ties by saved insertion position.
+  end note
+  sorted --> model
+  deactivate sorted
+else !isSortedByDate
+  note over model, sorted : Keep the null comparator and insertion order.
+end
+model --> command
+deactivate model
+command -> model : getFilteredPersonList()
+activate model
+model --> command : displayedPersons
+deactivate model
+command --> logic : CommandResult(feedback)
+deactivate command
+note over logic, command
+  Feedback contains the count or empty-list message.
+  LogicManager skips storage writes for ListCommand.
+end note
+[<-- logic : commandResult
+deactivate logic
+[-> logic : getPersonListHeading()
+activate logic
+logic -> model : getPersonListHeading()
+activate model
+model --> logic : heading with ordering and count
+deactivate model
+[<-- logic : heading
+deactivate logic
+note over logic, sorted
+  MainWindow displays feedback and the heading.
+  Observed list changes update the cards and indexes.
+  Saved engagement order remains unchanged.
+end note
+@enduml

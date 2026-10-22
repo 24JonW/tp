@@ -146,7 +146,7 @@ How the parsing works:
 **API**:
 [`Model.java`](https://github.com/AY2627S1-CS2103T-T08-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" width="900" alt="Model classes and the JavaFX filtered and sorted display pipeline" />
 
 
 The `Model` component,
@@ -160,11 +160,12 @@ The `Model` component,
 * treats two `Person` objects as the same engagement (`Person#isSameEngagement`) when their name, phone, email, event
   type and event date all match, ignoring case for the name, email and event type. The stage is not part of this
   identity. `UniquePersonList` uses this check to reject duplicates.
-* maintains the _displayed_ list of `Person` objects in two layers: a `FilteredList` that selects which engagements
-  are shown (e.g., search results or the upcoming-events window), wrapped by a `SortedList` that optionally orders them
-  by event date (e.g., `list sort/date`). `getFilteredPersonList()` returns this displayed list as an unmodifiable
-  `ObservableList<Person>` that the UI observes, so the UI updates when the list changes. Command indexes such as
-  `edit 2` refer to positions in this displayed list.
+* maintains the _displayed_ list of `Person` objects in two layers: a `FilteredList<Person>` over the saved,
+  insertion-ordered list selects which engagements are shown (e.g., search results or the upcoming-events window), and a
+  `SortedList<Person>` over that filter optionally orders them by event date (e.g., `list sort/date`) without
+  reordering the saved records. `getFilteredPersonList()` returns this displayed list as an unmodifiable
+  `ObservableList<Person>` that the UI observes, so the UI updates when the list changes. The UI and index-based
+  commands such as `edit 2` use this displayed order.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -211,6 +212,10 @@ the command works without writable storage, neither changes existing files nor c
 preserves the previous view on invalid input. The persistent insertion order is unchanged.
 
 ### Listing engagements and sorting by event date
+
+The sequence below shows `list` and `list sort/date`, including the display's `FilteredList` and `SortedList` interactions. Parsing is summarized in a reference frame; invalid arguments are rejected before the model calls shown here. `allPersons` denotes `PREDICATE_SHOW_ALL_PERSONS`. The comparator expression is abbreviated: its secondary key is the engagement's saved insertion position.
+
+![List command execution, optional date sorting, and the filtered-to-sorted display pipeline.](images/ListSortSequenceDiagram.png)
 
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.

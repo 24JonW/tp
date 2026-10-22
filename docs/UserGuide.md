@@ -5,6 +5,8 @@ title: User Guide
 
 ShutterLink is a **desktop application for managing photography client engagements, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, ShutterLink can help you manage engagements faster than traditional GUI applications.
 
+Use ShutterLink if you are an independent freelance event photographer who personally handles enquiries, upcoming shoots, and delivery follow-ups. Your records stay in a local file, and the app works without an Internet connection. It is intended for one photographer's records, rather than shared access by a team.
+
 ShutterLink manages **engagements**, not separate client profiles. Each engagement contains a client's name, phone
 number, and email address together with one event type, event date, and workflow stage. A repeat client can therefore
 appear in multiple engagement records. Some current UI messages still use the legacy word “contact” to mean an
@@ -17,16 +19,15 @@ engagement record.
 
 ## Quick start
 
-1. Ensure that Java `25` or later is installed on your computer.<br>
+1. Ensure that Java **25** is installed on your computer. In a terminal, run `java -version` and check that it reports version 25.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-T08-3/tp/releases).
+1. Download `shutterlink.jar` from the [ShutterLink releases page](https://github.com/AY2627S1-CS2103T-T08-3/tp/releases). Use a release that includes the commands described in this guide; the project website may describe changes newer than an older JAR.
 
-1. Copy the file to the folder you want to use as the _home folder_ for ShutterLink.
+1. Copy the file to a folder you can write to. Use the same folder each time you launch ShutterLink, because data paths are relative to your terminal's current folder.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar shutterlink.jar`.<br>
-   The ShutterLink window should appear in a few seconds with sample engagement data.
-   ![Ui](images/Ui.png)
+   On a first launch with no data file, ShutterLink displays sample engagements. On subsequent launches it loads your saved engagements. If your downloaded file has a different name, substitute that filename in the command.
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
@@ -35,13 +36,72 @@ engagement record.
 
    * `add n/John Doe p/98765432 e/johnd@example.com t/Wedding d/2026-12-20` : Adds an engagement for `John Doe` at the `Enquiry` stage.
 
-   * `delete 3` : Deletes the 3rd engagement shown in the current list.
+   * `find t/Wed` : Finds engagements whose event type contains `Wed`.
 
-   * `clear` : Deletes all engagements.
+   * `list sort/date` : Orders engagements by event date.
+
+   * `upcoming` : Shows events dated today through the next six dates.
 
    * `exit` : Exits the app.
 
 1. Refer to the [Features](#features) section below for details of each command.
+
+The screenshots below use fictional engagements in the current interface. Your record contents and upcoming date window will differ.
+
+![ShutterLink window showing the command field, feedback panel, list heading, and engagement cards with client, event, and stage details.](images/ug-overview.png)
+
+## Finding your way around
+
+| Area | What to use it for |
+| --- | --- |
+| **Command** | Type one command, then press Enter. Accepted commands clear the input; rejected commands retain the text for correction. |
+| **Feedback** | Read the command result or error. A possible-typo warning can appear after a successful add or edit. |
+| List heading | Check which view is active and how many engagements it contains. |
+| Engagement cards | Read each displayed index, client name, phone, email, event type, event date, and stage. Scroll to see additional cards. |
+| **Help** | Open the command reference using the button, `help`, or F1. |
+
+The displayed index is a temporary position, not a permanent client ID. After a search, sort, add, edit, advance, or deletion, check the list again before choosing an index. `edit 1` affects the first engagement currently shown, which may be a different engagement from the first one in the full list.
+
+If columns or long values are clipped, widen the window and use the horizontal scrollbar where available. The overview screenshot uses a wider window to show all six columns.
+
+### Try a client workflow
+
+Use these commands in order to follow an example engagement. Replace the sample client details with your own when you start using the app for real work.
+
+1. Add an engagement that has already been booked:
+
+   ```text
+   add n/Avery Tan p/+65 9123 4567 e/avery@example.com t/Wedding d/2026-12-20 s/Booked
+   ```
+
+1. Select that engagement by searching its email address:
+
+   ```text
+   find e/avery@example.com
+   ```
+
+   On your first run of this example, the new engagement is the only match and has displayed index 1. If other engagements match, check their event details and use the correct displayed index instead.
+
+1. Once the shoot is finished, advance the selected engagement from `Booked` to `Shot Completed`:
+
+   ```text
+   advance 1
+   ```
+
+   The full list reappears after the stage change, so index 1 may now identify a different engagement.
+
+1. Search again before updating that engagement's payment stage:
+
+   ```text
+   find e/avery@example.com
+   edit 1 s/Awaiting Payment
+   ```
+
+   Enter the two commands separately, pressing Enter after each one. Recheck the displayed index if your search returns more than one engagement.
+
+1. Run `list sort/date` to review all event dates, or `upcoming` to prepare for the next seven calendar days. The example wedding appears in `upcoming` only when 2026-12-20 is within that window.
+
+Repeating the same add command gives a duplicate error. Find and edit the existing engagement instead. To record a different event for a repeat client, add another engagement with its own event type or date; editing one engagement does not update the client's other engagements.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +121,8 @@ engagement record.
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
   For `edit`, the `INDEX` must appear before the prefixed parameters.
 
+* Enter one command per line. Use a regular space before each prefix, such as `n/` or `d/`, and use only the prefixes shown in that command's format. Do not type quotes around multiword values: use `s/Awaiting Payment` directly.
+
 * Command words and prefixes are case-sensitive, except that `list`, `upcoming`, and the `sort/date` option are
   case-insensitive. Stage values are also case-insensitive.<br>
   For example, `add ... s/booked` is accepted, while `ADD ...` and `N/John Doe` are not.
@@ -79,7 +141,7 @@ Leading and trailing whitespace around values is ignored when commands are parse
 
 | Field | Prefix | Accepted format and stored value |
 | --- | --- | --- |
-| Name | `n/` | One or more alphanumeric characters or spaces; the first character must be alphanumeric. |
+| Name | `n/` | English letters (`A`–`Z`, `a`–`z`), digits, and spaces; the first character must be a letter or digit. Apostrophes, hyphens, and other characters are not supported in names in this version. |
 | Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
 | Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
 | Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
@@ -89,13 +151,19 @@ Leading and trailing whitespace around values is ignored when commands are parse
 An `INDEX` is a positive integer referring to the numbering in the list currently displayed. Search, sort, and
 upcoming views can therefore change which engagement an index identifies.
 
+**Both phone and email are required.** You cannot leave either field empty when adding, or clear it with `edit 1 p/` or `edit 1 e/`. Omit a field from an edit command to retain its current value. Event dates may be in the past, so completed work can remain in your records.
+
+Phone formatting does not infer country codes: `+65 9123 4567` is stored as `+6591234567`, while `91234567` stays `91234567`. The leading `+` is retained and matters when checking duplicate phone numbers. Use a consistent format for repeat clients.
+
 ### Viewing help: `help`
 
 Opens a concise in-app command reference and provides a link to this User Guide.
 
-![help message](images/helpMessage.png)
-
 Format: `help`
+
+Use F1 or the **Help** button for the same panel. Scroll through the command reference, then press Escape or use **Close** to return to the command field. The underlying list and its indexes are retained. `help 123` is rejected because Help takes no arguments.
+
+![Current ShutterLink Help panel with command formats, explanations, and a Close button.](images/ug-help.png)
 
 
 ### Adding an engagement: `add`
@@ -117,6 +185,10 @@ ignore capitalization. A repeat client can still have multiple engagements with 
 
 After a successful add, the complete list is displayed in insertion order. If the new engagement shares a phone
 number or email address with another client identity, ShutterLink also displays a possible-typo warning.
+
+For example, adding `Avery Tan` and later adding `Avery Tna` with the same phone and email creates separate client identities and can produce a warning. The add has already succeeded; inspect the numbered records in the warning and correct the mistaken one using `edit` or `delete`. A warning is not a duplicate rejection. For repeat engagements with the same name, phone, and email, a different event type or date is accepted without this client-identity warning.
+
+A duplicate is rejected even if the new stage differs. Change the existing engagement's stage using `edit INDEX s/STAGE` instead.
 
 ### Listing and sorting engagements: `list`
 
@@ -179,6 +251,10 @@ The command is case-insensitive and takes no arguments: `UPCOMING` works, but `u
 The date window does not advance automatically at midnight; run `upcoming` again to refresh it.
 If the date window cannot be calculated, ShutterLink asks you to check the system date and leaves the view unchanged.
 
+![Upcoming view showing the inclusive date range in the heading and only matching engagement cards.](images/ug-upcoming.png)
+
+This screenshot illustrates the window at capture time. It includes every stage, including `Delivered`, if the event date is in range; it is not a stage filter.
+
 ### Editing an engagement: `edit`
 
 Edits one or more details of an existing engagement. Use `s/STAGE` to correct or directly set its stage.
@@ -191,6 +267,10 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [
 * The stage may be moved forward or backward to any supported value.
 * Supplying a value identical to the current value is accepted and reported as a successful edit.
 * A successful edit returns to the complete list in insertion order.
+* Empty supplied fields are rejected. Omitted fields are preserved, including the stage.
+* An edit that would make the engagement duplicate another one is rejected.
+
+If you change the client's name, phone, or email to details shared with another client identity, a possible-typo warning can accompany the successful edit. Review the warning using the indexes in the newly displayed full list.
 
 Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` edits the phone number and email address of the first engagement.
@@ -239,6 +319,8 @@ Phone numbers are stored without spaces or hyphens, so searching with digits onl
 from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Formatting characters in a phone search are not removed automatically, so `find p/9123 4567` may fail to match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
+
 | Invalid input | Reason |
 | --- | --- |
 | `find` | No search field was provided |
@@ -249,6 +331,8 @@ advance, and delete use the displayed result indexes. Use `list` to restore ever
 ### Deleting an engagement: `delete`
 
 Deletes the specified engagement from ShutterLink.
+
+**Deletion is immediate, with no confirmation or undo.** Check the displayed name, event, and index before pressing Enter. Other engagements belonging to the same client remain.
 
 Format: `delete INDEX`
 
@@ -266,6 +350,8 @@ view returns to the complete list in insertion order.
 
 Clears all engagements from ShutterLink.
 
+**This deletes every engagement, including ones hidden by the current search or upcoming view, with no confirmation or undo.** Make a [backup](#backing-up-and-restoring-data) first if you may need the records again.
+
 Format: `clear`
 
 In the current version, trailing text after `clear` is ignored. Use the documented argument-free form to avoid
@@ -282,8 +368,26 @@ In the current version, trailing text after `exit` is ignored.
 ### Saving the data
 
 ShutterLink attempts to save after every successfully executed command except `list` and `upcoming`, which only change
-the view. You do not need to save manually. If saving fails after a data-changing command, ShutterLink reports an
-error, but the change remains in memory for the current session; the file keeps its last successfully saved contents.
+the view. You do not need to save manually. Window settings are stored separately in `preferences.json` when you close the app.
+
+If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, `find n/RELEVANT_NAME` attempts to save the current records again; `list` and `upcoming` do not retry saving. Replace `RELEVANT_NAME` with a name in your data.
+
+### Backing up and restoring data
+
+To make a backup:
+
+1. Close ShutterLink.
+1. Open the folder you normally launch it from and find `data/addressbook.json`.
+1. Copy that file to a separate backup folder. Keep the original in place so the next launch still opens your records.
+
+To restore a backup or move to another computer:
+
+1. Close ShutterLink on both computers if you are transferring data.
+1. Keep a copy of the destination's existing `data/addressbook.json` before replacing it.
+1. Copy the backup to `data/addressbook.json` inside the destination launch folder, creating the `data` folder if necessary.
+1. Start ShutterLink from that folder and use `list` to check the restored engagements.
+
+There is no in-app import, export, or undo command in this version. Restoring a backup replaces the whole dataset; it does not merge records. Copying a file while the app is open can result in a later command overwriting that copy with the in-memory records.
 
 ### Editing the data file
 
@@ -310,31 +414,49 @@ Use the formats in [Field formats](#field-formats). In particular, `eventDate` m
 must be `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, or `Delivered`. Duplicate engagement identities
 also make the file invalid.
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, ShutterLink starts with an empty address book at the next run. The invalid
-file remains on disk until a command that triggers saving succeeds; `list` and `upcoming` do not overwrite it. Still,
-we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+<div markdown="block" class="alert alert-warning">
+
+**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty engagement list at the next run. A later command that saves, including `find`, `help`, or `exit`, can overwrite that file with the empty list. `list` and `upcoming` do not overwrite it.
+
 </div>
 
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
+If a previously populated list unexpectedly opens empty after manual editing, use the window's **Exit** button before entering any further commands. Preserve the file and restore a known-good backup or repair its JSON and field values while ShutterLink is closed. A missing file produces sample data; an unreadable or invalid existing file produces an empty list in the current version.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Close ShutterLink on both computers. In the folder from which ShutterLink will be launched on the new computer,
-create a `data` folder if needed and copy the old `addressbook.json` into it. The resulting path should be
-`data/addressbook.json` relative to that launch folder.
+**A**: Follow [Backing up and restoring data](#backing-up-and-restoring-data). Use the same supported Java version on the new computer.
+
+**Q**: Why did `upcoming` show no engagements even though I have bookings?<br>
+**A**: It uses event dates, not stages. Run `list sort/date`, check the stored dates and the computer's local date, and rerun `upcoming`. Only today through today + 6 days are included.
+
+**Q**: Why did a command affect a different engagement than expected?<br>
+**A**: Indexes refer to the list currently on screen. Add, edit, and advance return to the full list, which can change indexes. Search again and check the event details before acting on a record.
+
+**Q**: Why can I not filter by stage or add free-text notes?<br>
+**A**: These are not available in the current version. Stages can be displayed, edited, or advanced, and you can search by name, phone, email, or event type.
+
+## Troubleshooting
+
+| Symptom or feedback | What to do |
+| --- | --- |
+| `Unable to access jarfile` in the terminal | Change to the download folder and check the JAR filename. Use `java -jar` followed by that exact filename. |
+| A Java version or JavaFX startup error | Check `java -version` reports Java 25. Mac users should follow the Java setup link in Quick start. Capture the full terminal error if asking your team for help. |
+| `Unknown command.` | Check the spelling and capitalization. Use lowercase command words except for the case-insensitive `list` and `upcoming`. |
+| A usage message, missing field, or repeated-prefix error | Compare your input with the command summary. Add requires name, phone, email, event type, and event date; edit requires an index and at least one field. |
+| `The person index provided is invalid.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
+| A phone, email, date, or stage validation error | Follow [Field formats](#field-formats); phone and email cannot be blank. Enter the date as `YYYY-MM-DD` and stages with their documented spacing. |
+| A duplicate-engagement error | Find the existing event and edit it. Changing only the stage does not create a different engagement. |
+| `No matching contacts found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
+| A save-permission or disk-space error | Follow [Saving the data](#saving-the-data). Do not assume the change was saved merely because the list updated. |
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
+1. **A window can reopen off-screen after disconnecting a monitor.** Close ShutterLink, move `preferences.json` from the launch folder to a backup location, and restart. This resets window placement without deleting `data/addressbook.json`.
 
 --------------------------------------------------------------------------------------------------------------------
 
