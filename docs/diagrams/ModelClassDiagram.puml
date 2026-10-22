@@ -27,6 +27,12 @@ Class I #FFFFFF
 Class HiddenOutside #FFFFFF
 HiddenOutside ..> Model
 
+Package "JavaFX collections" as JavaFxPackage <<Rectangle>> {
+Class "<<interface>>\nObservableList" as ObservablePersonList
+Class "FilteredList" as FilteredPersonList
+Class "SortedList" as SortedPersonList
+}
+
 AddressBook .up.|> ReadOnlyAddressBook
 
 ModelManager .up.|> Model
@@ -54,5 +60,15 @@ Email -[hidden]right-> EventType
 EventType -[hidden]right-> EventDate
 EventDate -[hidden]right-> Stage
 
-ModelManager --> "~* filtered" Person
+ModelManager -right-> "1" FilteredPersonList : filteredPersons
+ModelManager -right-> "1" SortedPersonList : displayedPersons
+UniquePersonList -right-> "1" ObservablePersonList : exposes insertion order
+FilteredPersonList -up-> "1" ObservablePersonList : source
+SortedPersonList -up-> "1" FilteredPersonList : source
+
+note bottom of SortedPersonList
+  All collection elements are Person instances.
+  Display order may differ from saved insertion order.
+  Equal event dates retain insertion order.
+end note
 @enduml
