@@ -33,7 +33,8 @@ The application is called **ShutterLink**. It helps photographers manage client 
 
 <img src="images/ArchitectureDiagram.png" width="280" />
 
-The ***Architecture Diagram*** given above explains the high-level design of the App.
+The ***Architecture Diagram*** above explains the high-level design of ShutterLink. Solid arrows show runtime
+collaboration, while dotted arrows show dependencies on shared types or external actors and files.
 
 * [**`UI`**](#ui-component): Displays the application window and engagement information.
 * [**`Logic`**](#logic-component): Parses and executes user commands.
@@ -57,7 +58,9 @@ event type, event date, and engagement stage.
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
+The *Sequence Diagram* below shows how the components interact when the user issues `delete 1`. It includes the
+successful JSON save and the subsequent refresh of the list heading. The UI observes the model's displayed list, so
+individual list-change notifications are omitted.
 
 <img src="images/ArchitectureSequenceDiagram.png" width="574" />
 
@@ -196,6 +199,12 @@ No stage restriction is applied. The selected window stays fixed until the comma
 the command works without writable storage, neither changes existing files nor creates missing files, and
 preserves the previous view on invalid input. The persistent insertion order is unchanged.
 
+The sequence diagram below summarizes the successful command path. It focuses on parsing, calculating the inclusive
+date range, filtering and sorting the displayed list, and returning feedback. Calls used only to construct the date
+predicate or format the feedback are omitted.
+
+![Interactions for the `upcoming` Command](images/UpcomingSequenceDiagram.png)
+
 ### Listing engagements and sorting by event date
 
 The sequence below shows `list` and `list sort/date`, including the display's `FilteredList` and `SortedList` interactions. Parsing is summarized in a reference frame; invalid arguments are rejected before the model calls shown here. `allPersons` denotes `PREDICATE_SHOW_ALL_PERSONS`. The comparator expression is abbreviated: its secondary key is the engagement's saved insertion position.
@@ -205,7 +214,7 @@ The sequence below shows `list` and `list sort/date`, including the display's `F
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.
 List-specific parsing is case-insensitive and preserves raw arguments to reject embedded control characters.
-Stage filtering is deferred; `stage/` is currently an unsupported list parameter.
+Stage filtering is not supported; `stage/` is rejected as an unsupported list parameter.
 
 `ListCommand` calls `Model#showAllPersons` to clear the current filter and select an ordering.
 `ModelManager` exposes a `SortedList<Person>` over its `FilteredList<Person>` to the UI and index-based commands.
@@ -217,7 +226,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral placeholder `Contacts (N)` for future search-UI refinement.
+commands. A filtered view uses the neutral heading `Contacts (N)`.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -277,104 +286,6 @@ an add, edit, advance, delete, or clear remains applied to the in-memory model f
 rollback; the data file retains its last successfully written state. On startup, a missing file loads sample data,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
-
-### \[Proposed\] Undo/redo feature
-
-#### Proposed Implementation
-
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
-
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
-
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
-
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
-
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
-
-![UndoRedoState0](images/UndoRedoState0.png)
-
-Step 2. The user executes `delete 5` to delete the fifth engagement. The `delete` command calls
-`Model#commitAddressBook()`, causing the modified address book state to be saved in the `addressBookStateList`, and
-the `currentStatePointer` is shifted to the newly inserted state.
-
-![UndoRedoState1](images/UndoRedoState1.png)
-
-Step 3. The user executes
-`add n/David Li p/91234567 e/david@example.com t/Wedding d/2027-01-15` to add a new engagement. The `add` command
-also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the
-`addressBookStateList`.
-
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
-</div>
-
-Step 4. The user decides that adding the engagement was a mistake and executes `undo`. The `undo` command calls
-`Model#undoAddressBook()`, shifts the `currentStatePointer` once to the left, and restores the previous address book
-state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not
-pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be
-purged. It no longer makes sense to redo the earlier `add` command. This is the behavior that most modern desktop
-applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (proposed choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, save only the engagement being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-### \[Proposed\] Data archiving
-
-Data archiving is not implemented in the current version. Its storage representation and command workflow are still
-to be decided.
-
 
 --------------------------------------------------------------------------------------------------------------------
 

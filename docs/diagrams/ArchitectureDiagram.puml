@@ -1,33 +1,41 @@
 @startuml
-!include <office/Concepts/globe_internet>
 !include <office/Concepts/documents>
 !include <office/Users/user>
 !include style.puml
+!pragma layout smetana
 
-Package " "<<Rectangle>>{
-    Class UI UI_COLOR
-    Class Logic LOGIC_COLOR
-    Class Storage STORAGE_COLOR
-    Class Model MODEL_COLOR
+top to bottom direction
+
+Package "ShutterLink" <<Rectangle>> {
     Class Main #grey
+    together {
+        Class UI UI_COLOR
+        Class Logic LOGIC_COLOR
+        Class Storage STORAGE_COLOR
+    }
+    Class Model MODEL_COLOR
     Class Commons LOGIC_COLOR_T2
 }
 
-Class "<$user>" as User MODEL_COLOR_T2
-Class "<$documents>" as File UI_COLOR_T1
+Class "<$user>\nUser" as User MODEL_COLOR_T2
+Class "<$documents>\nJSON files" as Files UI_COLOR_T1
 
+User ..> UI : enters commands
 
-UI -[#green]> Logic
-UI -right[#green]-> Model
-Logic -[#blue]-> Storage
-Logic -down[#blue]-> Model
 Main -[#grey]-> UI
 Main -[#grey]-> Logic
+Main -[#grey]-> Model
 Main -[#grey]-> Storage
-Main -up[#grey]-> Model
-Main -down[hidden]-> Commons
 
-Storage -up[STORAGE_COLOR].> Model
-Storage .right[STORAGE_COLOR].>File
-User ..> UI
+UI -[#green]> Logic : commands
+UI -right[#green]-> Model : observes data
+Logic -[#blue]-> Model : reads and updates
+Logic -[#blue]-> Storage : saves data
+Storage -[STORAGE_COLOR].> Model : converts data
+Storage .right[STORAGE_COLOR].> Files : reads/writes
+
+note bottom of Commons
+    Utilities shared by
+    other components
+end note
 @enduml
