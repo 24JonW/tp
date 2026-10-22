@@ -131,7 +131,21 @@ How the `Logic` component works:
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an engagement).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
-1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
+1. The result of the command execution is encapsulated as a `CommandResult` object.
+1. Unless the command is a `ListCommand` or an `UpcomingCommand`, `LogicManager` then saves the address book through
+   `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it throws a
+   `CommandException` instead of returning the result.
+1. Finally, the `CommandResult` is returned from `Logic`.
+
+The sequence diagram below shows the execution portion for a command that modifies data, using `add` as an example.
+Parsing works the same way as in the `delete 1` example above, so it is omitted.
+
+![Interactions Inside the Logic Component for an `add` Command](images/AddSequenceDiagram.png)
+
+`AddCommand` first asks the `Model` whether the new engagement duplicates an existing one, and fails with a
+`CommandException` if so. Otherwise, it adds the engagement, shows all engagements so that the displayed indexes cover
+every engagement, and asks `SimilarContactWarning` for a possible-typo warning about engagements of other clients that
+share the same phone number or email. The warning, if any, is appended to the result message.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 
@@ -140,6 +154,8 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+* Commands that take no arguments (e.g., `clear`, `help`, `exit`) are created by `AddressBookParser` directly, without
+  an `XYZCommandParser`.
 
 ### Model component
 **API**:
@@ -153,7 +169,18 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * represents each `Person` as one photography engagement containing a client's `Name`, `Phone`, `Email`,
   `EventType`, `EventDate`, and `Stage`.
-* applies a `FilteredList<Person>` to the saved insertion-ordered list, then exposes a `SortedList<Person>` over that filter as the unmodifiable observable display. List, search, and upcoming commands update this view without reordering the saved records. The UI and index-based commands use the displayed order.
+* represents the engagement stage as the `Stage` enum. `advance` uses `Stage#getNextStage()`, which maps each stage to
+  the next one explicitly, so adding a stage requires updating that mapping (changing the enum order alone does not
+  change the behaviour of `advance`).
+* treats two `Person` objects as the same engagement (`Person#isSameEngagement`) when their name, phone, email, event
+  type and event date all match, ignoring case for the name, email and event type. The stage is not part of this
+  identity. `UniquePersonList` uses this check to reject duplicates.
+* maintains the _displayed_ list of `Person` objects in two layers: a `FilteredList<Person>` over the saved,
+  insertion-ordered list selects which engagements are shown (e.g., search results or the upcoming-events window), and a
+  `SortedList<Person>` over that filter optionally orders them by event date (e.g., `list sort/date`) without
+  reordering the saved records. `getFilteredPersonList()` returns this displayed list as an unmodifiable
+  `ObservableList<Person>` that the UI observes, so the UI updates when the list changes. The UI and index-based
+  commands such as `edit 2` use this displayed order.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -277,13 +304,23 @@ The following sequence diagram shows how a search command is parsed, converted i
 
 ### Persistence after commands
 
+The sequence diagram below shows how `LogicManager` saves the data after a command that may change it.
+
+![Saving the address book after a command](images/PersistenceSequenceDiagram.png)
+
+`StorageManager` delegates to `JsonAddressBookStorage`, which converts the address book into a
+`JsonSerializableAddressBook` (one `JsonAdaptedPerson` per engagement) and writes it to the data file using `JsonUtil`.
+The whole address book is rewritten on every save.
+
 `LogicManager#execute` parses and executes a command before deciding whether to save. `ListCommand` and
 `UpcomingCommand` are the only commands that skip `Storage#saveAddressBook`, because they change only the view.
 All other successfully executed commands currently attempt a write, including `find`, `help`, and `exit`.
 
-If a storage write fails, `LogicManager` returns a `CommandException`. The command has already executed, however, so
+If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no
-rollback; the data file retains its last successfully written state. On startup, a missing file loads sample data,
+rollback. The data file is also not guaranteed to keep its previous contents, because `FileUtil#writeToFile`
+overwrites it directly rather than writing to a temporary file first, so a failure during writing can leave it
+incomplete. On startup, a missing file loads sample data,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
 

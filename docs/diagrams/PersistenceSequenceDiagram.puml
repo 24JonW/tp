@@ -1,0 +1,62 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+end box
+
+box Storage STORAGE_COLOR_T1
+participant ":StorageManager" as StorageManager STORAGE_COLOR
+participant ":JsonAddressBookStorage" as JsonAddressBookStorage STORAGE_COLOR
+participant "j:JsonSerializableAddressBook" as JsonSerializableAddressBook STORAGE_COLOR
+participant "<<class>>\nJsonUtil" as JsonUtil STORAGE_COLOR
+end box
+
+[-> LogicManager : execute(commandText)
+activate LogicManager
+
+note right of LogicManager : the command is parsed and\nexecuted as shown in the\nLogic component, returning r
+
+alt command is a list or upcoming command
+    [<-- LogicManager : r
+else else
+    LogicManager -> Model : getAddressBook()
+    activate Model
+    Model --> LogicManager : addressBook
+    deactivate Model
+
+    LogicManager -> StorageManager : saveAddressBook(addressBook)
+    activate StorageManager
+
+    StorageManager -> JsonAddressBookStorage : saveAddressBook(addressBook)
+    activate JsonAddressBookStorage
+
+    create JsonSerializableAddressBook
+    JsonAddressBookStorage -> JsonSerializableAddressBook : JsonSerializableAddressBook(addressBook)
+    activate JsonSerializableAddressBook
+    note right of JsonSerializableAddressBook : converts each Person\ninto a JsonAdaptedPerson
+    JsonSerializableAddressBook --> JsonAddressBookStorage : j
+    deactivate JsonSerializableAddressBook
+
+    JsonAddressBookStorage -> JsonUtil : saveJsonFile(j, filePath)
+    activate JsonUtil
+    JsonUtil --> JsonAddressBookStorage
+    deactivate JsonUtil
+
+    JsonAddressBookStorage --> StorageManager
+    deactivate JsonAddressBookStorage
+
+    StorageManager --> LogicManager
+    deactivate StorageManager
+
+    note right of LogicManager : successful save shown; if saving fails,\nthe IOException propagates and LogicManager\nthrows a CommandException instead of returning r
+
+    [<-- LogicManager : r
+end
+deactivate LogicManager
+@enduml
