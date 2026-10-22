@@ -29,7 +29,9 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ### Architecture
 
-<img src="images/ArchitectureDiagram.png" width="500" />
+The application is called **ShutterLink**. It helps photographers manage client contacts and their associated photography events.
+
+<img src="images/ArchitectureDiagram.png" width="280" />
 
 The ***Architecture Diagram*** above explains the high-level design of ShutterLink. Solid arrows show runtime
 collaboration, while dotted arrows show dependencies on shared types or external actors and files.
