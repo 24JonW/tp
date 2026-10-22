@@ -3,11 +3,17 @@ package seedu.address.logic.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 public class CommandResultTest {
+    @Test
+    public void constructor_showHelpAndExit_throwsAssertionError() {
+        assertThrows(AssertionError.class, () -> new CommandResult("feedback", true, true));
+    }
+
     @Test
     public void equals() {
         CommandResult commandResult = new CommandResult("feedback");
