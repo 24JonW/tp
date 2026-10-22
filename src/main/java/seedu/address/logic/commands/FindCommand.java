@@ -2,6 +2,9 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.logging.Logger;
+
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.model.Model;
@@ -24,7 +27,12 @@ public class FindCommand extends Command {
             + "find e/alice@example.com\n"
             + "find t/Wedding";
 
+    public static final String MESSAGE_NO_MATCHING_CONTACTS = "No matching contacts found.";
+
+    private static final Logger logger = LogsCenter.getLogger(FindCommand.class);
+
     private final PersonSearchPredicate predicate;
+
 
     /**
      * Creates a command that filters contacts using the given predicate.
@@ -38,16 +46,19 @@ public class FindCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
+
+        logger.fine("Executing find command.");
         model.updateFilteredPersonList(predicate);
 
-        int numberOfMatches = model.getFilteredPersonList().size();
+        int matchCount = model.getFilteredPersonList().size();
+        logger.info("Find command completed with " + matchCount + " matching contact(s).");
 
-        if (numberOfMatches == 0) {
-            return new CommandResult("No matching contacts found.");
+        if (matchCount == 0) {
+            return new CommandResult(MESSAGE_NO_MATCHING_CONTACTS);
         }
 
         return new CommandResult(
-                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, model.getFilteredPersonList().size()));
+                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, matchCount));
     }
 
     @Override
