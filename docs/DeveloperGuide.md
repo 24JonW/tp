@@ -313,7 +313,7 @@ the same client repeat those three fields.
 | `***` | As a fast typist, I can add, edit, and find engagements by typing commands, so that I can manage work faster than with a form. |
 | `***` | As a photographer, I can type `help` to open a concise command reference, so that I can recall common syntax without leaving the application. |
 | `**` | As a photographer, I can record multiple engagements for the same repeat client, so that their separate events remain available. |
-| `*` | As a photographer, I receive a possible-typo warning when an added or edited engagement shares a phone number or email address with a different client identity. |
+| `*` | As a photographer, I receive a possible-typo warning when adding an engagement or editing its client contact details causes it to share a phone number or email address with a different client identity. |
 
 
 ### Use cases
