@@ -198,7 +198,7 @@ predicate or format the feedback are omitted.
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.
 List-specific parsing is case-insensitive and preserves raw arguments to reject embedded control characters.
-Stage filtering is deferred; `stage/` is currently an unsupported list parameter.
+Stage filtering is not supported; `stage/` is rejected as an unsupported list parameter.
 
 `ListCommand` calls `Model#showAllPersons` to clear the current filter and select an ordering.
 `ModelManager` exposes a `SortedList<Person>` over its `FilteredList<Person>` to the UI and index-based commands.
@@ -210,7 +210,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral placeholder `Contacts (N)` for future search-UI refinement.
+commands. A filtered view uses the neutral heading `Contacts (N)`.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -260,130 +260,6 @@ rollback; the data file retains its last successfully written state. On startup,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
 
-### \[Proposed\] Undo/redo feature
-
-#### Proposed Implementation
-
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
-
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
-
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
-
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
-
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
-
-![UndoRedoState0](images/UndoRedoState0.png)
-
-Step 2. The user executes `delete 5` to delete the fifth engagement. The `delete` command calls
-`Model#commitAddressBook()`, causing the modified address book state to be saved in the `addressBookStateList`, and
-the `currentStatePointer` is shifted to the newly inserted state.
-
-![UndoRedoState1](images/UndoRedoState1.png)
-
-Step 3. The user executes
-`add n/David Li p/91234567 e/david@example.com t/Wedding d/2027-01-15` to add a new engagement. The `add` command
-also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the
-`addressBookStateList`.
-
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
-</div>
-
-Step 4. The user decides that adding the engagement was a mistake and executes `undo`. The `undo` command calls
-`Model#undoAddressBook()`, shifts the `currentStatePointer` once to the left, and restores the previous address book
-state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not
-pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be
-purged. It no longer makes sense to redo the earlier `add` command. This is the behavior that most modern desktop
-applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (proposed choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, save only the engagement being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-### \[Proposed\] Data archiving
-
-Data archiving is not implemented in the current version. The proposed feature hides completed engagements from the
-active list without deleting their client or event history. An `archive INDEX` command would accept the index in the
-current displayed list and archive only an engagement at the `Delivered` stage. A separate archived view would allow
-the user to inspect archived engagements and restore one that was archived accidentally.
-
-#### Proposed implementation
-
-The proposed model adds an `isArchived` state to each engagement. `ArchiveCommand` and `RestoreCommand` create a new
-immutable `Person` with the state changed and replace the previous object through `Model#setPerson`. The default
-model predicate excludes archived engagements; the archived view selects only those engagements. The state is
-serialized as part of `JsonAdaptedPerson`, so archiving survives a restart without moving records between files.
-
-An archive or restore is a data-changing command. After a successful model update, `LogicManager` saves the complete
-address book through the existing storage path. If the proposed undo/redo feature is also implemented, both commands
-commit a new address-book state and can be undone like add, edit, advance, delete, and clear.
-
-#### Design considerations
-
-**Aspect: How archived engagements are represented:**
-
-* **Alternative 1 (proposed choice):** Store an `isArchived` state with each engagement.
-  * Pros: Preserves one source of truth, reuses existing JSON conversion and duplicate checks, and makes restoration a
-    state change rather than a cross-file transfer.
-  * Cons: Every default query must consistently exclude archived engagements.
-* **Alternative 2:** Move archived engagements to a separate archive file.
-  * Pros: Keeps the active data file smaller and makes archived data easy to copy independently.
-  * Cons: Moving and restoring records requires coordinated writes to two files; a partial write failure can leave
-    records duplicated or missing.
-
-
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, dev-ops**
@@ -431,15 +307,10 @@ the same client repeat those three fields.
 | `***` | As a photographer, I can search engagements by client phone number or email address, so that I can find a client's work even when I do not remember their name. |
 | `***` | As a photographer, I can search engagements by event type, so that I can quickly locate specific types of shoots. |
 | `***` | As a photographer, I can view engagements sorted by event date, including past events, so that I can review them chronologically. |
-| `***` _(planned)_ | As a photographer, I can filter engagements by stage, so that I can quickly find the work that requires follow-up. |
 | `***` | As a photographer, I can view all engagements with events happening within the next seven days, so that I can prepare logistics in advance. |
 | `***` | As a fast typist, I can add, edit, and find engagements by typing commands, so that I can manage work faster than with a form. |
 | `***` | As a photographer, I can type `help` to open a concise command reference, so that I can recall common syntax without leaving the application. |
 | `**` | As a photographer, I can record multiple engagements for the same repeat client, so that their separate events remain available. |
-| `**` | As a photographer, I can add free-text notes to an engagement, such as the shoot location, package, or special requests, so that I do not lose important context. |
-| `**` | As a photographer, I can attach event requirements to an engagement, such as “Needs drone shots”, so that I have the necessary information before the shoot. |
-| `**` | As a photographer, I can record how an engagement originated, such as through a referral, Instagram, or my website, so that I can track which channels bring in the most business. |
-| `*` | As a photographer, I can archive completed engagements, so that my active list stays focused on current work. |
 | `*` | As a photographer, I receive a possible-typo warning when an added or edited engagement shares a phone number or email address with a different client identity. |
 
 
@@ -628,35 +499,7 @@ the same client repeat those three fields.
 
       Use case ends.
 
-**Use case: UC06 - Follow up on engagements at a stage**
-
-_Planned for a future iteration; not implemented in the current version._
-
-**MSS**
-
-1.  User requests to list the engagements at a specific stage (e.g., _Awaiting Payment_).
-2.  ShutterLink shows the engagements at that stage.
-3.  User follows up outside ShutterLink with the client associated with an engagement.
-4.  User updates the stage of that engagement (UC03).
-
-    Steps 3-4 are repeated for each engagement that requires follow-up.<br>
-    Use case ends.
-
-**Extensions**
-
-* 1a. The given stage is not one of the supported stages.
-
-    * 1a1. ShutterLink shows an error message listing the supported stages.
-
-      Use case resumes at step 1.
-
-* 2a. No engagement is at the given stage.
-
-    * 2a1. ShutterLink informs the user that no engagements were found at that stage.
-
-      Use case ends.
-
-**Use case: UC07 - Prepare for upcoming events**
+**Use case: UC06 - Prepare for upcoming events**
 
 **MSS**
 
@@ -682,9 +525,8 @@ _Planned for a future iteration; not implemented in the current version._
 
 ### Non-Functional Requirements
 
-These requirements describe the intended quality of ShutterLink for an independent freelance event photographer.
-They apply to the full product direction, including features introduced after the MVP, where relevant;
-they do not assert that every requirement is already implemented.
+These requirements describe the quality of the current ShutterLink implementation for an independent freelance
+event photographer.
 An **engagement** is the primary stored record. It contains one client's contact details, one event, and one workflow
 stage, so a repeat client may appear in multiple engagement records.
 
@@ -701,7 +543,7 @@ stage, so a repeat client may appear in multiple engagement records.
    text format, without a database server. Valid manual edits made while the application is closed shall be loaded
    on the next launch. Normal operation shall not transmit engagement or client contact data to external services.
    Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
-   responsibility. Any future export feature shall retain this local-data model.
+   responsibility.
 5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
    and restored after a normal shutdown and restart, preserving all supported field values and record order.
    This assumes writable storage with sufficient space and excludes external file modification or disk failure.
@@ -714,21 +556,11 @@ stage, so a repeat client may appear in multiple engagement records.
 7. **Keyboard usability (NFR-07).** All supported engagement-management and query operations shall be available through
    typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
    on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
-   This also applies to later engagement-management features, such as notes or reminders, if implemented.
 8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
    alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
    At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
    without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
    scaling, allowing scrolling where necessary.
-9. **Capacity and responsiveness (NFR-09, proposed target).** ShutterLink shall support at least 1,000 engagement records
-   across all engagement stages. With up to this volume, at least 95% of a 100-command test sequence shall complete
-   within 2 seconds per command, measured from submission to updated feedback and results, including saving for
-   data-changing commands. The sequence shall exercise adding, editing, deleting, stage changes, finding, listing,
-   sorting, filtering, and upcoming-event queries with valid data. Measure after application startup on a computer
-   with at least two CPU cores, 8 GB RAM, SSD storage and Java 25, without other resource-intensive applications
-   running. Record the OS, hardware and dataset with the results. This is a proposed acceptance target for team
-   review, not an existing benchmark result.
-
 The platform, distribution, local-storage and display requirements reflect the relevant
 [tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
 Course process requirements, such as incremental delivery, are not product NFRs.
