@@ -5,7 +5,9 @@ import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
@@ -30,6 +32,8 @@ public class AdvanceStageCommand extends Command {
     public static final String MESSAGE_ALREADY_AT_FINAL_STAGE =
             "This engagement is already Delivered and cannot be advanced.";
 
+    private static final Logger logger = LogsCenter.getLogger(AdvanceStageCommand.class);
+
     private final Index targetIndex;
 
     /**
@@ -45,18 +49,24 @@ public class AdvanceStageCommand extends Command {
         List<Person> lastShownList = model.getFilteredPersonList();
 
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
+            logger.fine("Cannot advance engagement: displayed index " + targetIndex.getOneBased()
+                    + " is outside the displayed list of size " + lastShownList.size());
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
         Person personToAdvance = lastShownList.get(targetIndex.getZeroBased());
         Optional<Stage> nextStage = personToAdvance.getStage().getNextStage();
         if (nextStage.isEmpty()) {
+            logger.fine("Cannot advance engagement at displayed index " + targetIndex.getOneBased()
+                    + ": engagement is already at the final stage");
             throw new CommandException(MESSAGE_ALREADY_AT_FINAL_STAGE);
         }
 
         Person advancedPerson = new Person(personToAdvance.getName(), personToAdvance.getPhone(),
                 personToAdvance.getEmail(), personToAdvance.getEventType(), personToAdvance.getEventDate(),
                 nextStage.get());
+        assert advancedPerson.getStage() != personToAdvance.getStage()
+                : "Advancing an engagement must change its stage";
         model.setPerson(personToAdvance, advancedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(advancedPerson)));
