@@ -499,7 +499,35 @@ the same client repeat those three fields.
 
       Use case ends.
 
-**Use case: UC06 - Prepare for upcoming events**
+**Use case: UC06 - Follow up on engagements at a stage**
+
+_Planned for a future iteration; not implemented in the current version._
+
+**MSS**
+
+1.  User requests to list the engagements at a specific stage (e.g., _Awaiting Payment_).
+2.  ShutterLink shows the engagements at that stage.
+3.  User follows up outside ShutterLink with the client associated with an engagement.
+4.  User updates the stage of that engagement (UC03).
+
+    Steps 3-4 are repeated for each engagement that requires follow-up.<br>
+    Use case ends.
+
+**Extensions**
+
+* 1a. The given stage is not one of the supported stages.
+
+    * 1a1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 1.
+
+* 2a. No engagement is at the given stage.
+
+    * 2a1. ShutterLink informs the user that no engagements were found at that stage.
+
+      Use case ends.
+
+**Use case: UC07 - Prepare for upcoming events**
 
 **MSS**
 
@@ -525,8 +553,9 @@ the same client repeat those three fields.
 
 ### Non-Functional Requirements
 
-These requirements describe the quality of the current ShutterLink implementation for an independent freelance
-event photographer.
+These requirements describe the intended quality of ShutterLink for an independent freelance event photographer.
+They apply to the full product direction, including features introduced after the MVP, where relevant;
+they do not assert that every requirement is already implemented.
 An **engagement** is the primary stored record. It contains one client's contact details, one event, and one workflow
 stage, so a repeat client may appear in multiple engagement records.
 
@@ -543,7 +572,7 @@ stage, so a repeat client may appear in multiple engagement records.
    text format, without a database server. Valid manual edits made while the application is closed shall be loaded
    on the next launch. Normal operation shall not transmit engagement or client contact data to external services.
    Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
-   responsibility.
+   responsibility. Any future export feature shall retain this local-data model.
 5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
    and restored after a normal shutdown and restart, preserving all supported field values and record order.
    This assumes writable storage with sufficient space and excludes external file modification or disk failure.
@@ -556,11 +585,21 @@ stage, so a repeat client may appear in multiple engagement records.
 7. **Keyboard usability (NFR-07).** All supported engagement-management and query operations shall be available through
    typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
    on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
+   This also applies to later engagement-management features, such as notes or reminders, if implemented.
 8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
    alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
    At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
    without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
    scaling, allowing scrolling where necessary.
+9. **Capacity and responsiveness (NFR-09, proposed target).** ShutterLink shall support at least 1,000 engagement records
+   across all engagement stages. With up to this volume, at least 95% of a 100-command test sequence shall complete
+   within 2 seconds per command, measured from submission to updated feedback and results, including saving for
+   data-changing commands. The sequence shall exercise adding, editing, deleting, stage changes, finding, listing,
+   sorting, filtering, and upcoming-event queries with valid data. Measure after application startup on a computer
+   with at least two CPU cores, 8 GB RAM, SSD storage and Java 25, without other resource-intensive applications
+   running. Record the OS, hardware and dataset with the results. This is a proposed acceptance target for team
+   review, not an existing benchmark result.
+
 The platform, distribution, local-storage and display requirements reflect the relevant
 [tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
 Course process requirements, such as incremental delivery, are not product NFRs.
