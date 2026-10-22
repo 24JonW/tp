@@ -55,7 +55,7 @@ else else
     deactivate SimilarContactWarning
 
     create CommandResult
-    AddCommand -> CommandResult
+    AddCommand -> CommandResult : CommandResult(successMessage + warning)
     activate CommandResult
     CommandResult --> AddCommand
     deactivate CommandResult

@@ -116,9 +116,11 @@ How the `Logic` component works:
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an engagement).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
-1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
-1. Unless the command only changes the view (`list` and `upcoming`), `LogicManager` then saves the address book
-   through `Storage` (see [Persistence after commands](#persistence-after-commands)).
+1. The result of the command execution is encapsulated as a `CommandResult` object.
+1. Unless the command is a `ListCommand` or an `UpcomingCommand`, `LogicManager` then saves the address book through
+   `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it throws a
+   `CommandException` instead of returning the result.
+1. Finally, the `CommandResult` is returned from `Logic`.
 
 The sequence diagram below shows the execution portion for a command that modifies data, using `add` as an example.
 Parsing works the same way as in the `delete 1` example above, so it is omitted.
@@ -152,8 +154,9 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * represents each `Person` as one photography engagement containing a client's `Name`, `Phone`, `Email`,
   `EventType`, `EventDate`, and `Stage`.
-* represents the engagement stage as the `Stage` enum, whose values are ordered from `Enquiry` to `Delivered` so that
-  `advance` can move an engagement to the next stage.
+* represents the engagement stage as the `Stage` enum. `advance` uses `Stage#getNextStage()`, which maps each stage to
+  the next one explicitly, so adding a stage requires updating that mapping (changing the enum order alone does not
+  change the behaviour of `advance`).
 * treats two `Person` objects as the same engagement (`Person#isSameEngagement`) when their name, phone, email, event
   type and event date all match, ignoring case for the name, email and event type. The stage is not part of this
   identity. `UniquePersonList` uses this check to reject duplicates.
@@ -278,7 +281,9 @@ All other successfully executed commands currently attempt a write, including `f
 
 If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no
-rollback; the data file retains its last successfully written state. On startup, a missing file loads sample data,
+rollback. The data file is also not guaranteed to keep its previous contents, because `FileUtil#writeToFile`
+overwrites it directly rather than writing to a temporary file first, so a failure during writing can leave it
+incomplete. On startup, a missing file loads sample data,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
 

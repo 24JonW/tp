@@ -54,6 +54,8 @@ else else
     StorageManager --> LogicManager
     deactivate StorageManager
 
+    note right of LogicManager : successful save shown; if saving fails,\nthe IOException propagates and LogicManager\nthrows a CommandException instead of returning r
+
     [<-- LogicManager : r
 end
 deactivate LogicManager
