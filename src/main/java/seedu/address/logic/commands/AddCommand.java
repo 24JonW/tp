@@ -38,8 +38,9 @@ public class AddCommand extends Command {
             + PREFIX_EVENT_DATE + "2026-12-20 "
             + PREFIX_STAGE + "Booked";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_SUCCESS = "New contact added: %1$s.";
+    public static final String MESSAGE_DUPLICATE_PERSON =
+            "A contact with all the same details already exists. No contact was added.";
 
     private final Person toAdd;
 
@@ -64,7 +65,7 @@ public class AddCommand extends Command {
         // match what the user sees.
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         String warning = SimilarContactWarning.generate(model.getFilteredPersonList(), toAdd);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)) + warning);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.formatSummary(toAdd)) + warning);
     }
 
     @Override

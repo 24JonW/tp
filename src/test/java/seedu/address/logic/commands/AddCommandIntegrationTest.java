@@ -34,7 +34,7 @@ public class AddCommandIntegrationTest {
         expectedModel.addPerson(validPerson);
 
         assertCommandSuccess(new AddCommand(validPerson), model,
-                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson)),
+                String.format(AddCommand.MESSAGE_SUCCESS, Messages.formatSummary(validPerson)),
                 expectedModel);
     }
 
@@ -46,7 +46,8 @@ public class AddCommandIntegrationTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addPerson(validPerson);
 
-        String expectedMessage = String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validPerson))
+        String expectedMessage = String.format(AddCommand.MESSAGE_SUCCESS,
+                Messages.formatSummary(validPerson))
                 + String.format(SimilarContactWarning.MESSAGE_WARNING,
                         "#1 " + firstPerson.getName() + " (same phone)");
         assertCommandSuccess(new AddCommand(validPerson), model, expectedMessage, expectedModel);
