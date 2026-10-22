@@ -227,6 +227,12 @@ It constructs a new immutable `Person` with the same client and event fields, re
 `Model#setPerson`, and returns to the complete insertion-ordered list. `Delivered` has no successor and produces a
 command error without modifying the model or view. Direct editing can move a stage either forward or backward.
 
+The following sequence diagram shows the parsing and execution of a successful `advance 1` command up to the model
+update. As with the delete-command sequence diagram, the subsequent storage write is covered by the architecture
+sequence diagram.
+
+![Interactions for the `advance 1` Command](images/AdvanceStageSequenceDiagram.png)
+
 Stage is deliberately excluded from `Person#isSameEngagement`, so changing only the stage cannot create a distinct
 duplicate. Engagement identity uses name, normalized phone, normalized email, event type, and event date; name,
 email, and event type comparisons are case-insensitive.
@@ -400,16 +406,11 @@ the same client repeat those three fields.
 | `***` | As a photographer, I can search engagements by client phone number or email address, so that I can find a client's work even when I do not remember their name. |
 | `***` | As a photographer, I can search engagements by event type, so that I can quickly locate specific types of shoots. |
 | `***` | As a photographer, I can view engagements sorted by event date, including past events, so that I can review them chronologically. |
-| `***` _(planned)_ | As a photographer, I can filter engagements by stage, so that I can quickly find the work that requires follow-up. |
 | `***` | As a photographer, I can view all engagements with events happening within the next seven days, so that I can prepare logistics in advance. |
 | `***` | As a fast typist, I can add, edit, and find engagements by typing commands, so that I can manage work faster than with a form. |
 | `***` | As a photographer, I can type `help` to open a concise command reference, so that I can recall common syntax without leaving the application. |
 | `**` | As a photographer, I can record multiple engagements for the same repeat client, so that their separate events remain available. |
-| `**` | As a photographer, I can add free-text notes to an engagement, such as the shoot location, package, or special requests, so that I do not lose important context. |
-| `**` | As a photographer, I can attach event requirements to an engagement, such as “Needs drone shots”, so that I have the necessary information before the shoot. |
-| `**` | As a photographer, I can record how an engagement originated, such as through a referral, Instagram, or my website, so that I can track which channels bring in the most business. |
-| `*` | As a photographer, I can archive completed engagements, so that my active list stays focused on current work. |
-| `*` | As a photographer, I receive a possible-typo warning when an added or edited engagement shares a phone number or email address with a different client identity. |
+| `*` | As a photographer, I receive a possible-typo warning when adding an engagement or editing its client contact details causes it to share a phone number or email address with a different client identity. |
 
 
 ### Use cases
@@ -447,8 +448,9 @@ the same client repeat those three fields.
 
 * 1c. ShutterLink is unable to save the data.
 
-    * 1c1. ShutterLink shows an error message. The engagement remains in memory for the current session, but the data
-      file retains its last successfully saved state.
+    * 1c1. ShutterLink shows an error message. The engagement remains in memory for the current session. A failure
+      detected before writing, such as insufficient permissions, leaves the data file unchanged; an interrupted write
+      is not guaranteed to be recoverable.
 
       Use case ends.
 
@@ -512,8 +514,9 @@ the same client repeat those three fields.
 
 * 3d. ShutterLink is unable to save the data.
 
-    * 3d1. ShutterLink shows an error message. The stage remains changed in memory for the current session, but the
-      data file retains its last successfully saved state.
+    * 3d1. ShutterLink shows an error message. The stage remains changed in memory for the current session. A failure
+      detected before writing, such as insufficient permissions, leaves the data file unchanged; an interrupted write
+      is not guaranteed to be recoverable.
 
       Use case ends.
 
@@ -562,8 +565,9 @@ the same client repeat those three fields.
 
 * 3e. ShutterLink is unable to save the data.
 
-    * 3e1. ShutterLink shows an error message. The edit remains applied in memory for the current session, but the
-      data file retains its last successfully saved state.
+    * 3e1. ShutterLink shows an error message. The edit remains applied in memory for the current session. A failure
+      detected before writing, such as insufficient permissions, leaves the data file unchanged; an interrupted write
+      is not guaranteed to be recoverable.
 
       Use case ends.
 
@@ -592,40 +596,13 @@ the same client repeat those three fields.
 
 * 3b. ShutterLink is unable to save the data.
 
-    * 3b1. ShutterLink shows an error message. The deletion remains applied in memory for the current session, but the
-      data file retains its last successfully saved state.
+    * 3b1. ShutterLink shows an error message. The deletion remains applied in memory for the current session. A
+      failure detected before writing, such as insufficient permissions, leaves the data file unchanged; an interrupted
+      write is not guaranteed to be recoverable.
 
       Use case ends.
 
-**Use case: UC06 - Follow up on engagements at a stage**
-
-_Planned for a future iteration; not implemented in the current version._
-
-**MSS**
-
-1.  User requests to list the engagements at a specific stage (e.g., _Awaiting Payment_).
-2.  ShutterLink shows the engagements at that stage.
-3.  User follows up outside ShutterLink with the client associated with an engagement.
-4.  User updates the stage of that engagement (UC03).
-
-    Steps 3-4 are repeated for each engagement that requires follow-up.<br>
-    Use case ends.
-
-**Extensions**
-
-* 1a. The given stage is not one of the supported stages.
-
-    * 1a1. ShutterLink shows an error message listing the supported stages.
-
-      Use case resumes at step 1.
-
-* 2a. No engagement is at the given stage.
-
-    * 2a1. ShutterLink informs the user that no engagements were found at that stage.
-
-      Use case ends.
-
-**Use case: UC07 - Prepare for upcoming events**
+**Use case: UC06 - Prepare for upcoming events**
 
 **MSS**
 
@@ -651,9 +628,8 @@ _Planned for a future iteration; not implemented in the current version._
 
 ### Non-Functional Requirements
 
-These requirements describe the intended quality of ShutterLink for an independent freelance event photographer.
-They apply to the full product direction, including features introduced after the MVP, where relevant;
-they do not assert that every requirement is already implemented.
+These requirements describe the intended quality of the current ShutterLink release for an independent freelance
+event photographer.
 An **engagement** is the primary stored record. It contains one client's contact details, one event, and one workflow
 stage, so a repeat client may appear in multiple engagement records.
 
@@ -661,8 +637,8 @@ stage, so a repeat client may appear in multiple engagement records.
    without requiring another Java version. Supported operations shall have the same behaviour across these platforms.
 2. **Portable distribution (NFR-02).** Users shall be able to run ShutterLink from a single downloadable JAR
    without an application installer or separately installed dependencies other than the required Java runtime.
-3. **Independent, offline operation (NFR-03).** Engagement management, searching, sorting, filtering,
-   upcoming-event views, command help, and saving/loading shall remain available without an Internet connection.
+3. **Independent, offline operation (NFR-03).** Engagement management, searching, sorting, upcoming-event views,
+   command help, and saving/loading shall remain available without an Internet connection.
    Normal use shall not require an account, a shared data service, or a remote server.
    Each installation is intended for one photographer managing their own records; concurrent users and shared-file
    collaboration are outside the supported operating environment.
@@ -670,35 +646,25 @@ stage, so a repeat client may appear in multiple engagement records.
    text format, without a database server. Valid manual edits made while the application is closed shall be loaded
    on the next launch. Normal operation shall not transmit engagement or client contact data to external services.
    Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
-   responsibility. Any future export feature shall retain this local-data model.
+   responsibility.
 5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
    and restored after a normal shutdown and restart, preserving all supported field values and record order.
    This assumes writable storage with sufficient space and excludes external file modification or disk failure.
-6. **Failure handling (NFR-06).** Invalid input and command-execution errors shall leave records, the active
-   filter/sort, and displayed indexes unchanged. A failed save shall be reported as an error and leave the last valid
-   saved data unchanged. The current implementation does not roll back a model mutation that occurred before that
-   save failure, so the in-memory state can differ from the file until another save succeeds or the app restarts.
-   A malformed data file starts as an empty address book and is not overwritten by startup itself, although a later
-   successfully executed command that triggers saving can replace it.
+6. **Failure handling (NFR-06).** Invalid input and command-execution errors shall leave records, the current displayed
+   view, and displayed indexes unchanged. A failed save shall be reported as an error. The current implementation
+   does not roll back a model mutation that occurred before that failure, so the in-memory state can differ from the
+   file until another save succeeds or the app restarts. A failure detected before writing, such as insufficient
+   permissions, leaves the existing file unchanged, but saving is not atomic and an interrupted write is not guaranteed
+   to preserve the previous file. A malformed data file starts as an empty address book and is not overwritten by
+   startup itself, although a later successfully executed command that triggers saving can replace it.
 7. **Keyboard usability (NFR-07).** All supported engagement-management and query operations shall be available through
-   typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
-   on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
-   This also applies to later engagement-management features, such as notes or reminders, if implemented.
-8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
-   alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
-   At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
-   without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
-   scaling, allowing scrolling where necessary.
-9. **Capacity and responsiveness (NFR-09, proposed target).** ShutterLink shall support at least 1,000 engagement records
-   across all engagement stages. With up to this volume, at least 95% of a 100-command test sequence shall complete
-   within 2 seconds per command, measured from submission to updated feedback and results, including saving for
-   data-changing commands. The sequence shall exercise adding, editing, deleting, stage changes, finding, listing,
-   sorting, filtering, and upcoming-event queries with valid data. Measure after application startup on a computer
-   with at least two CPU cores, 8 GB RAM, SSD storage and Java 25, without other resource-intensive applications
-   running. Record the OS, hardware and dataset with the results. This is a proposed acceptance target for team
-   review, not an existing benchmark result.
+   typed commands without mandatory mouse interaction. After an ordinary successful command, the command field shall
+   clear and remain focused; after closing command help, focus shall return to it. On rejection, the field shall retain
+   the input for correction. Command help shall be accessible from the keyboard.
+8. **Readable feedback (NFR-08).** Errors shall be reported using text in the feedback area in addition to visually
+   marking the command input, so colour alone is not needed to identify a rejected command.
 
-The platform, distribution, local-storage and display requirements reflect the relevant
+The platform, distribution, local-storage and feedback requirements reflect the relevant
 [tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
 Course process requirements, such as incremental delivery, are not product NFRs.
 
@@ -721,8 +687,6 @@ Course process requirements, such as incremental delivery, are not product NFRs.
   `Awaiting Payment`, or `Delivered`.
 * **Event type**: The category of photography event associated with an engagement, such as a wedding or birthday
   celebration.
-* **Mainstream OS**: Windows, Linux, Unix, or macOS.
-* **Private contact detail**: Client contact data that is not meant to be shared with others.
 * **Substring matching**: A search method that matches when the supplied text occurs anywhere within the selected
   field; ShutterLink performs this comparison without regard to capitalization.
 * **Upcoming events**: Events scheduled from today through the next six calendar days, inclusive.
@@ -744,14 +708,14 @@ testers are expected to do more *exploratory* testing.
 
    1. Download the JAR file and copy it into an empty folder.
 
-   1. Double-click the JAR file.<br>
+   1. Open a terminal in that folder and run `java -jar shutterlink.jar`.<br>
       Expected: The GUI opens with a set of sample engagements. The window size may not be optimal.
 
 1. Saving window preferences
 
    1. Resize the window to an optimal size. Move the window to a different location. Close the window.
 
-   1. Relaunch the app by double-clicking the JAR file.<br>
+   1. Relaunch the app by running `java -jar shutterlink.jar` again.<br>
        Expected: The most recent window size and location are retained.
 
 ### Viewing upcoming events
@@ -782,7 +746,7 @@ testers are expected to do more *exploratory* testing.
 
 ### Adding, editing, and advancing stages
 
-1. Add one engagement without `s/STAGE` and another with `s/booked`.<br>
+1. In an empty disposable dataset, add one engagement without `s/STAGE` and another with `s/booked`.<br>
    Expected: The first is displayed as `Enquiry`; the second is displayed as `Booked`.
 2. Run `edit 1 s/Awaiting Payment`, followed by `edit 1 s/enquiry`.<br>
    Expected: Both edits succeed, showing that direct stage edits can move forward or backward and ignore
@@ -807,6 +771,33 @@ testers are expected to do more *exploratory* testing.
 5. Add an event type containing repeated spaces or tabs.<br>
    Expected: It is stored with each run of whitespace normalized to one space, provided the normalized value contains
    only letters, digits, spaces, and hyphens and is no longer than 40 characters.
+
+### Finding engagements
+
+1. In a disposable dataset, add an engagement for Alice Tan with phone `+6591234567`, email `alice@example.com`, and
+   event type `Wedding`. Add another for Alicia Lim with phone `81234567`, email `alicia@studio.com`, and event type
+   `Portrait`. Give both engagements valid, distinct event dates.
+2. Run `find n/ALI`, `find p/9123`, `find e/STUDIO`, and `find t/wed` one at a time.<br>
+   Expected: The name search finds both engagements. Each other search finds only the engagement whose selected field
+   contains the supplied text, ignoring capitalization. The heading and displayed indexes update to match each result.
+3. Run `find n/Zachary`.<br>
+   Expected: The list is empty and the feedback is `No matching contacts found.`
+4. Run `find n/Alice`, then try `find`, `find n/`, `find n/Alice p/9123`, and `find n/Alice n/Bob`.<br>
+   Expected: Each command is rejected and leaves the preceding view unchanged.
+5. Run `list`.<br>
+   Expected: All engagements reappear in insertion order.
+
+### Detecting duplicate and similar contact details
+
+1. In an empty disposable dataset, add an engagement for Alice Tan.
+2. Try adding another engagement with the same name, normalized phone number, email address, event type, and event date,
+   but a different stage.<br>
+   Expected: The command is rejected as a duplicate because stage is not part of engagement identity.
+3. Add an engagement for Bob Lim that has a different email, event type, and event date but the same phone number as
+   Alice.<br>
+   Expected: The engagement is added and the feedback warns that it shares Alice's phone number.
+4. Add an engagement for Carol Lee with distinct details, then edit Carol's email to Alice's email.<br>
+   Expected: The edit succeeds and the feedback warns that Carol now shares Alice's email address.
 
 ### Deleting an engagement
 
