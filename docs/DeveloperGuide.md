@@ -198,7 +198,7 @@ predicate or format the feedback are omitted.
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.
 List-specific parsing is case-insensitive and preserves raw arguments to reject embedded control characters.
-Stage filtering is deferred; `stage/` is currently an unsupported list parameter.
+Stage filtering is not supported; `stage/` is rejected as an unsupported list parameter.
 
 `ListCommand` calls `Model#showAllPersons` to clear the current filter and select an ordering.
 `ModelManager` exposes a `SortedList<Person>` over its `FilteredList<Person>` to the UI and index-based commands.
@@ -210,7 +210,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral placeholder `Contacts (N)` for future search-UI refinement.
+commands. A filtered view uses the neutral heading `Contacts (N)`.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -260,101 +260,452 @@ rollback; the data file retains its last successfully written state. On startup,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
 
-### \[Proposed\] Undo/redo feature
+--------------------------------------------------------------------------------------------------------------------
 
-#### Proposed Implementation
+## **Documentation, logging, testing, dev-ops**
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+* [Documentation guide](Documentation.md)
+* [Testing guide](Testing.md)
+* [Logging guide](Logging.md)
+* [DevOps guide](DevOps.md)
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+--------------------------------------------------------------------------------------------------------------------
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+## **Appendix: Requirements**
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+### Product scope
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+**Target user profile**:
 
-![UndoRedoState0](images/UndoRedoState0.png)
+* is a freelance photographer who handles event-based jobs
+* has a need to manage a significant number of clients and photography jobs
+* needs to track client contact details, event details, and job progress from enquiry to delivery
+* prefers desktop apps over other types of applications
+* can type fast
+* prefers typing to mouse interactions
+* is reasonably comfortable using CLI apps
 
-Step 2. The user executes `delete 5` to delete the fifth engagement. The `delete` command calls
-`Model#commitAddressBook()`, causing the modified address book state to be saved in the `addressBookStateList`, and
-the `currentStatePointer` is shifted to the newly inserted state.
+**Value proposition**: Manage photography engagements from enquiry to delivery faster than with a typical
+mouse-driven GUI application.
 
-![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes
-`add n/David Li p/91234567 e/david@example.com t/Wedding d/2027-01-15` to add a new engagement. The `add` command
-also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the
-`addressBookStateList`.
+### User stories
 
-![UndoRedoState2](images/UndoRedoState2.png)
+Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+In these stories, an **engagement** is the record being added, edited, searched, displayed, and deleted. A **client**
+is the person associated with that engagement, identified in the current model by the combination of name, normalized
+phone number, and normalized email address. Clients are not stored as separate objects, so multiple engagements for
+the same client repeat those three fields.
+
+| Priority | User story |
+| -------- | ---------- |
+| `***` | As a photographer, I can add an engagement with client contact details, event details, and an optional initial stage, so that I can record work at any point in its lifecycle. |
+| `***` | As a photographer, I can set an engagement's stage, such as enquiry, booked, shot completed, awaiting payment, or delivered, so that I always know what needs to happen next. |
+| `***` | As a photographer, I can edit an engagement's client, event, or stage details, so that I can keep its information accurate as things change. |
+| `***` | As a photographer, I can delete an engagement, so that my engagement list does not fill up with irrelevant work. |
+| `***` | As a photographer, I can search engagements by client phone number or email address, so that I can find a client's work even when I do not remember their name. |
+| `***` | As a photographer, I can search engagements by event type, so that I can quickly locate specific types of shoots. |
+| `***` | As a photographer, I can view engagements sorted by event date, including past events, so that I can review them chronologically. |
+| `***` | As a photographer, I can view all engagements with events happening within the next seven days, so that I can prepare logistics in advance. |
+| `***` | As a fast typist, I can add, edit, and find engagements by typing commands, so that I can manage work faster than with a form. |
+| `***` | As a photographer, I can type `help` to open a concise command reference, so that I can recall common syntax without leaving the application. |
+| `**` | As a photographer, I can record multiple engagements for the same repeat client, so that their separate events remain available. |
+| `*` | As a photographer, I receive a possible-typo warning when an added or edited engagement shares a phone number or email address with a different client identity. |
+
+
+### Use cases
+
+(For all use cases below, the **System** is `ShutterLink` and the **Actor** is the `user`, a freelance event photographer, unless specified otherwise)
+
+**Use case: UC01 - Add an engagement**
+
+**MSS**
+
+1.  User requests to add an engagement, giving the client's name, phone number, email address, event type and event
+    date, and optionally an engagement stage.
+2.  ShutterLink adds the engagement at the supplied stage, or at _Enquiry_ when no stage is supplied, and shows the
+    full engagement list in insertion order.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. A required detail (name, phone number, email address, event type or event date) is missing, or a supplied detail
+  (including stage) is invalid.
+
+    * 1a1. ShutterLink shows an error message describing the first problem found.
+    * 1a2. User requests to add the engagement again with corrected details.
+
+      Steps 1a1-1a2 are repeated until the details are valid.<br>
+      Use case resumes from step 2.
+
+* 1b. An engagement with the same name, normalized phone number, email address, event type, and event date already
+  exists, using case-insensitive comparison for name, email, and event type. Stage is not part of duplicate identity.
+
+    * 1b1. ShutterLink informs the user that the engagement already exists and does not add it.
+
+      Use case ends.
+
+* 1c. ShutterLink is unable to save the data.
+
+    * 1c1. ShutterLink shows an error message. The engagement remains in memory for the current session, but the data
+      file retains its last successfully saved state.
+
+      Use case ends.
+
+**Use case: UC02 - Find engagements by client or event details**
+
+**MSS**
+
+1.  User requests to find engagements, giving one client name, phone number, email address, or event type.
+2.  ShutterLink shows all engagements whose selected field contains the given value, ignoring capitalization.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. User gives no search value, or more than one.
+
+    * 1a1. ShutterLink shows an error message asking for exactly one search value.
+
+      Use case resumes at step 1.
+
+* 2a. No engagement matches the given value.
+
+    * 2a1. ShutterLink informs the user that no matching engagements were found.
+
+      Use case ends.
+
+**Use case: UC03 - Update an engagement stage**
+
+**MSS**
+
+1.  User requests to list engagements, or finds the relevant engagement (UC02).
+2.  ShutterLink shows a list of engagements.
+3.  User either edits the stage directly or advances the engagement to the next stage.
+4.  ShutterLink updates the engagement's stage and shows the full engagement list.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. The given stage is not one of the supported stages.
+
+    * 3b1. ShutterLink shows an error message listing the supported stages.
+
+      Use case resumes at step 2.
+
+* 3c. User requests to advance an engagement that is already at _Delivered_.
+
+    * 3c1. ShutterLink informs the user that the final stage cannot be advanced and keeps the current list.
+
+      Use case ends.
+
+* 3d. ShutterLink is unable to save the data.
+
+    * 3d1. ShutterLink shows an error message. The stage remains changed in memory for the current session, but the
+      data file retains its last successfully saved state.
+
+      Use case ends.
+
+**Use case: UC04 - Edit an engagement**
+
+**MSS**
+
+1.  User requests to list engagements, or finds the relevant engagement (UC02).
+2.  ShutterLink shows a list of engagements.
+3.  User requests to edit a specific engagement in the list, giving new values for one or more client, event, or stage
+    fields.
+4.  ShutterLink updates the engagement and shows the full engagement list.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. User does not give any detail to edit, or a given detail is invalid.
+
+    * 3b1. ShutterLink shows an error message and does not change the engagement.
+
+      Use case resumes at step 2.
+
+* 3c. The edit supplies an empty value for a required detail (name, phone number, email address, event type, event date,
+  or stage).
+
+    * 3c1. ShutterLink shows an error message and does not change the engagement.
+
+      Use case resumes at step 2.
+
+* 3d. The edit would give the engagement the same identity as another existing engagement.
+
+    * 3d1. ShutterLink informs the user that the edit would create a duplicate and does not change the engagement.
+
+      Use case resumes at step 2.
+
+* 3e. ShutterLink is unable to save the data.
+
+    * 3e1. ShutterLink shows an error message. The edit remains applied in memory for the current session, but the
+      data file retains its last successfully saved state.
+
+      Use case ends.
+
+**Use case: UC05 - Delete an engagement**
+
+**MSS**
+
+1.  User requests to list engagements, or finds the relevant engagement (UC02).
+2.  ShutterLink shows a list of engagements.
+3.  User requests to delete a specific engagement in the list.
+4.  ShutterLink deletes the engagement immediately and shows the remaining engagements.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+
+    * 3a1. ShutterLink shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. ShutterLink is unable to save the data.
+
+    * 3b1. ShutterLink shows an error message. The deletion remains applied in memory for the current session, but the
+      data file retains its last successfully saved state.
+
+      Use case ends.
+
+**Use case: UC06 - Prepare for upcoming events**
+
+**MSS**
+
+1.  User requests to view upcoming events.
+2.  ShutterLink shows the engagements whose event dates fall within today and the next six days, sorted by event date.
+3.  User reviews the events and edits an engagement if needed (UC04).
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. ShutterLink is unable to determine today's date.
+
+    * 1a1. ShutterLink shows an error message and keeps the current list.
+
+      Use case ends.
+
+* 2a. No event falls within the next seven days.
+
+    * 2a1. ShutterLink informs the user that no events are scheduled in that period.
+
+      Use case ends.
+
+### Non-Functional Requirements
+
+These requirements describe the quality of the current ShutterLink implementation for an independent freelance
+event photographer.
+An **engagement** is the primary stored record. It contains one client's contact details, one event, and one workflow
+stage, so a repeat client may appear in multiple engagement records.
+
+1. **Platform compatibility (NFR-01).** ShutterLink shall run on Windows, Linux and macOS with Java 25 installed,
+   without requiring another Java version. Supported operations shall have the same behaviour across these platforms.
+2. **Portable distribution (NFR-02).** Users shall be able to run ShutterLink from a single downloadable JAR
+   without an application installer or separately installed dependencies other than the required Java runtime.
+3. **Independent, offline operation (NFR-03).** Engagement management, searching, sorting, filtering,
+   upcoming-event views, command help, and saving/loading shall remain available without an Internet connection.
+   Normal use shall not require an account, a shared data service, or a remote server.
+   Each installation is intended for one photographer managing their own records; concurrent users and shared-file
+   collaboration are outside the supported operating environment.
+4. **Local data ownership and privacy (NFR-04).** Engagement records shall be stored locally in a human-editable UTF-8
+   text format, without a database server. Valid manual edits made while the application is closed shall be loaded
+   on the next launch. Normal operation shall not transmit engagement or client contact data to external services.
+   Local files are not encrypted by this requirement; restricting access to the device and files remains the user's
+   responsibility.
+5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
+   and restored after a normal shutdown and restart, preserving all supported field values and record order.
+   This assumes writable storage with sufficient space and excludes external file modification or disk failure.
+6. **Failure handling (NFR-06).** Invalid input and command-execution errors shall leave records, the active
+   filter/sort, and displayed indexes unchanged. A failed save shall be reported as an error and leave the last valid
+   saved data unchanged. The current implementation does not roll back a model mutation that occurred before that
+   save failure, so the in-memory state can differ from the file until another save succeeds or the app restarts.
+   A malformed data file starts as an empty address book and is not overwritten by startup itself, although a later
+   successfully executed command that triggers saving can replace it.
+7. **Keyboard usability (NFR-07).** All supported engagement-management and query operations shall be available through
+   typed commands without mandatory mouse interaction. On success, the command field shall clear and regain focus;
+   on rejection, it shall retain the input for correction. Command help shall be accessible from the keyboard.
+8. **Readable feedback and display (NFR-08).** Errors shall include a visible text label as well as colour, so colour
+   alone is not needed to distinguish them. Valid long field values shall wrap and remain readable through scrolling.
+   At 1920 x 1080 or higher with 100% or 125% scaling, the command input, feedback, and record details shall be usable
+   without resolution-related clipping. All functions shall remain accessible at 1280 x 720 or higher with 150%
+   scaling, allowing scrolling where necessary.
+The platform, distribution, local-storage and display requirements reflect the relevant
+[tP product constraints](https://nus-cs2103-ay2627-s1.github.io/website/admin/tp-constraints.html).
+Course process requirements, such as incremental delivery, are not product NFRs.
+
+### Glossary
+
+* **Client**: The person associated with an engagement. The current implementation treats two engagements as
+  belonging to the same client only when their name, normalized phone number, and normalized email address all match;
+  name and email comparisons ignore capitalization. A client is not stored as a separate model object.
+* **Client contact details**: The client's name, phone number, and email address stored within each engagement.
+* **Contact**: A legacy user-interface label for an engagement record. It does not mean that ShutterLink stores a
+  separate contact or client profile.
+* **Current displayed list**: The engagements currently visible after applying a search, sort, or upcoming-event
+  view. Index-based commands refer to this list.
+* **Engagement**: The primary record managed by ShutterLink. It combines client contact details, an event type, an
+  event date, and an engagement stage. In the Java model, this record is represented by `Person`.
+* **Engagement identity**: The fields used to reject duplicate engagement records: client identity, event type, and
+  event date. Name, email, and event type comparisons ignore capitalization; phone separators are removed during
+  normalization. Stage is not part of engagement identity.
+* **Engagement stage**: The workflow status of an engagement: `Enquiry`, `Booked`, `Shot Completed`,
+  `Awaiting Payment`, or `Delivered`.
+* **Event type**: The category of photography event associated with an engagement, such as a wedding or birthday
+  celebration.
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Private contact detail**: Client contact data that is not meant to be shared with others.
+* **Substring matching**: A search method that matches when the supplied text occurs anywhere within the selected
+  field; ShutterLink performs this comparison without regard to capitalization.
+* **Upcoming events**: Events scheduled from today through the next six calendar days, inclusive.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Instructions for manual testing**
+
+Given below are instructions to test the app manually.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** These instructions only provide a starting point for testers to work on;
+testers are expected to do more *exploratory* testing.
 
 </div>
 
-Step 4. The user decides that adding the engagement was a mistake and executes `undo`. The `undo` command calls
-`Model#undoAddressBook()`, shifts the `currentStatePointer` once to the left, and restores the previous address book
-state.
+### Launch and shutdown
 
-![UndoRedoState3](images/UndoRedoState3.png)
+1. Initial launch
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
+   1. Download the JAR file and copy it into an empty folder.
 
-</div>
+   1. Double-click the JAR file.<br>
+      Expected: The GUI opens with a set of sample engagements. The window size may not be optimal.
 
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
+1. Saving window preferences
 
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
+   1. Resize the window to an optimal size. Move the window to a different location. Close the window.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
+   1. Relaunch the app by double-clicking the JAR file.<br>
+       Expected: The most recent window size and location are retained.
 
-</div>
+### Viewing upcoming events
 
-Similarly, how an undo operation goes through the `Model` component is shown below:
+1. In a disposable dataset, add engagements dated yesterday, today, today + 6 days and today + 7 days.
+   Add another engagement for today, after the first one, to check insertion-order ties.
+2. Run `upcoming`. Expect only the two engagements for today and the one for today + 6 days, in date order.
+   The two engagements for today must remain in insertion order. Check the heading's dates and count.
+3. Run `upcoming 7`. Expect a usage error with the same displayed engagements and heading.
+4. Run `list`, search for one engagement, then run `upcoming` again. Expect all engagements in the upcoming date window,
+   regardless of the preceding search results. Run `list` again to restore the complete insertion-ordered list.
+5. With no engagements in the window, expect an empty list and feedback naming the start and end dates.
+6. For midnight behaviour, use the automated mutable-clock test rather than changing the operating system clock.
+   The window stays unchanged until the next execution, then advances to the new local date.
 
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
+### Listing and sorting engagements
 
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+1. Use a dataset with insertion order A (2030-12-31), B (2000-02-29), C (2000-02-29).
+2. Run `list sort/date`. Expect B, C, A, indexes 1–3, heading `All contacts by event date (3)`,
+   and feedback `Showing 3 contacts.` Repeating the command must retain B before C.
+3. Run `list sort/name`. Expect an invalid-sort error and the same B, C, A view.
+4. Run `list`. Expect A, B, C and heading `All contacts (3)`.
+5. Search for one engagement, then run either list variant. Expect all three engagements again.
+6. With no saved engagements, run each variant. Expect an empty list, the corresponding heading with `(0)`,
+   and `No contacts to display.`
+7. In a disposable dataset, sort and delete index 1. Expect the earliest displayed engagement to be removed,
+   not the first engagement in insertion order. Restart after a successful save and verify insertion order.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
+### Adding, editing, and advancing stages
 
-</div>
+1. Add one engagement without `s/STAGE` and another with `s/booked`.<br>
+   Expected: The first is displayed as `Enquiry`; the second is displayed as `Booked`.
+2. Run `edit 1 s/Awaiting Payment`, followed by `edit 1 s/enquiry`.<br>
+   Expected: Both edits succeed, showing that direct stage edits can move forward or backward and ignore
+   capitalization.
+3. Run `advance 1` repeatedly.<br>
+   Expected: The stage follows `Enquiry` → `Booked` → `Shot Completed` → `Awaiting Payment` → `Delivered`.
+4. Run `advance 1` once more.<br>
+   Expected: ShutterLink reports that `Delivered` cannot be advanced and leaves the data and view unchanged.
+5. Try an unsupported value such as `edit 1 s/Confirmed` and a missing value such as `edit 1 s/`.<br>
+   Expected: Each command is rejected with the supported-stage constraint and makes no change.
 
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+### Validating and normalizing fields
 
-![UndoRedoState4](images/UndoRedoState4.png)
+1. Add a phone number containing a leading `+`, spaces, and hyphens, with 8–15 digits in total.<br>
+   Expected: The command succeeds and the stored/displayed phone contains the leading `+` and digits only.
+2. Try phone numbers with 7 and 16 digits.<br>
+   Expected: Both are rejected.
+3. Add an email containing uppercase letters.<br>
+   Expected: It is accepted when otherwise valid and displayed in lowercase.
+4. Try `d/2025-02-29`, `d/2024-02-29`, and a non-ISO date.<br>
+   Expected: Only the valid leap-day value `2024-02-29` is accepted.
+5. Add an event type containing repeated spaces or tabs.<br>
+   Expected: It is stored with each run of whitespace normalized to one space, provided the normalized value contains
+   only letters, digits, spaces, and hyphens and is no longer than 40 characters.
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not
-pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be
-purged. It no longer makes sense to redo the earlier `add` command. This is the behavior that most modern desktop
-applications follow.
+### Deleting an engagement
 
-![UndoRedoState5](images/UndoRedoState5.png)
+1. Deleting an engagement while all engagements are being shown
 
-The following activity diagram summarizes what happens when a user executes a new command:
+   1. Prerequisites: List all engagements using the `list` command, with multiple engagements in the list.
 
-<img src="images/CommitActivityDiagram.png" width="250" />
+   1. Test case: `delete 1`<br>
+      Expected: The first engagement is deleted from the list. The status message shows the deleted engagement's
+      details.
 
-#### Design considerations:
+   1. Test case: `delete 0`<br>
+      Expected: No engagement is deleted. The status message shows error details.
 
-**Aspect: How undo & redo execute:**
+   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
+      Expected: Similar to previous.
 
-* **Alternative 1 (proposed choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
+### Saving data
 
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, save only the engagement being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
+1. Dealing with missing/corrupted data files
 
-### \[Proposed\] Data archiving
+   1. In a disposable folder, launch the app without `data/addressbook.json`.<br>
+      Expected: Sample engagements are loaded. The data file is created only when a command other than `list` or
+      `upcoming` successfully executes and triggers a save.
 
-Data archiving is not implemented in the current version. The proposed feature hides completed engagements from the
-active list without deleting their client or event history. An `archive INDEX` command would accept the index in the
-current displayed list and archive only an engagement at the `Delivered` stage. A separate archived view would allow
-the user to inspect archived engagements and restore one that was archived accidentally.
+   1. Close the app, replace `data/addressbook.json` with malformed JSON, and relaunch it.<br>
+      Expected: An empty address book is displayed and the malformed file remains unchanged at startup.
+
+   1. Run `list` and then `upcoming`.<br>
+      Expected: Both commands work without overwriting the malformed file.
+
+   1. Run `clear` or another successfully executed command that triggers saving.<br>
+      Expected: The file is replaced with valid JSON representing the current in-memory address book.
+
+2. Dealing with a save failure
+
+   1. Make the data file or its directory read-only, then run a data-changing command.<br>
+      Expected: ShutterLink reports a save error. The change is visible in the current session, while the file retains
+      its last saved contents. Restore write permission before continuing.
