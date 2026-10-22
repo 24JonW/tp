@@ -198,7 +198,7 @@ predicate or format the feedback are omitted.
 `ListCommandParser` accepts `list` and `list sort/date`, rejecting extra positional arguments,
 unsupported/repeated prefixes, empty values and invalid sort options before changing the model.
 List-specific parsing is case-insensitive and preserves raw arguments to reject embedded control characters.
-Stage filtering is not supported; `stage/` is rejected as an unsupported list parameter.
+Stage filtering is deferred; `stage/` is currently an unsupported list parameter.
 
 `ListCommand` calls `Model#showAllPersons` to clear the current filter and select an ordering.
 `ModelManager` exposes a `SortedList<Person>` over its `FilteredList<Person>` to the UI and index-based commands.
@@ -210,7 +210,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral heading `Contacts (N)`.
+commands. A filtered view uses the neutral placeholder `Contacts (N)` for future search-UI refinement.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -260,96 +260,101 @@ rollback; the data file retains its last successfully written state. On startup,
 whereas a malformed or otherwise unreadable file loads an empty address book and leaves the bad file untouched until
 a later command successfully writes data.
 
---------------------------------------------------------------------------------------------------------------------
+### \[Proposed\] Undo/redo feature
 
-## **Documentation, logging, testing, dev-ops**
+#### Proposed Implementation
 
-* [Documentation guide](Documentation.md)
-* [Testing guide](Testing.md)
-* [Logging guide](Logging.md)
-* [DevOps guide](DevOps.md)
+The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
 
---------------------------------------------------------------------------------------------------------------------
+* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
+* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
+* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
 
-## **Appendix: Requirements**
+These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
 
-### Product scope
+Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
 
-**Target user profile**:
+Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
 
-* is a freelance photographer who handles event-based jobs
-* has a need to manage a significant number of clients and photography jobs
-* needs to track client contact details, event details, and job progress from enquiry to delivery
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+![UndoRedoState0](images/UndoRedoState0.png)
 
-**Value proposition**: Manage photography engagements from enquiry to delivery faster than with a typical
-mouse-driven GUI application.
+Step 2. The user executes `delete 5` to delete the fifth engagement. The `delete` command calls
+`Model#commitAddressBook()`, causing the modified address book state to be saved in the `addressBookStateList`, and
+the `currentStatePointer` is shifted to the newly inserted state.
 
+![UndoRedoState1](images/UndoRedoState1.png)
 
-### User stories
+Step 3. The user executes
+`add n/David Li p/91234567 e/david@example.com t/Wedding d/2027-01-15` to add a new engagement. The `add` command
+also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the
+`addressBookStateList`.
 
-Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
+![UndoRedoState2](images/UndoRedoState2.png)
 
-In these stories, an **engagement** is the record being added, edited, searched, displayed, and deleted. A **client**
-is the person associated with that engagement, identified in the current model by the combination of name, normalized
-phone number, and normalized email address. Clients are not stored as separate objects, so multiple engagements for
-the same client repeat those three fields.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
 
-| Priority | User story |
-| -------- | ---------- |
-| `***` | As a photographer, I can add an engagement with client contact details, event details, and an optional initial stage, so that I can record work at any point in its lifecycle. |
-| `***` | As a photographer, I can set an engagement's stage, such as enquiry, booked, shot completed, awaiting payment, or delivered, so that I always know what needs to happen next. |
-| `***` | As a photographer, I can edit an engagement's client, event, or stage details, so that I can keep its information accurate as things change. |
-| `***` | As a photographer, I can delete an engagement, so that my engagement list does not fill up with irrelevant work. |
-| `***` | As a photographer, I can search engagements by client phone number or email address, so that I can find a client's work even when I do not remember their name. |
-| `***` | As a photographer, I can search engagements by event type, so that I can quickly locate specific types of shoots. |
-| `***` | As a photographer, I can view engagements sorted by event date, including past events, so that I can review them chronologically. |
-| `***` | As a photographer, I can view all engagements with events happening within the next seven days, so that I can prepare logistics in advance. |
-| `***` | As a fast typist, I can add, edit, and find engagements by typing commands, so that I can manage work faster than with a form. |
-| `***` | As a photographer, I can type `help` to open a concise command reference, so that I can recall common syntax without leaving the application. |
-| `**` | As a photographer, I can record multiple engagements for the same repeat client, so that their separate events remain available. |
-| `*` | As a photographer, I receive a possible-typo warning when an added or edited engagement shares a phone number or email address with a different client identity. |
+</div>
 
+Step 4. The user decides that adding the engagement was a mistake and executes `undo`. The `undo` command calls
+`Model#undoAddressBook()`, shifts the `currentStatePointer` once to the left, and restores the previous address book
+state.
 
-### Use cases
+![UndoRedoState3](images/UndoRedoState3.png)
 
-(For all use cases below, the **System** is `ShutterLink` and the **Actor** is the `user`, a freelance event photographer, unless specified otherwise)
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
+than attempting to perform the undo.
 
-**Use case: UC01 - Add an engagement**
+</div>
 
-**MSS**
+The following sequence diagram shows how an undo operation goes through the `Logic` component:
 
-1.  User requests to add an engagement, giving the client's name, phone number, email address, event type and event
-    date, and optionally an engagement stage.
-2.  ShutterLink adds the engagement at the supplied stage, or at _Enquiry_ when no stage is supplied, and shows the
-    full engagement list in insertion order.
+![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
 
-    Use case ends.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 
-**Extensions**
+</div>
 
-* 1a. A required detail (name, phone number, email address, event type or event date) is missing, or a supplied detail
-  (including stage) is invalid.
+Similarly, how an undo operation goes through the `Model` component is shown below:
 
-    * 1a1. ShutterLink shows an error message describing the first problem found.
-    * 1a2. User requests to add the engagement again with corrected details.
+![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
 
-      Steps 1a1-1a2 are repeated until the details are valid.<br>
-      Use case resumes from step 2.
+The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
 
-* 1b. An engagement with the same name, normalized phone number, email address, event type, and event date already
-  exists, using case-insensitive comparison for name, email, and event type. Stage is not part of duplicate identity.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
 
-    * 1b1. ShutterLink informs the user that the engagement already exists and does not add it.
+</div>
 
-      Use case ends.
+Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
 
-* 1c. ShutterLink is unable to save the data.
+![UndoRedoState4](images/UndoRedoState4.png)
 
-    * 1c1. ShutterLink shows an error message. The engagement remains in memory for the current session, but the data
-      file retains its last successfully saved state.
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not
+pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be
+purged. It no longer makes sense to redo the earlier `add` command. This is the behavior that most modern desktop
+applications follow.
 
-      Use case ends.
+![UndoRedoState5](images/UndoRedoState5.png)
+
+The following activity diagram summarizes what happens when a user executes a new command:
+
+<img src="images/CommitActivityDiagram.png" width="250" />
+
+#### Design considerations:
+
+**Aspect: How undo & redo execute:**
+
+* **Alternative 1 (proposed choice):** Saves the entire address book.
+  * Pros: Easy to implement.
+  * Cons: May have performance issues in terms of memory usage.
+
+* **Alternative 2:** Individual command knows how to undo/redo by
+  itself.
+  * Pros: Will use less memory (e.g. for `delete`, save only the engagement being deleted).
+  * Cons: We must ensure that the implementation of each individual command is correct.
+
+### \[Proposed\] Data archiving
+
+Data archiving is not implemented in the current version. The proposed feature hides completed engagements from the
+active list without deleting their client or event history. An `archive INDEX` command would accept the index in the
+current displayed list and archive only an engagement at the `Delivered` stage. A separate archived view would allow
+the user to inspect archived engagements and restore one that was archived accidentally.
