@@ -35,10 +35,10 @@ The application is called **ShutterLink**. It helps photographers manage client 
 
 The ***Architecture Diagram*** given above explains the high-level design of the App.
 
-* [**`UI`**](#ui-component): Displays the application window and contact information.
+* [**`UI`**](#ui-component): Displays the application window and engagement information.
 * [**`Logic`**](#logic-component): Parses and executes user commands.
-* [**`Model`**](#model-component): Stores contacts and their event details in memory.
-* [**`Storage`**](#storage-component): Saves and loads contact data from the local JSON file.
+* [**`Model`**](#model-component): Stores engagements and their event details in memory.
+* [**`Storage`**](#storage-component): Saves and loads engagement data from the local JSON file.
 
 [**`Commons`**](#common-classes) contains utility classes shared by multiple components.
 
@@ -47,9 +47,12 @@ The ***Architecture Diagram*** given above explains the high-level design of the
 
 **`Main`** and **`MainApp`** initialise the application, connect the components, and handle application shutdown.
 
-The `Logic` component receives commands from the UI. It parses commands such as adding, editing, deleting, listing, and finding contacts, then executes them using the `Model`. The `Model` updates its filtered contact list, which the UI observes and displays.
+The `Logic` component receives commands from the UI. It parses commands such as adding, editing, deleting, listing,
+and finding engagements, then executes them using the `Model`. The `Model` maintains a filtered list wrapped by a
+sorted list, which determines the engagements displayed by the UI.
 
-Each contact is represented by a `Person` object containing the contact's name, phone number, email address, event type, event date, and engagement stage.
+Each engagement is represented by a `Person` object containing the client's name, phone number, email address,
+event type, event date, and engagement stage.
 
 
 **How the architecture components interact with each other**
@@ -76,23 +79,30 @@ The **API** of this component is specified in
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
+The UI keeps a reference to the `Logic` interface, which it uses to execute user commands. It also depends on selected
+`Model` classes, such as `Person`, when displaying engagement data.
+
+The UI is composed of multiple UI parts. All these parts, including `MainWindow`, inherit from the abstract `UiPart`
+class, which provides common functionality for loading and managing their corresponding FXML files.
+
 The UI is implemented using JavaFX. Its main parts include:
 
 * `MainWindow`, which contains the main application layout.
 * `CommandBox`, which accepts user commands.
 * `ResultDisplay`, which displays feedback messages.
-* `PersonListPanel`, which displays the filtered list of contacts.
-* `PersonCard`, which displays an individual contact.
+* `PersonListPanel`, which displays the filtered and sorted list of engagements.
+* `PersonCard`, which displays an individual engagement.
 * `StatusBarFooter`, which displays the data file location.
 
 The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example, `PersonListCard.fxml` defines the layout for an individual contact card.
 
 The `UI` component,
 
-* sends user commands to the `Logic` component;
+* keeps a reference to `Logic` and sends user commands through it;
 * displays command results returned by `Logic`;
-* observes the filtered contact list maintained by `Model`;
-* updates the displayed contacts whenever the model changes.
+* observes the filtered and sorted engagement list exposed through `Logic`;
+* depends on selected `Model` classes when displaying engagement data;
+* updates the displayed engagements whenever the observed list changes.
 
 ### Logic component
 
