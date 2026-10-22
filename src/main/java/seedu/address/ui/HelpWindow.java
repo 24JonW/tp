@@ -84,7 +84,6 @@ public class HelpWindow extends UiPart<Stage> {
      */
     public HelpWindow(Stage root, Runnable onHidden) {
         super(FXML, root);
-        assert helpMessage != null : "Help message label must be injected from FXML";
         this.onHidden = onHidden;
         helpMessage.setText(HELP_MESSAGE);
         getRoot().getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::handleKeyPressed);
