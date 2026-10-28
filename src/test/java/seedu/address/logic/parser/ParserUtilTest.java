@@ -1,12 +1,15 @@
 package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.EventDate;
@@ -27,6 +30,38 @@ public class ParserUtilTest {
     private static final String VALID_EVENT_TYPE = "Wedding";
     private static final String VALID_EVENT_DATE = "2026-10-07";
     private static final String WHITESPACE = " \t\r\n";
+
+    @Test
+    public void verifyNoUnsupportedPrefixes_supportedOrNoPrefixes_success() throws Exception {
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/John p/91234567", PREFIX_NAME, PREFIX_PHONE);
+        ParserUtil.verifyNoUnsupportedPrefixes("", PREFIX_NAME);
+        // a slash inside a word is not a prefix
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/AC/DC", PREFIX_NAME);
+    }
+
+    @Test
+    public void verifyNoUnsupportedPrefixes_unsupportedPrefix_throwsParseException() {
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "x/"), ()
+            -> ParserUtil.verifyNoUnsupportedPrefixes(" n/John x/oops", PREFIX_NAME));
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "x/"), ()
+            -> ParserUtil.verifyNoUnsupportedPrefixes("x/oops", PREFIX_NAME));
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "x/"), ()
+            -> ParserUtil.verifyNoUnsupportedPrefixes(" n/John\tx/oops", PREFIX_NAME));
+    }
+
+    @Test
+    public void verifyRequiredPrefixesPresent_missingPrefix_throwsParseException() {
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" n/John", PREFIX_NAME, PREFIX_PHONE);
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_MISSING_PARAMETER, PREFIX_PHONE), ()
+            -> ParserUtil.verifyRequiredPrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_PHONE));
+    }
+
+    @Test
+    public void verifyRequiredPrefixesPresent_allPresent_success() throws Exception {
+        ArgumentMultimap argMultimap =
+                ArgumentTokenizer.tokenize(" n/John p/91234567", PREFIX_NAME, PREFIX_PHONE);
+        ParserUtil.verifyRequiredPrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_PHONE);
+    }
 
     @Test
     public void parseIndex_invalidInput_throwsParseException() {
