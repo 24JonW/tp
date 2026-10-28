@@ -141,7 +141,7 @@ Leading and trailing whitespace around values is ignored when commands are parse
 
 | Field | Prefix | Accepted format and stored value |
 | --- | --- | --- |
-| Name | `n/` | English letters (`A`–`Z`, `a`–`z`), digits, and spaces; the first character must be a letter or digit. Apostrophes, hyphens, and other characters are not supported in names in this version. |
+| Name | `n/` | English letters (`A`–`Z`, `a`–`z`), digits, and spaces; the first character must be a letter or digit. Repeated whitespace is stored as one space, so `Amy  Lim` is stored as `Amy Lim`. Apostrophes, hyphens, and other characters are not supported in names in this version. |
 | Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
 | Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
 | Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
