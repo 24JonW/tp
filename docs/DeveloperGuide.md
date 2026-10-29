@@ -132,9 +132,9 @@ How the `Logic` component works:
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an engagement).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object.
-1. Unless the command is a `ListCommand` or an `UpcomingCommand`, `LogicManager` then saves the address book through
-   `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it throws a
-   `CommandException` instead of returning the result.
+1. If `Command#modifiesAddressBook` reports that the command can change persistent data, `LogicManager` saves the
+   address book through `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it
+   throws a `CommandException` instead of returning the result.
 1. Finally, the `CommandResult` is returned from `Logic`.
 
 The sequence diagram below shows the execution portion for a command that modifies data, using `add` as an example.
@@ -312,9 +312,9 @@ The sequence diagram below shows how `LogicManager` saves the data after a comma
 `JsonSerializableAddressBook` (one `JsonAdaptedPerson` per engagement) and writes it to the data file using `JsonUtil`.
 The whole address book is rewritten on every save.
 
-`LogicManager#execute` parses and executes a command before deciding whether to save. `ListCommand` and
-`UpcomingCommand` are the only commands that skip `Storage#saveAddressBook`, because they change only the view.
-All other successfully executed commands currently attempt a write, including `find`, `help`, and `exit`.
+`LogicManager#execute` parses and executes a command before deciding whether to save. Each `Command` reports through
+`Command#modifiesAddressBook` whether it can change persistent data. `list`, `upcoming`, `help`, and `exit` skip
+`Storage#saveAddressBook`; other successfully executed commands currently attempt a write, including `find`.
 
 If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no

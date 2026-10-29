@@ -9,6 +9,13 @@ import seedu.address.model.Model;
 public abstract class Command {
 
     /**
+     * Returns whether executing this command can modify address book data.
+     */
+    public boolean modifiesAddressBook() {
+        return true;
+    }
+
+    /**
      * Executes the command and returns the result message.
      *
      * @param model {@code Model} which the command should operate on.
