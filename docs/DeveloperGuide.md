@@ -315,8 +315,8 @@ The sequence diagram below shows how `LogicManager` saves the data after a comma
 The whole address book is rewritten on every save.
 
 `LogicManager#execute` parses and executes a command before deciding whether to save. Each `Command` reports through
-`Command#modifiesAddressBook` whether it can change persistent data. `list`, `upcoming`, `help`, and `exit` skip
-`Storage#saveAddressBook`; other successfully executed commands currently attempt a write, including `find`.
+`Command#modifiesAddressBook` whether it can change persistent data. Data-changing commands trigger
+`Storage#saveAddressBook`; `find`, `list`, `upcoming`, `help`, and `exit` skip that write.
 
 If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no
