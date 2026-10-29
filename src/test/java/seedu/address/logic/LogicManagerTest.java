@@ -74,6 +74,18 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_findUnsupportedPrefix_preservesSortedView() throws Exception {
+        model.addPerson(AMY);
+        logic.execute("list sort/date");
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.showAllPersons(true);
+
+        assertCommandFailure("find n/Amy s/Booked", ParseException.class,
+                String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "s/"), expectedModel);
+        assertEquals(expectedModel.getPersonListHeading(), model.getPersonListHeading());
+    }
+
+    @Test
     public void execute_advanceStage_success() throws Exception {
         Person original = new PersonBuilder().build();
         model.addPerson(original);
