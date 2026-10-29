@@ -561,3 +561,54 @@
 .scroll-bar .thumb {
     -fx-background-color: #334155;
 }
+
+/* Engagement details dialog */
+.engagement-details-dialog {
+    -fx-background-color: #0f172a;
+}
+
+.engagement-details-dialog > *.button-bar > *.container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.engagement-details-dialog:header *.header-panel {
+    -fx-background-color: #111827;
+    -fx-border-color: transparent transparent #243147 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.engagement-details-dialog:header *.header-panel *.label {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 16px;
+    -fx-font-style: normal;
+    -fx-text-fill: #f8fafc;
+}
+
+.engagement-details-dialog .engagement-details-text {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-color: #111827;
+    -fx-border-color: #334155;
+    -fx-border-width: 1px;
+}
+
+.engagement-details-dialog .engagement-details-text .content {
+    -fx-background-color: #111827;
+    -fx-padding: 14px;
+}
+
+.engagement-details-dialog .button {
+    -fx-background-color: #0284c7;
+    -fx-background-radius: 4px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: #f8fafc;
+}
+
+.engagement-details-dialog .button:hover {
+    -fx-background-color: #0ea5e9;
+}
