@@ -167,7 +167,7 @@ public class MainWindow extends UiPart<Stage> {
     private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
-            logger.info("Result: " + commandResult.getFeedbackToUser());
+            logger.info("Command executed successfully.");
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
             personListPanel.setHeading(logic.getPersonListHeading());
 
@@ -181,7 +181,7 @@ public class MainWindow extends UiPart<Stage> {
 
             return commandResult;
         } catch (CommandException | ParseException e) {
-            logger.info("An error occurred while executing command: " + commandText);
+            logger.info("An error occurred while executing a command.");
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }

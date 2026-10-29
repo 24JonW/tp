@@ -44,11 +44,10 @@ public class LogicManager implements Logic {
 
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
-        logger.info("----------------[USER COMMAND][" + commandText + "]");
-
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        logger.info("----------------[USER COMMAND][" + command.getClass().getSimpleName() + "]");
+
+        CommandResult commandResult = command.execute(model);
         // These commands change only the view and must work when the data file is read-only.
         if (command instanceof ListCommand || command instanceof UpcomingCommand) {
             return commandResult;

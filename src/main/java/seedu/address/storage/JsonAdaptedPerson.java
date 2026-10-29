@@ -116,7 +116,7 @@ class JsonAdaptedPerson {
         try {
             modelStage = Stage.fromString(stage);
         } catch (IllegalArgumentException exception) {
-            logger.warning("Rejected contact record with an invalid engagement stage: " + stage);
+            logger.warning("Rejected contact record with an invalid engagement stage.");
             throw new IllegalValueException("Invalid engagement stage.", exception);
 
         }
