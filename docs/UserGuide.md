@@ -265,7 +265,8 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * The stage may be moved forward or backward to any supported value.
-* Supplying a value identical to the current value is accepted and reported as a successful edit.
+* If every supplied value is the same as the current value, nothing is changed: ShutterLink reports
+  `No changes were made.` and keeps the current list.
 * A successful edit returns to the complete list in insertion order.
 * Empty supplied fields are rejected. Omitted fields are preserved, including the stage.
 * An edit that would make the engagement duplicate another one is rejected.
