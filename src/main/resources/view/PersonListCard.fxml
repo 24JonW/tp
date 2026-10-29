@@ -38,3 +38,4 @@
     <Label fx:id="eventDate" styleClass="contact-event-date" text="\$eventDate" GridPane.columnIndex="5" />
   </GridPane>
 </HBox>
+
