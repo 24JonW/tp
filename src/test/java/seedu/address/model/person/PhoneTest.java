@@ -54,6 +54,11 @@ public class PhoneTest {
     }
 
     @Test
+    public void removeSeparators_phoneWithSeparators_removesSeparators() {
+        assertEquals("+6591234567", Phone.removeSeparators("+65 9123-4567"));
+    }
+
+    @Test
     public void equals() {
         Phone phone = new Phone("99999999");
 

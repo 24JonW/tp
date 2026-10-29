@@ -293,7 +293,8 @@ Example: `advance 2` advances the second displayed engagement by one stage.
 ### Finding engagements: `find`
 
 Find engagements whose selected field contains the search text. Matching is case-insensitive and accepts partial
-values; the search text itself is not required to satisfy that field's add/edit format.
+values; the search text itself is not required to satisfy that field's add/edit format. Spaces and hyphens in phone
+searches are ignored.
 
 Format:
 
@@ -319,7 +320,7 @@ Phone numbers are stored without spaces or hyphens, so searching with digits onl
 from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
-The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Formatting characters in a phone search are not removed automatically, so `find p/9123 4567` may fail to match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
 
 | Invalid input | Reason |
 | --- | --- |
