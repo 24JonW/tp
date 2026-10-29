@@ -30,7 +30,7 @@ public class EventType {
      * Returns true if the given string is a valid event type.
      */
     public static boolean isValidEventType(String test) {
-        return test.matches(VALIDATION_REGEX) && test.codePointCount(0, test.length()) <= MAX_LENGTH;
+        return test.codePointCount(0, test.length()) <= MAX_LENGTH && test.matches(VALIDATION_REGEX);
     }
 
     @Override

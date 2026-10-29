@@ -130,6 +130,12 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseEventType_veryLongMultiwordValue_throwsParseException() {
+        String eventType = "a ".repeat(10_000);
+        assertThrows(ParseException.class, EventType.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseEventType(eventType));
+    }
+
+    @Test
     public void parseEventDate_valuesHandled() throws Exception {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseEventDate(null));
         assertThrows(ParseException.class, () -> ParserUtil.parseEventDate(INVALID_EVENT_DATE));

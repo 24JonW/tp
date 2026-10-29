@@ -18,6 +18,11 @@ public class EventTypeTest {
     }
 
     @Test
+    public void isValidEventType_veryLongMultiwordValue_returnsFalse() {
+        assertFalse(EventType.isValidEventType("a ".repeat(10_000).trim()));
+    }
+
+    @Test
     public void isValidEventType() {
         // null event type
         assertThrows(NullPointerException.class, () -> EventType.isValidEventType(null));
