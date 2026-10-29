@@ -2,7 +2,6 @@ package seedu.address.model.person;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Locale;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -44,8 +43,13 @@ public class PersonSearchPredicate implements Predicate<Person> {
             case EVENT_TYPE -> person.getEventType().value;
         };
 
-        return actualValue.toLowerCase(Locale.ROOT)
-                .contains(searchValue.toLowerCase(Locale.ROOT));
+        // Compare regions directly to avoid context-sensitive lowercase conversions changing a substring.
+        for (int i = 0; i <= actualValue.length() - searchValue.length(); i++) {
+            if (actualValue.regionMatches(true, i, searchValue, 0, searchValue.length())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

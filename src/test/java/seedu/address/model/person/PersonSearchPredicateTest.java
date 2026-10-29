@@ -44,6 +44,25 @@ public class PersonSearchPredicateTest {
     }
 
     @Test
+    public void partialUnicodeNameMatch_returnsTrue() {
+        Person greekClient = new PersonBuilder(person).withName("ΝΙΚΟΣ").build();
+
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "Σ").test(greekClient));
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "σ").test(greekClient));
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "ς").test(greekClient));
+        assertFalse(new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "Λ").test(greekClient));
+    }
+
+    @Test
+    public void partialUnicodeEventTypeMatch_returnsTrue() {
+        Person greekEvent = new PersonBuilder(person).withEventType("ΧΟΡΟΣ").build();
+
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.EVENT_TYPE, "Σ").test(greekEvent));
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.EVENT_TYPE, "σ").test(greekEvent));
+        assertTrue(new PersonSearchPredicate(PersonSearchPredicate.Field.EVENT_TYPE, "ς").test(greekEvent));
+    }
+
+    @Test
     public void exactPhoneMatch_returnsTrue() {
         PersonSearchPredicate predicate = new PersonSearchPredicate(
                 PersonSearchPredicate.Field.PHONE,
