@@ -45,7 +45,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/24JonW)]
 
 * Role: Developer
-* Responsibilities: Full Stack 
+* Responsibilities: Full Stack
 
 ### Yu Ke Mi
 
