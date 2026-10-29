@@ -21,11 +21,22 @@ public class CliSyntax {
      */
     public static final Pattern NAME_RELATION_MARKER = Pattern.compile("(?i)(?:s/o|d/o|a/l|a/p|w/o)(?=\\s)");
 
+    private static final Pattern TRAILING_NAME_RELATION_MARKER =
+            Pattern.compile("(?i)(?:s/o|d/o|a/l|a/p|w/o)\\s*$");
+
     /**
      * Returns true if a name relation marker starts at {@code index} of {@code text}.
      */
     public static boolean isNameRelationMarkerAt(String text, int index) {
         return NAME_RELATION_MARKER.matcher(text).region(index, text.length()).lookingAt();
+    }
+
+    /**
+     * Returns true if a name relation marker starts at {@code index} of {@code text} and only whitespace
+     * follows it, as in a partial search such as {@code find n/Raj s/o}.
+     */
+    public static boolean isTrailingNameRelationMarkerAt(String text, int index) {
+        return TRAILING_NAME_RELATION_MARKER.matcher(text).region(index, text.length()).lookingAt();
     }
 
 }
