@@ -293,9 +293,10 @@ comparison against the selected stored field. Consequently, `find e/alice@` is v
 `alice@example.com`. Phone values are stored without spaces or hyphens, but search text is not normalized, so users
 should normally search phone numbers using digits only.
 
-Executing `find` removes date sorting, replaces the previous predicate, and assigns indexes to the matching view.
-Index-based commands operate on that view. A successful add, edit, or advance restores the complete list; deleting
-from a search leaves the remaining search matches visible.
+Executing `find` removes date sorting and assigns the search predicate to the model's `FilteredList`. The
+`FilteredList` invokes `PersonSearchPredicate` for the saved engagements, while the wrapping `SortedList` supplies
+the displayed view and its match count. Index-based commands operate on that view. A successful add, edit, or
+advance restores the complete list; deleting from a search leaves the remaining search matches visible.
 
 The following sequence diagram shows how a search command is parsed, converted into a
 `PersonSearchPredicate`, and used to filter the model.
