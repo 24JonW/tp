@@ -291,8 +291,8 @@ email, and event type comparisons are case-insensitive.
 `FindCommandParser` requires exactly one of `n/`, `p/`, `e/`, or `t/` with a non-blank search value. It does not
 validate the search text as a complete field value. `PersonSearchPredicate` performs a case-insensitive substring
 comparison against the selected stored field. Consequently, `find e/alice@` is valid and can match
-`alice@example.com`. Phone values are stored without spaces or hyphens, but search text is not normalized, so users
-should normally search phone numbers using digits only.
+`alice@example.com`. Phone values and phone search text are normalized by removing spaces and hyphens, so formatted
+searches such as `find p/9123-4567` can match a stored `91234567`.
 
 Executing `find` removes date sorting, replaces the previous predicate, and assigns indexes to the matching view.
 Index-based commands operate on that view. A successful add, edit, or advance restores the complete list; deleting

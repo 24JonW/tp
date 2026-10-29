@@ -257,7 +257,7 @@ This screenshot illustrates the window at capture time. It includes every stage,
 
 Edits one or more details of an existing engagement. Use `s/STAGE` to correct or directly set its stage.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
+Format: `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
 
 * Edits the engagement at the specified `INDEX`. The index refers to the number shown in the current list and must be a positive integer.
 * At least one of the optional fields must be provided.
