@@ -42,11 +42,10 @@ public class LogicManager implements Logic {
 
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
-        logger.info("----------------[USER COMMAND][" + commandText + "]");
-
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        logger.info("----------------[USER COMMAND][" + command.getClass().getSimpleName() + "]");
+
+        CommandResult commandResult = command.execute(model);
         if (!command.modifiesAddressBook()) {
             return commandResult;
         }
