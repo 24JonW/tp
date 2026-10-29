@@ -73,7 +73,7 @@ public class AddressBookParser {
             case AdvanceStageCommand.COMMAND_WORD -> new AdvanceStageCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
-            case ClearCommand.COMMAND_WORD -> new ClearCommand();
+            case ClearCommand.COMMAND_WORD -> parseClearCommand(arguments);
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> parseHelpCommand(arguments);
@@ -82,6 +82,16 @@ public class AddressBookParser {
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
             }
         };
+    }
+
+    /**
+     * Parses a clear command, which does not accept arguments.
+     */
+    private ClearCommand parseClearCommand(String arguments) throws ParseException {
+        if (!arguments.isBlank()) {
+            throw new ParseException(ClearCommand.MESSAGE_INVALID_FORMAT);
+        }
+        return new ClearCommand();
     }
 
     /**

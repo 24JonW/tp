@@ -356,8 +356,7 @@ Clears all engagements from ShutterLink.
 
 Format: `clear`
 
-In the current version, trailing text after `clear` is ignored. Use the documented argument-free form to avoid
-accidentally clearing data.
+Arguments after `clear` are rejected, so accidental trailing text cannot clear the address book.
 
 ### Exiting the program: `exit`
 
