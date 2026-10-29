@@ -18,6 +18,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -47,6 +48,15 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+        personListView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                Person selectedPerson = personListView.getSelectionModel().getSelectedItem();
+                if (selectedPerson != null) {
+                    event.consume();
+                    showPersonDetails(selectedPerson);
+                }
+            }
+        });
 
         columnHeader.prefWidthProperty().bind(personListView.widthProperty());
         personListView.skinProperty().addListener((observable, oldSkin, newSkin) ->
@@ -138,7 +148,6 @@ public class PersonListPanel extends UiPart<Region> {
         TextArea detailsText = new TextArea(formatPersonDetails(person));
         detailsText.setEditable(false);
         detailsText.setWrapText(true);
-        detailsText.setFocusTraversable(false);
         detailsText.setPrefColumnCount(50);
         detailsText.setPrefRowCount(8);
         detailsText.getStyleClass().add("engagement-details-text");
