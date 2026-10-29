@@ -446,7 +446,7 @@ If a previously populated list unexpectedly opens empty after manual editing, us
 | A Java version or JavaFX startup error | Check `java -version` reports Java 25. Mac users should follow the Java setup link in Quick start. Capture the full terminal error if asking your team for help. |
 | `Unknown command.` | Check the spelling and capitalization. Use lowercase command words except for the case-insensitive `list` and `upcoming`. |
 | A usage message, missing field, or repeated-prefix error | Compare your input with the command summary. Add requires name, phone, email, event type, and event date; edit requires an index and at least one field. |
-| `The person index provided is invalid.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
+| `No contact at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
 | A phone, email, date, or stage validation error | Follow [Field formats](#field-formats); phone and email cannot be blank. Enter the date as `YYYY-MM-DD` and stages with their documented spacing. |
 | A duplicate-engagement error | Find the existing event and edit it. Changing only the stage does not create a different engagement. |
 | `No matching contacts found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
