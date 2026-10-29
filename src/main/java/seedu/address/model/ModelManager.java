@@ -161,12 +161,12 @@ public class ModelManager implements Model {
         if (upcomingStartDate != null) {
             heading = "Upcoming: " + upcomingStartDate + " to " + upcomingEndDate;
         } else if (displayedPersons.getComparator() != null) {
-            heading = "All contacts by event date";
+            heading = "All engagements by event date";
         } else if (filteredPersons.getPredicate() == null
                 || filteredPersons.getPredicate() == PREDICATE_SHOW_ALL_PERSONS) {
-            heading = "All contacts";
+            heading = "All engagements";
         } else {
-            heading = "Contacts";
+            heading = "Engagements";
         }
         return heading + " (" + displayedPersons.size() + ")";
     }

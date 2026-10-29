@@ -22,7 +22,7 @@ public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds an engagement to ShutterLink. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -38,9 +38,10 @@ public class AddCommand extends Command {
             + PREFIX_EVENT_DATE + "2026-12-20 "
             + PREFIX_STAGE + "Booked";
 
-    public static final String MESSAGE_SUCCESS = "New contact added: %1$s.";
+    public static final String MESSAGE_SUCCESS = "New engagement added: %1$s.";
     public static final String MESSAGE_DUPLICATE_PERSON =
-            "A contact with all the same details already exists. No contact was added.";
+            "An engagement with the same identifying details already exists. Stage is not considered when checking "
+                    + "for duplicates. No engagement was added.";
 
     private final Person toAdd;
 

@@ -97,7 +97,8 @@ The UI is implemented using JavaFX. Its main parts include:
 * `PersonCard`, which displays an individual engagement.
 * `StatusBarFooter`, which displays the data file location.
 
-The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example, `PersonListCard.fxml` defines the layout for an individual contact card.
+The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example,
+`PersonListCard.fxml` defines the layout for an individual engagement card.
 
 The `UI` component,
 
@@ -253,7 +254,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral heading `Contacts (N)`.
+commands. A filtered view uses the neutral heading `Engagements (N)`.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -639,8 +640,6 @@ Course process requirements, such as incremental delivery, are not product NFRs.
   belonging to the same client only when their name, normalized phone number, and normalized email address all match;
   name and email comparisons ignore capitalization. A client is not stored as a separate model object.
 * **Client contact details**: The client's name, phone number, and email address stored within each engagement.
-* **Contact**: A legacy user-interface label for an engagement record. It does not mean that ShutterLink stores a
-  separate contact or client profile.
 * **Current displayed list**: The engagements currently visible after applying a search, sort, or upcoming-event
   view. Index-based commands refer to this list.
 * **Engagement**: The primary record managed by ShutterLink. It combines client contact details, an event type, an
@@ -699,13 +698,13 @@ testers are expected to do more *exploratory* testing.
 ### Listing and sorting engagements
 
 1. Use a dataset with insertion order A (2030-12-31), B (2000-02-29), C (2000-02-29).
-2. Run `list sort/date`. Expect B, C, A, indexes 1–3, heading `All contacts by event date (3)`,
-   and feedback `Showing 3 contacts.` Repeating the command must retain B before C.
+2. Run `list sort/date`. Expect B, C, A, indexes 1–3, heading `All engagements by event date (3)`,
+   and feedback `Showing 3 engagement(s).` Repeating the command must retain B before C.
 3. Run `list sort/name`. Expect an invalid-sort error and the same B, C, A view.
-4. Run `list`. Expect A, B, C and heading `All contacts (3)`.
+4. Run `list`. Expect A, B, C and heading `All engagements (3)`.
 5. Search for one engagement, then run either list variant. Expect all three engagements again.
 6. With no saved engagements, run each variant. Expect an empty list, the corresponding heading with `(0)`,
-   and `No contacts to display.`
+   and `No engagements to display.`
 7. In a disposable dataset, sort and delete index 1. Expect the earliest displayed engagement to be removed,
    not the first engagement in insertion order. Restart after a successful save and verify insertion order.
 
@@ -746,7 +745,7 @@ testers are expected to do more *exploratory* testing.
    Expected: The name search finds both engagements. Each other search finds only the engagement whose selected field
    contains the supplied text, ignoring capitalization. The heading and displayed indexes update to match each result.
 3. Run `find n/Zachary`.<br>
-   Expected: The list is empty and the feedback is `No matching contacts found.`
+   Expected: The list is empty and the feedback is `No matching engagements found.`
 4. Run `find n/Alice`, then try `find`, `find n/`, `find n/Alice p/9123`, and `find n/Alice n/Bob`.<br>
    Expected: Each command is rejected and leaves the preceding view unchanged.
 5. Run `list`.<br>

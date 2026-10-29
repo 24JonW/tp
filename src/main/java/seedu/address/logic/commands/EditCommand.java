@@ -34,8 +34,8 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
-            + "by the index number used in the displayed person list. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the engagement identified "
+            + "by the index number used in the displayed engagement list. "
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
@@ -48,11 +48,11 @@ public class EditCommand extends Command {
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
 
-    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Contact updated: %1$s.";
+    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Engagement updated: %1$s.";
     public static final String MESSAGE_NOT_EDITED = "No fields to edit. Please specify at least one field.";
     public static final String MESSAGE_NO_CHANGES = "No changes were made.";
     public static final String MESSAGE_DUPLICATE_PERSON =
-            "This edit would create a duplicate contact. No changes were made.";
+            "This edit would create a duplicate engagement. No changes were made.";
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;

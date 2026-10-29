@@ -17,16 +17,16 @@
       <ColumnConstraints percentWidth="13" />
       <ColumnConstraints percentWidth="13" />
     </columnConstraints>
-    <Label text="Contact" GridPane.columnIndex="0" />
+    <Label text="Client" GridPane.columnIndex="0" />
     <Label text="Phone" GridPane.columnIndex="1" />
     <Label text="Email" GridPane.columnIndex="2" />
     <Label text="Event type" GridPane.columnIndex="3" />
-    <Label text="Event stage" GridPane.columnIndex="4" />
+    <Label text="Engagement stage" GridPane.columnIndex="4" />
     <Label text="Event date" GridPane.columnIndex="5" />
   </GridPane>
   <ListView fx:id="personListView" VBox.vgrow="ALWAYS">
     <placeholder>
-      <Label styleClass="label-bright" text="No contacts to display" />
+      <Label styleClass="label-bright" text="No engagements to display" />
     </placeholder>
   </ListView>
 </VBox>

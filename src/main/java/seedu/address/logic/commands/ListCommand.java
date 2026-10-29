@@ -11,8 +11,8 @@ import seedu.address.model.Model;
 public class ListCommand extends Command {
     public static final String COMMAND_WORD = "list";
     public static final String MESSAGE_USAGE = "list [sort/date]";
-    public static final String MESSAGE_SUCCESS = "Showing %d contacts.";
-    public static final String MESSAGE_EMPTY = "No contacts to display.";
+    public static final String MESSAGE_SUCCESS = "Showing %d engagement(s).";
+    public static final String MESSAGE_EMPTY = "No engagements to display.";
 
     private final boolean isSortedByDate;
 
