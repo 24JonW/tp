@@ -19,7 +19,7 @@
       <ColumnConstraints percentWidth="13" />
       <ColumnConstraints percentWidth="13" />
     </columnConstraints>
-    <Label text="Contact" minWidth="0" maxWidth="Infinity"
+    <Label text="Client" minWidth="0" maxWidth="Infinity"
            wrapText="true" GridPane.columnIndex="0" />
     <Label text="Phone" minWidth="0" maxWidth="Infinity"
            wrapText="true" GridPane.columnIndex="1" />
@@ -27,7 +27,7 @@
            wrapText="true" GridPane.columnIndex="2" />
     <Label text="Event type" minWidth="0" maxWidth="Infinity"
            wrapText="true" GridPane.columnIndex="3" />
-    <Label text="Event stage" minWidth="0" maxWidth="Infinity"
+    <Label text="Engagement stage" minWidth="0" maxWidth="Infinity"
            wrapText="true" GridPane.columnIndex="4" />
     <Label text="Event date" minWidth="0" maxWidth="Infinity"
            wrapText="true" GridPane.columnIndex="5" />
@@ -35,7 +35,7 @@
   <ListView fx:id="personListView" minWidth="0"
             styleClass="engagement-list" VBox.vgrow="ALWAYS">
     <placeholder>
-      <Label styleClass="label-bright" text="No contacts to display" />
+      <Label styleClass="label-bright" text="No engagements to display" />
     </placeholder>
   </ListView>
 </VBox>

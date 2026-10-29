@@ -9,8 +9,7 @@ Use ShutterLink if you are an independent freelance event photographer who perso
 
 ShutterLink manages **engagements**, not separate client profiles. Each engagement contains a client's name, phone
 number, and email address together with one event type, event date, and workflow stage. A repeat client can therefore
-appear in multiple engagement records. Some current UI messages still use the legacy word “contact” to mean an
-engagement record.
+appear in multiple engagement records.
 
 * Table of Contents
 {:toc}
@@ -202,10 +201,9 @@ Formats:
 * `list` — all engagements in insertion order.
 * `list sort/date` — all engagements by ascending event date.
 
-The heading is `All contacts (N)` or `All contacts by event date (N)`, respectively.
-The result panel reports `Showing N contacts.` With no saved engagements, it reports `No contacts to display.`
-Here, `N` is the number of displayed engagements. The word “contacts” in these UI messages refers to engagement
-records, not separate client profiles.
+The heading is `All engagements (N)` or `All engagements by event date (N)`, respectively.
+The result panel reports `Showing N engagement(s).` With no saved engagements, it reports
+`No engagements to display.` Here, `N` is the number of displayed engagements.
 
 Examples:
 * `list sort/date` brings earlier shoots to the top, including completed dates.
@@ -240,13 +238,13 @@ Format: `upcoming`
 * Events are sorted from earliest to latest; events on the same date retain insertion order.
 * Past events and events seven or more days after today are excluded.
 * Displayed indexes start at 1. Edit, advance, and delete use the indexes in this view.
-* The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming contacts.`
+* The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming engagement(s).`
 * With no matching events, the list is empty and feedback is `No events scheduled from START_DATE to END_DATE.`
 * Records are not changed or saved by this command. Use `list` to restore all engagements in insertion order.
 
 For example, running `upcoming` on **2026-10-14** includes dates **2026-10-14 through 2026-10-20**.
 An event on 2026-10-21 is outside that window. With two matches, the heading is
-`Upcoming: 2026-10-14 to 2026-10-20 (2)` and the feedback is `Showing 2 upcoming contacts.`
+`Upcoming: 2026-10-14 to 2026-10-20 (2)` and the feedback is `Showing 2 upcoming engagement(s).`
 
 The command is case-insensitive and takes no arguments: `UPCOMING` works, but `upcoming 7` and
 `upcoming sort/date` return `Invalid command format. Usage: upcoming` without changing the current view.
@@ -261,7 +259,7 @@ This screenshot illustrates the window at capture time. It includes every stage,
 
 Edits one or more details of an existing engagement. Use `s/STAGE` to correct or directly set its stage.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
+Format: `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
 
 * Edits the engagement at the specified `INDEX`. The index refers to the number shown in the current list and must be a positive integer.
 * At least one of the optional fields must be provided.
@@ -320,10 +318,10 @@ Examples:
 * `find t/Wed` finds event types containing `Wed`.
 
 Phone numbers are stored without spaces or hyphens, so searching with digits only is recommended. Each search starts
-from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
+from all saved engagements and replaces the previous search or sort. The heading becomes `Engagements (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
-The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching engagements found.`; run `list` to restore your records.
 
 | Invalid input | Reason |
 | --- | --- |
@@ -450,10 +448,10 @@ If a previously populated list unexpectedly opens empty after manual editing, us
 | A Java version or JavaFX startup error | Check `java -version` reports Java 25. Mac users should follow the Java setup link in Quick start. Capture the full terminal error if asking your team for help. |
 | `Unknown command.` | Check the spelling and capitalization. Use lowercase command words except for the case-insensitive `list` and `upcoming`. |
 | A usage message, missing field, or repeated-prefix error | Compare your input with the command summary. Add requires name, phone, email, event type, and event date; edit requires an index and at least one field. |
-| `No contact at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
+| `No engagement at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
 | A phone, email, date, or stage validation error | Follow [Field formats](#field-formats); phone and email cannot be blank. Enter the date as `YYYY-MM-DD` and stages with their documented spacing. |
 | A duplicate-engagement error | Find the existing event and edit it. Changing only the stage does not create a different engagement. |
-| `No matching contacts found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
+| `No matching engagements found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
 | A save-permission or disk-space error | Follow [Saving the data](#saving-the-data). Do not assume the change was saved merely because the list updated. |
 
 --------------------------------------------------------------------------------------------------------------------

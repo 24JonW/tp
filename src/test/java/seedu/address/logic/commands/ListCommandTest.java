@@ -35,17 +35,17 @@ public class ListCommandTest {
     @Test
     public void execute_plainList_restoresAllRecordsInInsertionOrder() {
         model.updateFilteredPersonList(person -> person.equals(earlier));
-        assertEquals("Showing 3 contacts.", new ListCommand().execute(model).getFeedbackToUser());
+        assertEquals("Showing 3 engagement(s).", new ListCommand().execute(model).getFeedbackToUser());
         assertEquals(List.of(later, earlier, tied), model.getFilteredPersonList());
-        assertEquals("All contacts (3)", model.getPersonListHeading());
+        assertEquals("All engagements (3)", model.getPersonListHeading());
     }
 
     @Test
     public void execute_sortFromEmptyFilter_ordersAllDatesAndPreservesTies() {
         model.updateFilteredPersonList(person -> false);
-        assertEquals("Showing 3 contacts.", new ListCommand(true).execute(model).getFeedbackToUser());
+        assertEquals("Showing 3 engagement(s).", new ListCommand(true).execute(model).getFeedbackToUser());
         assertEquals(List.of(earlier, tied, later), model.getFilteredPersonList());
-        assertEquals("All contacts by event date (3)", model.getPersonListHeading());
+        assertEquals("All engagements by event date (3)", model.getPersonListHeading());
         assertEquals(List.of(later, earlier, tied), model.getAddressBook().getPersonList());
         new ListCommand(true).execute(model);
         assertEquals(List.of(earlier, tied, later), model.getFilteredPersonList());
@@ -57,13 +57,13 @@ public class ListCommandTest {
     public void execute_emptyAndSingleRecord_returnsCorrectFeedback() {
         Model emptyModel = new ModelManager();
         for (boolean isSortedByDate : new boolean[]{false, true}) {
-            assertEquals("No contacts to display.",
+            assertEquals("No engagements to display.",
                     new ListCommand(isSortedByDate).execute(emptyModel).getFeedbackToUser());
-            assertEquals(isSortedByDate ? "All contacts by event date (0)" : "All contacts (0)",
+            assertEquals(isSortedByDate ? "All engagements by event date (0)" : "All engagements (0)",
                     emptyModel.getPersonListHeading());
         }
         emptyModel.addPerson(later);
-        assertEquals("Showing 1 contacts.", new ListCommand(true).execute(emptyModel).getFeedbackToUser());
+        assertEquals("Showing 1 engagement(s).", new ListCommand(true).execute(emptyModel).getFeedbackToUser());
         assertEquals(List.of(later), emptyModel.getFilteredPersonList());
     }
 
@@ -72,7 +72,7 @@ public class ListCommandTest {
         new ListCommand(true).execute(model);
         model.updateFilteredPersonList(person -> !person.equals(tied));
         assertEquals(List.of(later, earlier), model.getFilteredPersonList());
-        assertEquals("Contacts (2)", model.getPersonListHeading());
+        assertEquals("Engagements (2)", model.getPersonListHeading());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ListCommandTest {
         new DeleteCommand(INDEX_FIRST_PERSON).execute(model);
         assertEquals(List.of(later, tied), model.getAddressBook().getPersonList());
         assertEquals(List.of(later, tied), model.getFilteredPersonList());
-        assertEquals("All contacts (2)", model.getPersonListHeading());
+        assertEquals("All engagements (2)", model.getPersonListHeading());
     }
 
     @Test
