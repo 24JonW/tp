@@ -29,8 +29,8 @@ public class NameTest {
         assertFalse(Name.isValidName(" ")); // spaces only
         assertFalse(Name.isValidName("^")); // only non-alphanumeric characters
         assertFalse(Name.isValidName("peter*")); // contains non-alphanumeric characters
-        assertFalse(Name.isValidName("Raj S/O Kumar")); // slash marks parameters
         assertFalse(Name.isValidName("Amy | Lim")); // pipe is not a name character
+        assertFalse(Name.isValidName("/Amy")); // starts with a slash
         assertFalse(Name.isValidName("-Amy")); // starts with a hyphen
         assertFalse(Name.isValidName("'Amy")); // starts with an apostrophe
         assertFalse(Name.isValidName(".Amy")); // starts with a period
@@ -47,6 +47,8 @@ public class NameTest {
         assertTrue(Name.isValidName("John Tan Jr.")); // period
         assertTrue(Name.isValidName("Nguyễn Văn An")); // accented letters
         assertTrue(Name.isValidName("José")); // letter followed by a combining accent
+        assertTrue(Name.isValidName("Raj s/o Kumar")); // relation marker
+        assertTrue(Name.isValidName("Muthu A/L Raman")); // upper-case relation marker
     }
 
     @Test
