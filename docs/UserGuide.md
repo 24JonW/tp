@@ -419,7 +419,9 @@ also make the file invalid.
 
 <div markdown="block" class="alert alert-warning">
 
-**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty engagement list at the next run. A later command that saves, including `find`, `help`, or `exit`, can overwrite that file with the empty list. `list` and `upcoming` do not overwrite it.
+**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty
+engagement list at the next run. A later data-changing command or `find` can overwrite that file with the empty list.
+`list`, `upcoming`, `help`, and `exit` do not overwrite it.
 
 </div>
 
