@@ -125,6 +125,7 @@ public class MainWindow extends UiPart<Stage> {
     /**
      * Returns keyboard focus to the command input field after Help is closed.
      */
+    @FXML
     private void focusCommandBox() {
         Platform.runLater(() -> {
             if (!primaryStage.isShowing()) {
