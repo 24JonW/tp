@@ -82,11 +82,11 @@ public class PersonListOrderingTest {
         replacement.addPerson(createPerson(2, "2020-01-01"));
         model.setAddressBook(replacement);
         assertEquals(replacement.getPersonList(), model.getFilteredPersonList());
-        assertEquals("All contacts (2)", model.getPersonListHeading());
+        assertEquals("All engagements (2)", model.getPersonListHeading());
         model.showAllPersons(true);
         model.setAddressBook(new AddressBook());
         assertEquals(List.of(), model.getFilteredPersonList());
-        assertEquals("All contacts (0)", model.getPersonListHeading());
+        assertEquals("All engagements (0)", model.getPersonListHeading());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class PersonListOrderingTest {
         model.addPerson(createPerson(0, "2030-01-01"));
         model.showAllPersons(true);
         assertThrows(NullPointerException.class, () -> model.updateFilteredPersonList(null));
-        assertEquals("All contacts by event date (1)", model.getPersonListHeading());
+        assertEquals("All engagements by event date (1)", model.getPersonListHeading());
     }
 
     private void assertOrder(Model model, List<Person> insertionOrder) {

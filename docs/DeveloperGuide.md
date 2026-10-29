@@ -97,7 +97,8 @@ The UI is implemented using JavaFX. Its main parts include:
 * `PersonCard`, which displays an individual engagement.
 * `StatusBarFooter`, which displays the data file location.
 
-The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example, `PersonListCard.fxml` defines the layout for an individual contact card.
+The layouts of these UI parts are defined in FXML files under `src/main/resources/view`. For example,
+`PersonListCard.fxml` defines the layout for an individual engagement card.
 
 The `UI` component,
 
@@ -132,9 +133,9 @@ How the `Logic` component works:
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an engagement).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object.
-1. Unless the command is a `ListCommand` or an `UpcomingCommand`, `LogicManager` then saves the address book through
-   `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it throws a
-   `CommandException` instead of returning the result.
+1. If `Command#modifiesAddressBook` reports that the command can change persistent data, `LogicManager` saves the
+   address book through `Storage` (see [Persistence after commands](#persistence-after-commands)). If saving fails, it
+   throws a `CommandException` instead of returning the result.
 1. Finally, the `CommandResult` is returned from `Logic`.
 
 The sequence diagram below shows the execution portion for a command that modifies data, using `add` as an example.
@@ -253,7 +254,7 @@ insertion order. Deleting from a date-sorted view resets that view after selecti
 `LogicManager` skips storage writes for `ListCommand`: viewing engagements does not require write access to the
 JSON file. Other commands retain their existing saving behaviour. `Model#getPersonListHeading` supplies the
 heading and count through `Logic`; `MainWindow` refreshes a simple label in `PersonListPanel` after successful
-commands. A filtered view uses the neutral heading `Contacts (N)`.
+commands. A filtered view uses the neutral heading `Engagements (N)`.
 
 Tests cover empty and single-record lists, past/future dates, ties, filter/sort resets, displayed-index
 edit/advance/delete integration, failed-input view preservation and unchanged persisted order across restarts.
@@ -290,12 +291,13 @@ email, and event type comparisons are case-insensitive.
 `FindCommandParser` requires exactly one of `n/`, `p/`, `e/`, or `t/` with a non-blank search value. It does not
 validate the search text as a complete field value. `PersonSearchPredicate` performs a case-insensitive substring
 comparison against the selected stored field. Consequently, `find e/alice@` is valid and can match
-`alice@example.com`. Phone values are stored without spaces or hyphens, but search text is not normalized, so users
-should normally search phone numbers using digits only.
+`alice@example.com`. Phone values and phone search text are normalized by removing spaces and hyphens, so formatted
+searches such as `find p/9123-4567` can match a stored `91234567`.
 
-Executing `find` removes date sorting, replaces the previous predicate, and assigns indexes to the matching view.
-Index-based commands operate on that view. A successful add, edit, or advance restores the complete list; deleting
-from a search leaves the remaining search matches visible.
+Executing `find` removes date sorting and assigns the search predicate to the model's `FilteredList`. The
+`FilteredList` invokes `PersonSearchPredicate` for the saved engagements, while the wrapping `SortedList` supplies
+the displayed view and its match count. Index-based commands operate on that view. A successful add, edit, or
+advance restores the complete list; deleting from a search leaves the remaining search matches visible.
 
 The following sequence diagram shows how a search command is parsed, converted into a
 `PersonSearchPredicate`, and used to filter the model.
@@ -312,9 +314,9 @@ The sequence diagram below shows how `LogicManager` saves the data after a comma
 `JsonSerializableAddressBook` (one `JsonAdaptedPerson` per engagement) and writes it to the data file using `JsonUtil`.
 The whole address book is rewritten on every save.
 
-`LogicManager#execute` parses and executes a command before deciding whether to save. `ListCommand` and
-`UpcomingCommand` are the only commands that skip `Storage#saveAddressBook`, because they change only the view.
-All other successfully executed commands currently attempt a write, including `find`, `help`, and `exit`.
+`LogicManager#execute` parses and executes a command before deciding whether to save. Each `Command` reports through
+`Command#modifiesAddressBook` whether it can change persistent data. Data-changing commands trigger
+`Storage#saveAddressBook`; `find`, `list`, `upcoming`, `help`, and `exit` skip that write.
 
 If a storage write fails, `LogicManager` throws a `CommandException`. The command has already executed, however, so
 an add, edit, advance, delete, or clear remains applied to the in-memory model for the current session. There is no
@@ -645,8 +647,6 @@ Course process requirements, such as incremental delivery, are not product NFRs.
   belonging to the same client only when their name, normalized phone number, and normalized email address all match;
   name and email comparisons ignore capitalization. A client is not stored as a separate model object.
 * **Client contact details**: The client's name, phone number, and email address stored within each engagement.
-* **Contact**: A legacy user-interface label for an engagement record. It does not mean that ShutterLink stores a
-  separate contact or client profile.
 * **Current displayed list**: The engagements currently visible after applying a search, sort, or upcoming-event
   view. Index-based commands refer to this list.
 * **Engagement**: The primary record managed by ShutterLink. It combines client contact details, an event type, an
@@ -705,13 +705,13 @@ testers are expected to do more *exploratory* testing.
 ### Listing and sorting engagements
 
 1. Use a dataset with insertion order A (2030-12-31), B (2000-02-29), C (2000-02-29).
-2. Run `list sort/date`. Expect B, C, A, indexes 1–3, heading `All contacts by event date (3)`,
-   and feedback `Showing 3 contacts.` Repeating the command must retain B before C.
+2. Run `list sort/date`. Expect B, C, A, indexes 1–3, heading `All engagements by event date (3)`,
+   and feedback `Showing 3 engagement(s).` Repeating the command must retain B before C.
 3. Run `list sort/name`. Expect an invalid-sort error and the same B, C, A view.
-4. Run `list`. Expect A, B, C and heading `All contacts (3)`.
+4. Run `list`. Expect A, B, C and heading `All engagements (3)`.
 5. Search for one engagement, then run either list variant. Expect all three engagements again.
 6. With no saved engagements, run each variant. Expect an empty list, the corresponding heading with `(0)`,
-   and `No contacts to display.`
+   and `No engagements to display.`
 7. In a disposable dataset, sort and delete index 1. Expect the earliest displayed engagement to be removed,
    not the first engagement in insertion order. Restart after a successful save and verify insertion order.
 
@@ -752,7 +752,7 @@ testers are expected to do more *exploratory* testing.
    Expected: The name search finds both engagements. Each other search finds only the engagement whose selected field
    contains the supplied text, ignoring capitalization. The heading and displayed indexes update to match each result.
 3. Run `find n/Zachary`.<br>
-   Expected: The list is empty and the feedback is `No matching contacts found.`
+   Expected: The list is empty and the feedback is `No matching engagements found.`
 4. Run `find n/Alice`, then try `find`, `find n/`, `find n/Alice p/9123`, and `find n/Alice n/Bob`.<br>
    Expected: Each command is rejected and leaves the preceding view unchanged.
 5. Run `list`.<br>

@@ -1,6 +1,6 @@
 [![CI Status](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions/workflows/gradle.yml/badge.svg)](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions/workflows/gradle.yml)
 
-![Ui](docs/images/Ui.png)
+![ShutterLink showing client engagements, event stages, and the data file location.](docs/images/ug-overview.png)
 
 # ShutterLink
 
@@ -22,7 +22,7 @@ through post-event delivery.
 
 ## Getting started
 
-1. Install Java 25 or later and download the latest `.jar` file from the project releases page.
+1. Install Java 25 and download the latest `.jar` file from the project releases page.
 2. Run it with:
 
    ```bash

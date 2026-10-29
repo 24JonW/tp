@@ -9,8 +9,7 @@ Use ShutterLink if you are an independent freelance event photographer who perso
 
 ShutterLink manages **engagements**, not separate client profiles. Each engagement contains a client's name, phone
 number, and email address together with one event type, event date, and workflow stage. A repeat client can therefore
-appear in multiple engagement records. Some current UI messages still use the legacy word “contact” to mean an
-engagement record.
+appear in multiple engagement records.
 
 * Table of Contents
 {:toc}
@@ -57,12 +56,14 @@ The screenshots below use fictional engagements in the current interface. Your r
 | **Command** | Type one command, then press Enter. Accepted commands clear the input; rejected commands retain the text for correction. |
 | **Feedback** | Read the command result or error. A possible-typo warning can appear after a successful add or edit. |
 | List heading | Check which view is active and how many engagements it contains. |
-| Engagement cards | Read each displayed index, client name, phone, email, event type, event date, and stage. Scroll to see additional cards. |
+| Engagement cards | Read each displayed index, client name, phone, email, event type, event date, and stage. Scroll to see additional cards. Double-click an engagement card to open a resizable dialog containing its complete details. |
 | **Help** | Open the command reference using the button, `help`, or F1. |
 
 The displayed index is a temporary position, not a permanent client ID. After a search, sort, add, edit, advance, or deletion, check the list again before choosing an index. `edit 1` affects the first engagement currently shown, which may be a different engagement from the first one in the full list.
 
-If columns or long values are clipped, widen the window and use the horizontal scrollbar where available. The overview screenshot uses a wider window to show all six columns.
+If a value is clipped in the engagement list, double-click the engagement card to view all its stored fields in a
+resizable details dialog. You can also widen the main window and use the horizontal scrollbar where available. The
+overview screenshot uses a wider window to show all six columns.
 
 ### Try a client workflow
 
@@ -141,9 +142,9 @@ Leading and trailing whitespace around values is ignored when commands are parse
 
 | Field | Prefix | Accepted format and stored value |
 | --- | --- | --- |
-| Name | `n/` | Letters (including accented letters such as `é`), digits, spaces, apostrophes (`'`), hyphens (`-`), and periods (`.`); the first character must be a letter or digit. For example, `O'Connor`, `Anne-Marie Tan`, and `John Tan Jr.` are accepted. Repeated whitespace is stored as one space, so `Amy  Lim` is stored as `Amy Lim`. Slashes are not allowed because they mark parameters, so `Raj S/O Kumar` is rejected. |
+| Name | `n/` | Letters (including accented letters such as `é`), digits, spaces, apostrophes (`'`), hyphens (`-`), periods (`.`), and slashes (`/`); the first character must be a letter or digit. For example, `O'Connor`, `Anne-Marie Tan`, and `John Tan Jr.` are accepted. Relation markers `s/o`, `d/o`, `a/l`, `a/p`, and `w/o` (in any letter case) can be used inside a name, e.g. `n/Raj s/o Kumar`. Other text such as `x/` after a space is read as a parameter, so avoid it inside names. Repeated whitespace is stored as one space, so `Amy  Lim` is stored as `Amy Lim`. |
 | Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
-| Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
+| Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels. Each domain label must start and end with an alphanumeric character. Hyphens are allowed inside a domain label, but they cannot occur consecutively. For example, `john@my-domain.com` is accepted, while `john@my--domain.com` is rejected. The final domain label must contain at least two characters. The address is stored in lowercase. |
 | Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
 | Event date | `d/` | A real calendar date in `YYYY-MM-DD` format, with a year from `0001` to `9999`. |
 | Stage | `s/` | `Enquiry`, `Booked`, `Shot Completed`, `Awaiting Payment`, or `Delivered`. Matching ignores capitalization, and the canonical spelling is displayed. |
@@ -200,10 +201,9 @@ Formats:
 * `list` — all engagements in insertion order.
 * `list sort/date` — all engagements by ascending event date.
 
-The heading is `All contacts (N)` or `All contacts by event date (N)`, respectively.
-The result panel reports `Showing N contacts.` With no saved engagements, it reports `No contacts to display.`
-Here, `N` is the number of displayed engagements. The word “contacts” in these UI messages refers to engagement
-records, not separate client profiles.
+The heading is `All engagements (N)` or `All engagements by event date (N)`, respectively.
+The result panel reports `Showing N engagement(s).` With no saved engagements, it reports
+`No engagements to display.` Here, `N` is the number of displayed engagements.
 
 Examples:
 * `list sort/date` brings earlier shoots to the top, including completed dates.
@@ -238,13 +238,13 @@ Format: `upcoming`
 * Events are sorted from earliest to latest; events on the same date retain insertion order.
 * Past events and events seven or more days after today are excluded.
 * Displayed indexes start at 1. Edit, advance, and delete use the indexes in this view.
-* The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming contacts.`
+* The heading shows `Upcoming: START_DATE to END_DATE (N)` and feedback shows `Showing N upcoming engagement(s).`
 * With no matching events, the list is empty and feedback is `No events scheduled from START_DATE to END_DATE.`
 * Records are not changed or saved by this command. Use `list` to restore all engagements in insertion order.
 
 For example, running `upcoming` on **2026-10-14** includes dates **2026-10-14 through 2026-10-20**.
 An event on 2026-10-21 is outside that window. With two matches, the heading is
-`Upcoming: 2026-10-14 to 2026-10-20 (2)` and the feedback is `Showing 2 upcoming contacts.`
+`Upcoming: 2026-10-14 to 2026-10-20 (2)` and the feedback is `Showing 2 upcoming engagement(s).`
 
 The command is case-insensitive and takes no arguments: `UPCOMING` works, but `upcoming 7` and
 `upcoming sort/date` return `Invalid command format. Usage: upcoming` without changing the current view.
@@ -259,7 +259,7 @@ This screenshot illustrates the window at capture time. It includes every stage,
 
 Edits one or more details of an existing engagement. Use `s/STAGE` to correct or directly set its stage.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
+Format: `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [s/STAGE]`
 
 * Edits the engagement at the specified `INDEX`. The index refers to the number shown in the current list and must be a positive integer.
 * At least one of the optional fields must be provided.
@@ -318,10 +318,10 @@ Examples:
 * `find t/Wed` finds event types containing `Wed`.
 
 Phone numbers are stored without spaces or hyphens, so searching with digits only is recommended. Each search starts
-from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
+from all saved engagements and replaces the previous search or sort. The heading becomes `Engagements (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
-The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching engagements found.`; run `list` to restore your records.
 
 | Invalid input | Reason |
 | --- | --- |
@@ -368,10 +368,11 @@ In the current version, trailing text after `exit` is ignored.
 
 ### Saving the data
 
-ShutterLink attempts to save after every successfully executed command except `list` and `upcoming`, which only change
-the view. You do not need to save manually. Window settings are stored separately in `preferences.json` when you close the app.
+ShutterLink saves after successfully executed commands that can change engagement data. View-only commands such as
+`find`, `list`, `upcoming`, `help`, and `exit` do not rewrite the data file. You do not need to save manually. Window
+settings are stored separately in `preferences.json` when you close the app.
 
-If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, `find n/RELEVANT_NAME` attempts to save the current records again; `list` and `upcoming` do not retry saving. Replace `RELEVANT_NAME` with a name in your data.
+If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, execute a data-changing command to save the current records again; view-only commands do not retry saving.
 
 ### Backing up and restoring data
 
@@ -417,7 +418,9 @@ also make the file invalid.
 
 <div markdown="block" class="alert alert-warning">
 
-**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty engagement list at the next run. A later command that saves, including `find`, `help`, or `exit`, can overwrite that file with the empty list. `list` and `upcoming` do not overwrite it.
+**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty
+engagement list at the next run. A later data-changing command can overwrite that file with the empty list. `find`,
+`list`, `upcoming`, `help`, and `exit` do not overwrite it.
 
 </div>
 
@@ -447,10 +450,10 @@ If a previously populated list unexpectedly opens empty after manual editing, us
 | A Java version or JavaFX startup error | Check `java -version` reports Java 25. Mac users should follow the Java setup link in Quick start. Capture the full terminal error if asking your team for help. |
 | `Unknown command.` | Check the spelling and capitalization. Use lowercase command words except for the case-insensitive `list` and `upcoming`. |
 | A usage message, missing field, or repeated-prefix error | Compare your input with the command summary. Add requires name, phone, email, event type, and event date; edit requires an index and at least one field. |
-| `No contact at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
+| `No engagement at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
 | A phone, email, date, or stage validation error | Follow [Field formats](#field-formats); phone and email cannot be blank. Enter the date as `YYYY-MM-DD` and stages with their documented spacing. |
 | A duplicate-engagement error | Find the existing event and edit it. Changing only the stage does not create a different engagement. |
-| `No matching contacts found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
+| `No matching engagements found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |
 | A save-permission or disk-space error | Follow [Saving the data](#saving-the-data). Do not assume the change was saved merely because the list updated. |
 
 --------------------------------------------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ public class UpcomingCommandIntegrationTest {
         String originalData = Files.readString(dataPath);
         Logic logic = createReadOnlyLogic(model, dataPath);
 
-        assertEquals("Showing 1 upcoming contacts.", logic.execute("upcoming").getFeedbackToUser());
+        assertEquals("Showing 1 upcoming engagement(s).", logic.execute("upcoming").getFeedbackToUser());
         assertEquals(List.of(included), logic.getFilteredPersonList());
         assertEquals(originalData, Files.readString(dataPath));
         assertEquals(List.of(outside, included), storage.readAddressBook().orElseThrow().getPersonList());
@@ -55,7 +55,7 @@ public class UpcomingCommandIntegrationTest {
         assertEquals(List.of(included), logic.getFilteredPersonList());
         logic.execute("list sort/date");
         assertEquals(List.of(outside, included), logic.getFilteredPersonList());
-        assertEquals("All contacts by event date (2)", logic.getPersonListHeading());
+        assertEquals("All engagements by event date (2)", logic.getPersonListHeading());
     }
 
     @Test

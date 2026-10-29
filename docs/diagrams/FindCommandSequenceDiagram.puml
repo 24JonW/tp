@@ -1,6 +1,14 @@
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
+hide footbox
+
+<style>
+participant {
+    Padding 25
+
+}
+</style>
 
 box Logic LOGIC_COLOR_T1
 participant ":LogicManager" as LogicManager LOGIC_COLOR
@@ -10,8 +18,10 @@ participant "f:FindCommand" as FindCommand LOGIC_COLOR
 end box
 
 box Model MODEL_COLOR_T1
-participant "p:PersonSearchPredicate" as Predicate MODEL_COLOR
 participant ":ModelManager" as ModelManager MODEL_COLOR
+participant "displayedPersons:\nSortedList" as DisplayedPersons MODEL_COLOR
+participant "filteredPersons:\nFilteredList" as FilteredPersons MODEL_COLOR
+participant "p:PersonSearchPredicate" as Predicate MODEL_COLOR
 end box
 
 [-> LogicManager : execute(commandText)
@@ -40,29 +50,55 @@ FindCommandParser -> FindCommand : new FindCommand(predicate)
 
 FindCommandParser --> AddressBookParser : f
 deactivate FindCommandParser
-'Hidden arrow to position the destroy marker below the end of the activation bar.
+
+'Hidden arrow positions the destroy marker below the activation bar.
 FindCommandParser -[hidden]-> AddressBookParser
 destroy FindCommandParser
 
 AddressBookParser --> LogicManager : f
 deactivate AddressBookParser
 
-LogicManager -> FindCommand : execute(Model)
+LogicManager -> FindCommand : execute(model)
 activate FindCommand
 
-FindCommand -> ModelManager : updateFilteredPersonList(predicate)
+FindCommand -> ModelManager : updateFilteredPersonList\n(predicate)
 activate ModelManager
 
-ModelManager -> Predicate : test each Person
-Predicate --> ModelManager : match / no match
+ModelManager -> DisplayedPersons : setComparator(null)
+activate DisplayedPersons
+DisplayedPersons --> ModelManager
+deactivate DisplayedPersons
+
+ModelManager -> FilteredPersons : setPredicate(predicate)
+activate FilteredPersons
+
+loop each Person in source list
+    FilteredPersons -> Predicate : test(person)
+    activate Predicate
+    Predicate --> FilteredPersons : true / false
+    deactivate Predicate
+end
+
+FilteredPersons --> ModelManager
+deactivate FilteredPersons
+
+note over DisplayedPersons, FilteredPersons
+    displayedPersons observes filteredPersons,
+    so matching records become the displayed view.
+end note
 
 ModelManager --> FindCommand
 deactivate ModelManager
 
-FindCommand -> ModelManager : getFilteredPersonList().size()
+FindCommand -> ModelManager : getFilteredPersonList()
 activate ModelManager
-ModelManager --> FindCommand : match count
+ModelManager --> FindCommand : displayedPersons
 deactivate ModelManager
+
+FindCommand -> DisplayedPersons : size()
+activate DisplayedPersons
+DisplayedPersons --> FindCommand : matchCount
+deactivate DisplayedPersons
 
 FindCommand --> LogicManager : CommandResult
 deactivate FindCommand

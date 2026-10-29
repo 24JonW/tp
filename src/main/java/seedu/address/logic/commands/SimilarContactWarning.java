@@ -16,7 +16,7 @@ public class SimilarContactWarning {
 
     public static final int MAX_CONTACTS_LISTED = 3;
     public static final String MESSAGE_WARNING = "\nWarning: possible typo. Shares details with %1$s."
-            + "\nIf this is a mistake, fix the wrong contact with edit INDEX or delete INDEX.";
+            + "\nIf this is a mistake, fix the wrong engagement with edit INDEX or delete INDEX.";
     public static final String MESSAGE_MORE_CONTACTS = " and %1$d more";
 
     private SimilarContactWarning() {}
