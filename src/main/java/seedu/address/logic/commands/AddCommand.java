@@ -39,8 +39,8 @@ public class AddCommand extends Command {
             + PREFIX_STAGE + "Booked";
 
     public static final String MESSAGE_SUCCESS = "New contact added: %1$s.";
-    public static final String MESSAGE_DUPLICATE_PERSON =
-            "A contact with all the same details already exists. No contact was added.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "An engagement with the same name, phone, email, "
+            + "event type and event date already exists. No contact was added.";
 
     private final Person toAdd;
 
