@@ -16,13 +16,13 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Adds a person to the address book.
+ * Adds a contact (one client engagement) to ShutterLink.
  */
 public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds an engagement to ShutterLink. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a contact for one client engagement. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -39,9 +39,8 @@ public class AddCommand extends Command {
             + PREFIX_STAGE + "Booked";
 
     public static final String MESSAGE_SUCCESS = "New engagement added: %1$s.";
-    public static final String MESSAGE_DUPLICATE_PERSON =
-            "An engagement with the same identifying details already exists. Stage is not considered when checking "
-                    + "for duplicates. No engagement was added.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "An engagement with the same name, phone, email, "
+            + "event type and event date already exists. No engagement was added.";
 
     private final Person toAdd;
 

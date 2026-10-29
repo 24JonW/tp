@@ -28,15 +28,15 @@ import seedu.address.model.person.Phone;
 import seedu.address.model.person.Stage;
 
 /**
- * Edits the details of an existing person in the address book.
+ * Edits the details of an existing contact.
  */
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the engagement identified "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the engagement identified "
             + "by the index number used in the displayed engagement list. "
-            + "Existing values will be overwritten by the input values.\n"
+            + "Only the given fields are changed.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_PHONE + "PHONE] "
