@@ -36,6 +36,11 @@ public class UpcomingCommand extends Command {
     }
 
     @Override
+    public boolean modifiesAddressBook() {
+        return false;
+    }
+
+    @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         LocalDate startDate;

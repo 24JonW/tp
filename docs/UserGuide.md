@@ -369,8 +369,9 @@ In the current version, trailing text after `exit` is ignored.
 
 ### Saving the data
 
-ShutterLink attempts to save after every successfully executed command except `list` and `upcoming`, which only change
-the view. You do not need to save manually. Window settings are stored separately in `preferences.json` when you close the app.
+ShutterLink attempts to save after every successfully executed command except `list`, `upcoming`, `help`, and `exit`,
+which do not change engagement data. You do not need to save manually. Window settings are stored separately in
+`preferences.json` when you close the app.
 
 If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, `find n/RELEVANT_NAME` attempts to save the current records again; `list` and `upcoming` do not retry saving. Replace `RELEVANT_NAME` with a name in your data.
 
@@ -418,7 +419,9 @@ also make the file invalid.
 
 <div markdown="block" class="alert alert-warning">
 
-**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty engagement list at the next run. A later command that saves, including `find`, `help`, or `exit`, can overwrite that file with the empty list. `list` and `upcoming` do not overwrite it.
+**Caution:** Back up the file before editing it. If the edited file is invalid, ShutterLink starts with an empty
+engagement list at the next run. A later data-changing command or `find` can overwrite that file with the empty list.
+`list`, `upcoming`, `help`, and `exit` do not overwrite it.
 
 </div>
 

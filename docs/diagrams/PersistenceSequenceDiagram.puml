@@ -22,7 +22,7 @@ activate LogicManager
 
 note right of LogicManager : the command is parsed and\nexecuted as shown in the\nLogic component, returning r
 
-alt command is a list or upcoming command
+alt command.modifiesAddressBook() is false
     [<-- LogicManager : r
 else else
     LogicManager -> Model : getAddressBook()

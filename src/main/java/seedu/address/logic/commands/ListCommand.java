@@ -31,6 +31,11 @@ public class ListCommand extends Command {
     }
 
     @Override
+    public boolean modifiesAddressBook() {
+        return false;
+    }
+
+    @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.showAllPersons(isSortedByDate);
