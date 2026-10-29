@@ -561,3 +561,28 @@
 .scroll-bar .thumb {
     -fx-background-color: #334155;
 }
+
+/* Keep engagement headers and rows aligned. */
+.engagement-list {
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.engagement-list .list-cell {
+    -fx-padding: 4 0 4 0;
+}
+
+/* Reserve the same border space for selected and unselected cards. */
+.engagement-list .list-cell #cardPane {
+    -fx-border-width: 1;
+    -fx-border-color: transparent;
+}
+
+.engagement-list .list-cell:filled:selected #cardPane {
+    -fx-border-color: #38bdf8;
+}
+
+/* Matches the card's 12px horizontal padding plus its 1px border. */
+#columnHeader {
+    -fx-padding: 7 13 7 13;
+}

@@ -6,9 +6,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="8" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<VBox spacing="8" minWidth="0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <Label fx:id="listHeading" styleClass="list-heading" wrapText="true" minHeight="-Infinity" maxWidth="Infinity" />
-  <GridPane hgap="16" styleClass="contact-column-header">
+  <GridPane fx:id="columnHeader" id="columnHeader"
+            hgap="16" minWidth="0" maxWidth="-Infinity"
+            styleClass="contact-column-header">
     <columnConstraints>
       <ColumnConstraints percentWidth="22" />
       <ColumnConstraints percentWidth="14" />
@@ -17,14 +19,21 @@
       <ColumnConstraints percentWidth="13" />
       <ColumnConstraints percentWidth="13" />
     </columnConstraints>
-    <Label text="Client" GridPane.columnIndex="0" />
-    <Label text="Phone" GridPane.columnIndex="1" />
-    <Label text="Email" GridPane.columnIndex="2" />
-    <Label text="Event type" GridPane.columnIndex="3" />
-    <Label text="Engagement stage" GridPane.columnIndex="4" />
-    <Label text="Event date" GridPane.columnIndex="5" />
+    <Label text="Client" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="0" />
+    <Label text="Phone" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="1" />
+    <Label text="Email" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="2" />
+    <Label text="Event type" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="3" />
+    <Label text="Engagement stage" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="4" />
+    <Label text="Event date" minWidth="0" maxWidth="Infinity"
+           wrapText="true" GridPane.columnIndex="5" />
   </GridPane>
-  <ListView fx:id="personListView" VBox.vgrow="ALWAYS">
+  <ListView fx:id="personListView" minWidth="0"
+            styleClass="engagement-list" VBox.vgrow="ALWAYS">
     <placeholder>
       <Label styleClass="label-bright" text="No engagements to display" />
     </placeholder>

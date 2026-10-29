@@ -1,6 +1,8 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_PARAMETER;
+import static seedu.address.logic.Messages.MESSAGE_UNSUPPORTED_PARAMETER;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.EVENT_DATE_DESC_AMY;
@@ -22,7 +24,6 @@ import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
 import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.STAGE_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_DATE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EVENT_TYPE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
@@ -85,18 +86,45 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_compulsoryFieldMissing_failure() {
-        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
-
+        // missing name prefix: the name becomes the preamble
         assertParseFailure(parser, VALID_NAME_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB, expectedMessage);
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+
+        // missing other prefixes: the missing prefix is named
         assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB
-                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB, expectedMessage);
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
+                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_PHONE));
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB
-                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB, expectedMessage);
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
+                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EMAIL));
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + VALID_EVENT_TYPE_BOB + EVENT_DATE_DESC_BOB, expectedMessage);
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + EVENT_TYPE_DESC_BOB + VALID_EVENT_DATE_BOB, expectedMessage);
+                + VALID_EVENT_TYPE_BOB + EVENT_DATE_DESC_BOB,
+                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EVENT_TYPE));
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB,
+                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EVENT_DATE));
+
+        // several prefixes missing: the first one in command-format order is named
+        assertParseFailure(parser, NAME_DESC_BOB + EVENT_TYPE_DESC_BOB,
+                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_PHONE));
+    }
+
+    @Test
+    public void parse_unsupportedPrefix_failure() {
+        String validInput = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB
+                + EVENT_DATE_DESC_BOB;
+
+        // unknown prefix after a value
+        assertParseFailure(parser, validInput + " x/oops",
+                String.format(MESSAGE_UNSUPPORTED_PARAMETER, "x/"));
+
+        // prefixes are case-sensitive
+        assertParseFailure(parser, " N/Bob" + PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB
+                + EVENT_DATE_DESC_BOB, String.format(MESSAGE_UNSUPPORTED_PARAMETER, "N/"));
+
+        // reported before a missing required prefix
+        assertParseFailure(parser, NAME_DESC_BOB + " a/address",
+                String.format(MESSAGE_UNSUPPORTED_PARAMETER, "a/"));
     }
 
     @Test

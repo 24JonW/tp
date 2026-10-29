@@ -30,6 +30,9 @@ public class EditCommandParser implements Parser<EditCommand> {
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
                         PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
 
+        ParserUtil.verifyNoUnsupportedPrefixes(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
+                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
+
         Index index;
 
         try {

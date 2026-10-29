@@ -2,11 +2,18 @@ package seedu.address.ui;
 
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Person;
@@ -24,6 +31,9 @@ public class PersonListPanel extends UiPart<Region> {
     @FXML
     private ListView<Person> personListView;
 
+    @FXML
+    private GridPane columnHeader;
+
     /**
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
@@ -31,6 +41,11 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+
+        columnHeader.prefWidthProperty().bind(personListView.widthProperty());
+        personListView.skinProperty().addListener((observable, oldSkin, newSkin) ->
+                Platform.runLater(this::bindHeaderWidth));
+        Platform.runLater(this::bindHeaderWidth);
     }
 
     /**
@@ -41,18 +56,62 @@ public class PersonListPanel extends UiPart<Region> {
     }
 
     /**
-     * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
+     * Aligns the header with the list viewport, excluding the vertical scrollbar.
+     */
+    private void bindHeaderWidth() {
+        personListView.applyCss();
+
+        for (Node node : personListView.lookupAll(".scroll-bar")) {
+            if (node instanceof ScrollBar scrollBar
+                    && scrollBar.getOrientation() == Orientation.VERTICAL) {
+                DoubleBinding headerWidth = Bindings.createDoubleBinding(() -> Math.max(0,
+                                personListView.getWidth()
+                                    - (scrollBar.isVisible() ? scrollBar.getWidth() : 0)),
+                            personListView.widthProperty(),
+                            scrollBar.visibleProperty(),
+                            scrollBar.widthProperty());
+
+                columnHeader.prefWidthProperty().unbind();
+                columnHeader.prefWidthProperty().bind(headerWidth);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Displays a {@code PersonCard} constrained to the available cell width.
      */
     class PersonListViewCell extends ListCell<Person> {
+        private final DoubleBinding contentWidth = Bindings.createDoubleBinding(() -> Math.max(0,
+                        getWidth() - getInsets().getLeft() - getInsets().getRight()),
+                        widthProperty(), insetsProperty());
+
+        /**
+         * Creates a cell whose contents do not determine the list's preferred width.
+         */
+        PersonListViewCell() {
+            setMinWidth(0);
+            setPrefWidth(0);
+        }
+
         @Override
         protected void updateItem(Person person, boolean empty) {
             super.updateItem(person, empty);
 
+            if (getGraphic() instanceof Region previousCard) {
+                previousCard.prefWidthProperty().unbind();
+                previousCard.maxWidthProperty().unbind();
+            }
+
+            setText(null);
+
             if (empty || person == null) {
                 setGraphic(null);
-                setText(null);
             } else {
-                setGraphic(new PersonCard(person, getIndex() + 1).getRoot());
+                Region card = new PersonCard(person, getIndex() + 1).getRoot();
+                card.prefWidthProperty().bind(contentWidth);
+                card.maxWidthProperty().bind(contentWidth);
+                setGraphic(card);
             }
         }
     }
