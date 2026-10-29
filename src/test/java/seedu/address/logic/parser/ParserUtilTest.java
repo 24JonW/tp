@@ -42,6 +42,9 @@ public class ParserUtilTest {
         ParserUtil.verifyNoUnsupportedPrefixes(" n/Muthu a/l Raman", PREFIX_NAME);
         ParserUtil.verifyNoUnsupportedPrefixes(" n/Priya a/p Raman", PREFIX_NAME);
         ParserUtil.verifyNoUnsupportedPrefixes(" n/Mary w/o Tan", PREFIX_NAME);
+        // a marker at the end, as in a partial search, is not a prefix either
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Muthu a/l", PREFIX_NAME);
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Raj s/o ", PREFIX_NAME);
     }
 
     @Test
@@ -52,9 +55,9 @@ public class ParserUtilTest {
             -> ParserUtil.verifyNoUnsupportedPrefixes("x/oops", PREFIX_NAME));
         assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "x/"), ()
             -> ParserUtil.verifyNoUnsupportedPrefixes(" n/John\tx/oops", PREFIX_NAME));
-        // a marker-like prefix without a following word is still a prefix
-        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "a/"), ()
-            -> ParserUtil.verifyNoUnsupportedPrefixes(" n/Muthu a/l", PREFIX_NAME));
+        // text that only starts like a marker is still a prefix
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "s/"), ()
+            -> ParserUtil.verifyNoUnsupportedPrefixes(" n/Raj s/ok", PREFIX_NAME));
     }
 
     @Test

@@ -36,6 +36,17 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_nameWithRelationMarker_success() throws Exception {
+        assertParseSuccess(parser, " n/Raj s/o Kumar", new FindCommand(
+                new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "Raj s/o Kumar")));
+        // a partial search may end with the marker
+        assertParseSuccess(parser, " n/Raj s/o", new FindCommand(
+                new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "Raj s/o")));
+        assertParseSuccess(parser, " n/Muthu A/L ", new FindCommand(
+                new PersonSearchPredicate(PersonSearchPredicate.Field.NAME, "Muthu A/L")));
+    }
+
+    @Test
     public void parse_phone_success() throws Exception {
         FindCommand expected = new FindCommand(
                 new PersonSearchPredicate(

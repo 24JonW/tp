@@ -93,6 +93,8 @@ public class ArgumentTokenizer {
         // Sort by start position
         prefixPositions.sort((prefix1, prefix2) -> prefix1.getStartPosition() - prefix2.getStartPosition());
 
+        keepTrailingRelationMarkerInName(argsString, prefixPositions);
+
         // Insert a PrefixPosition to represent the preamble
         PrefixPosition preambleMarker = new PrefixPosition(new Prefix(""), 0);
         prefixPositions.addFirst(preambleMarker);
@@ -111,6 +113,23 @@ public class ArgumentTokenizer {
         }
 
         return argMultimap;
+    }
+
+    /**
+     * Drops the last prefix position if it starts a name relation marker that ends {@code argsString}
+     * directly after a name, so that {@code n/Ravi s/o} keeps {@code s/o} in the name. No stage or date
+     * is "o", and a marker after any other prefix (e.g. {@code edit 1 s/o}) is still read as a prefix.
+     * The positions must be sorted by start position.
+     */
+    private static void keepTrailingRelationMarkerInName(String argsString,
+                                                         List<PrefixPosition> prefixPositions) {
+        int last = prefixPositions.size() - 1;
+        if (last >= 1
+                && prefixPositions.get(last - 1).getPrefix().equals(CliSyntax.PREFIX_NAME)
+                && CliSyntax.isTrailingNameRelationMarkerAt(argsString,
+                        prefixPositions.get(last).getStartPosition())) {
+            prefixPositions.remove(last);
+        }
     }
 
     /**

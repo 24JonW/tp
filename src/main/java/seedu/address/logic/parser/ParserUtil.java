@@ -42,7 +42,8 @@ public class ParserUtil {
         Matcher matcher = PREFIX_PATTERN.matcher(args);
         while (matcher.find()) {
             String prefix = matcher.group(1);
-            if (CliSyntax.isNameRelationMarkerAt(args, matcher.start(1))) {
+            if (CliSyntax.isNameRelationMarkerAt(args, matcher.start(1))
+                    || CliSyntax.isTrailingNameRelationMarkerAt(args, matcher.start(1))) {
                 continue;
             }
             if (!supported.contains(prefix)) {
