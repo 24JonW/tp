@@ -141,7 +141,7 @@ Leading and trailing whitespace around values is ignored when commands are parse
 
 | Field | Prefix | Accepted format and stored value |
 | --- | --- | --- |
-| Name | `n/` | English letters (`A`–`Z`, `a`–`z`), digits, and spaces; the first character must be a letter or digit. Apostrophes, hyphens, and other characters are not supported in names in this version. |
+| Name | `n/` | Letters (including accented letters such as `é`), digits, spaces, apostrophes (`'`), hyphens (`-`), and periods (`.`); the first character must be a letter or digit. For example, `O'Connor`, `Anne-Marie Tan`, and `John Tan Jr.` are accepted. Repeated whitespace is stored as one space, so `Amy  Lim` is stored as `Amy Lim`. Slashes are not allowed because they mark parameters, so `Raj S/O Kumar` is rejected. |
 | Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
 | Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
 | Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
@@ -265,7 +265,8 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * The stage may be moved forward or backward to any supported value.
-* Supplying a value identical to the current value is accepted and reported as a successful edit.
+* If every supplied value is the same as the current value, nothing is changed: ShutterLink reports
+  `No changes were made.` and keeps the current list.
 * A successful edit returns to the complete list in insertion order.
 * Empty supplied fields are rejected. Omitted fields are preserved, including the stage.
 * An edit that would make the engagement duplicate another one is rejected.
@@ -293,7 +294,8 @@ Example: `advance 2` advances the second displayed engagement by one stage.
 ### Finding engagements: `find`
 
 Find engagements whose selected field contains the search text. Matching is case-insensitive and accepts partial
-values; the search text itself is not required to satisfy that field's add/edit format.
+values; the search text itself is not required to satisfy that field's add/edit format. Spaces and hyphens in phone
+searches are ignored.
 
 Format:
 
@@ -319,7 +321,7 @@ Phone numbers are stored without spaces or hyphens, so searching with digits onl
 from all saved engagements and replaces the previous search or sort. The heading becomes `Contacts (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
-The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Formatting characters in a phone search are not removed automatically, so `find p/9123 4567` may fail to match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching contacts found.`; run `list` to restore your records.
 
 | Invalid input | Reason |
 | --- | --- |
@@ -446,7 +448,7 @@ If a previously populated list unexpectedly opens empty after manual editing, us
 | A Java version or JavaFX startup error | Check `java -version` reports Java 25. Mac users should follow the Java setup link in Quick start. Capture the full terminal error if asking your team for help. |
 | `Unknown command.` | Check the spelling and capitalization. Use lowercase command words except for the case-insensitive `list` and `upcoming`. |
 | A usage message, missing field, or repeated-prefix error | Compare your input with the command summary. Add requires name, phone, email, event type, and event date; edit requires an index and at least one field. |
-| `The person index provided is invalid.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
+| `No contact at that index in the displayed list.` | The requested row is not in the displayed list. Check its current indexes or run `list`. |
 | A phone, email, date, or stage validation error | Follow [Field formats](#field-formats); phone and email cannot be blank. Enter the date as `YYYY-MM-DD` and stages with their documented spacing. |
 | A duplicate-engagement error | Find the existing event and edit it. Changing only the stage does not create a different engagement. |
 | `No matching contacts found.` | Try a shorter search value, use contiguous digits for phone searches, or run `list` to leave the empty search view. |

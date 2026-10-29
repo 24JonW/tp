@@ -5,20 +5,16 @@ title: About Us
 
 We are a team based in the [School of Computing, National University of Singapore](https://www.comp.nus.edu.sg).
 
-You can reach us at the email `seer[at]comp.nus.edu.sg`
-
 ## Project team
 
 ### Ruiduan
 
 <img src="images/markadodo.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
 [[github](https://github.com/markadodo)]
-[[portfolio](team/johndoe.md)]
 
 * Role: Product engineer
-* Responsibilities: UX
+* Responsibilities: Full stack
 
 ### Le Xuan Son
 
