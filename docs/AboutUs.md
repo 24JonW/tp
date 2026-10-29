@@ -41,7 +41,7 @@ We are a team based in the [School of Computing, National University of Singapor
 [[github](http://github.com/24JonW)]
 
 * Role: Developer
-* Responsibilities: Full Stack 
+* Responsibilities: Full Stack
 
 ### Yu Ke Mi
 
