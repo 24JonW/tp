@@ -66,6 +66,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_nameWithRelationMarker_success() {
+        String userInput = " " + PREFIX_NAME + "Raj s/o Kumar" + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB + STAGE_DESC_AMY;
+        assertParseSuccess(parser, userInput, new AddCommand(new PersonBuilder(BOB)
+                .withName("Raj s/o Kumar").withStage("Booked").build()));
+    }
+
+    @Test
     public void parse_repeatedValue_failure() {
         String validPerson = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB;

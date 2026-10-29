@@ -6,7 +6,7 @@ title: ShutterLink
 [![CI Status](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions/workflows/gradle.yml/badge.svg)](https://github.com/AY2627S1-CS2103T-T08-3/tp/actions)
 [![codecov](https://codecov.io/gh/AY2627S1-CS2103T-T08-3/tp/branch/master/graph/badge.svg)](https://codecov.io/gh/AY2627S1-CS2103T-T08-3/tp)
 
-![Ui](images/Ui.png)
+![ShutterLink showing client engagements, event stages, and the data file location.](images/ug-overview.png)
 
 **ShutterLink is a desktop application for managing photography client engagements.** It stores contact details,
 event information, and engagement stages. While it has a GUI, most user interactions happen through a CLI

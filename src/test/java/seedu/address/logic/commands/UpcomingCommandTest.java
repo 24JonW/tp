@@ -38,13 +38,13 @@ public class UpcomingCommandTest {
         model.updateFilteredPersonList(person -> person.equals(past));
 
         CommandResult result = new UpcomingCommand(clockAt(TODAY)).execute(model);
-        assertEquals("Showing 4 upcoming contacts.", result.getFeedbackToUser());
+        assertEquals("Showing 4 upcoming engagement(s).", result.getFeedbackToUser());
         assertEquals(List.of(first, tied, middle, last), model.getFilteredPersonList());
         assertEquals("Upcoming: 2026-10-14 to 2026-10-20 (4)", model.getPersonListHeading());
         assertEquals(List.of(last, past, first, tied, middle, future), model.getAddressBook().getPersonList());
         new ListCommand().execute(model);
         assertEquals(model.getAddressBook().getPersonList(), model.getFilteredPersonList());
-        assertEquals("All contacts (6)", model.getPersonListHeading());
+        assertEquals("All engagements (6)", model.getPersonListHeading());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UpcomingCommandTest {
         new UpcomingCommand(clockAt(TODAY)).execute(model);
         new DeleteCommand(Index.fromOneBased(1)).execute(model);
         assertEquals(List.of(later, outside), model.getFilteredPersonList());
-        assertEquals("All contacts (2)", model.getPersonListHeading());
+        assertEquals("All engagements (2)", model.getPersonListHeading());
     }
 
     @Test

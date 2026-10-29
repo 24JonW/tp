@@ -16,6 +16,11 @@ public class HelpCommand extends Command {
     public static final String SHOWING_HELP_MESSAGE = "Help opened.";
 
     @Override
+    public boolean modifiesAddressBook() {
+        return false;
+    }
+
+    @Override
     public CommandResult execute(Model model) {
         return new CommandResult(SHOWING_HELP_MESSAGE, true, false);
     }

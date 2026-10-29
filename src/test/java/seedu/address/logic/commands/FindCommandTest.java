@@ -62,7 +62,7 @@ public class FindCommandTest {
         assertCommandSuccess(
                 command,
                 model,
-                "No matching contacts found.",
+                "No matching engagements found.",
                 expectedModel);
 
         assertEquals(List.of(), model.getFilteredPersonList());

@@ -46,7 +46,7 @@ public class ListCommandIntegrationTest {
 
         logic.execute("list sort/date");
         assertEquals("Earlier", logic.getFilteredPersonList().get(0).getName().fullName);
-        assertEquals("All contacts by event date (2)", logic.getPersonListHeading());
+        assertEquals("All engagements by event date (2)", logic.getPersonListHeading());
         assertEquals(originalData, Files.readString(dataPath));
         Model restartedModel = new ModelManager(writableStorage.readAddressBook().orElseThrow(), new UserPrefs());
         assertEquals("Later", restartedModel.getFilteredPersonList().get(0).getName().fullName);

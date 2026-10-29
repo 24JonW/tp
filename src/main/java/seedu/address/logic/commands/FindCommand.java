@@ -19,7 +19,7 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds contacts by exactly one field.\n"
+            + ": Finds engagements by exactly one field.\n"
             + "Parameters: n/NAME, p/PHONE, e/EMAIL, or t/EVENT_TYPE\n"
             + "Examples:\n"
             + "find n/Alice Pauline\n"
@@ -27,7 +27,7 @@ public class FindCommand extends Command {
             + "find e/alice@example.com\n"
             + "find t/Wedding";
 
-    public static final String MESSAGE_NO_MATCHING_CONTACTS = "No matching contacts found.";
+    public static final String MESSAGE_NO_MATCHING_CONTACTS = "No matching engagements found.";
 
     private static final Logger logger = LogsCenter.getLogger(FindCommand.class);
 
@@ -41,6 +41,11 @@ public class FindCommand extends Command {
      */
     public FindCommand(PersonSearchPredicate predicate) {
         this.predicate = predicate;
+    }
+
+    @Override
+    public boolean modifiesAddressBook() {
+        return false;
     }
 
     @Override

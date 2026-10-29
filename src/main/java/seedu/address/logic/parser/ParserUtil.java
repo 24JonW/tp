@@ -31,7 +31,7 @@ public class ParserUtil {
     /**
      * Throws a {@code ParseException} naming the first prefix in {@code args} that is not one of
      * {@code supportedPrefixes}. A prefix is a sequence of letters followed by {@code /} at the start of
-     * {@code args} or after a space or tab.
+     * {@code args} or after a space or tab. Name relation markers such as {@code s/o} are not prefixes.
      */
     public static void verifyNoUnsupportedPrefixes(String args, Prefix... supportedPrefixes)
             throws ParseException {
@@ -42,6 +42,9 @@ public class ParserUtil {
         Matcher matcher = PREFIX_PATTERN.matcher(args);
         while (matcher.find()) {
             String prefix = matcher.group(1);
+            if (CliSyntax.isNameRelationMarkerAt(args, matcher.start(1))) {
+                continue;
+            }
             if (!supported.contains(prefix)) {
                 throw new ParseException(String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, prefix));
             }

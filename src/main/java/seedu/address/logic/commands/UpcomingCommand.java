@@ -14,7 +14,7 @@ import seedu.address.model.Model;
  */
 public class UpcomingCommand extends Command {
     public static final String COMMAND_WORD = "upcoming";
-    public static final String MESSAGE_SUCCESS = "Showing %d upcoming contacts.";
+    public static final String MESSAGE_SUCCESS = "Showing %d upcoming engagement(s).";
     public static final String MESSAGE_EMPTY = "No events scheduled from %s to %s.";
     public static final String MESSAGE_DATE_ERROR =
             "Unable to determine today's date. Check the system date and try again.";
@@ -33,6 +33,11 @@ public class UpcomingCommand extends Command {
      */
     public UpcomingCommand(Clock clock) {
         this.clock = requireNonNull(clock);
+    }
+
+    @Override
+    public boolean modifiesAddressBook() {
+        return false;
     }
 
     @Override

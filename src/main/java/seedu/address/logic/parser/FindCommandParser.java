@@ -25,6 +25,8 @@ public class FindCommandParser implements Parser<FindCommand> {
 
     @Override
     public FindCommand parse(String args) throws ParseException {
+        ParserUtil.verifyNoUnsupportedPrefixes(args,
+                PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_EVENT_TYPE);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(
                 args,
                 PREFIX_NAME,
