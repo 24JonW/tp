@@ -94,10 +94,25 @@ public class ArgumentTokenizerTest {
         assertArgumentPresent(argMultimap, nameSlash, "Priya D/O Raman");
         assertArgumentPresent(argMultimap, dateSlash, "2026-12-20");
 
-        // without a following word, s/o is still read as a prefix
+        // a marker ending the arguments right after a name stays in the name
         argMultimap = ArgumentTokenizer.tokenize(" n/Raj s/o", nameSlash, stageSlash);
+        assertArgumentPresent(argMultimap, nameSlash, "Raj s/o");
+        assertArgumentAbsent(argMultimap, stageSlash);
+        argMultimap = ArgumentTokenizer.tokenize(" s/Booked n/Priya D/O", nameSlash, stageSlash, dateSlash);
+        assertArgumentPresent(argMultimap, nameSlash, "Priya D/O");
+        assertArgumentPresent(argMultimap, stageSlash, "Booked");
+        assertArgumentAbsent(argMultimap, dateSlash);
+
+        // a trailing marker after any other prefix, or with no name before it, is still read as a prefix
+        argMultimap = ArgumentTokenizer.tokenize(" n/Raj d/2026-12-20 s/o", nameSlash, stageSlash, dateSlash);
         assertArgumentPresent(argMultimap, nameSlash, "Raj");
+        assertArgumentPresent(argMultimap, dateSlash, "2026-12-20");
         assertArgumentPresent(argMultimap, stageSlash, "o");
+        argMultimap = ArgumentTokenizer.tokenize("1 s/o", nameSlash, stageSlash);
+        assertPreamblePresent(argMultimap, "1");
+        assertArgumentPresent(argMultimap, stageSlash, "o");
+        argMultimap = ArgumentTokenizer.tokenize("1 d/o", nameSlash, dateSlash);
+        assertArgumentPresent(argMultimap, dateSlash, "o");
     }
 
     @Test

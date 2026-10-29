@@ -71,6 +71,19 @@ public class AddCommandParserTest {
                 + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB + STAGE_DESC_AMY;
         assertParseSuccess(parser, userInput, new AddCommand(new PersonBuilder(BOB)
                 .withName("Raj s/o Kumar").withStage("Booked").build()));
+
+        // a name ending with a marker at the end of the command keeps the marker
+        userInput = PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB
+                + " " + PREFIX_NAME + "Ravi s/o";
+        assertParseSuccess(parser, userInput,
+                new AddCommand(new PersonBuilder(BOB).withName("Ravi s/o").build()));
+    }
+
+    @Test
+    public void parse_trailingMarkerAfterOtherField_failure() {
+        // s/o after the date is still read as the stage "o"
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB
+                + EVENT_DATE_DESC_BOB + " " + PREFIX_STAGE + "o", Stage.MESSAGE_CONSTRAINTS);
     }
 
     @Test
