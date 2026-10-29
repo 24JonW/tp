@@ -80,6 +80,27 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenize_nameRelationMarkers_notTreatedAsPrefixes() {
+        Prefix nameSlash = new Prefix("n/");
+        Prefix stageSlash = new Prefix("s/");
+        Prefix dateSlash = new Prefix("d/");
+
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" n/Raj s/o Kumar s/Booked",
+                nameSlash, stageSlash);
+        assertArgumentPresent(argMultimap, nameSlash, "Raj s/o Kumar");
+        assertArgumentPresent(argMultimap, stageSlash, "Booked");
+
+        argMultimap = ArgumentTokenizer.tokenize(" n/Priya D/O Raman d/2026-12-20", nameSlash, dateSlash);
+        assertArgumentPresent(argMultimap, nameSlash, "Priya D/O Raman");
+        assertArgumentPresent(argMultimap, dateSlash, "2026-12-20");
+
+        // without a following word, s/o is still read as a prefix
+        argMultimap = ArgumentTokenizer.tokenize(" n/Raj s/o", nameSlash, stageSlash);
+        assertArgumentPresent(argMultimap, nameSlash, "Raj");
+        assertArgumentPresent(argMultimap, stageSlash, "o");
+    }
+
+    @Test
     public void tokenize_multipleArguments() {
         // Only two arguments are present
         String argsString = "SomePreambleString -t dashT-Value p/pSlash value";

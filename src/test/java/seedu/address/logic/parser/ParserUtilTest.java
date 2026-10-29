@@ -37,6 +37,11 @@ public class ParserUtilTest {
         ParserUtil.verifyNoUnsupportedPrefixes("", PREFIX_NAME);
         // a slash inside a word is not a prefix
         ParserUtil.verifyNoUnsupportedPrefixes(" n/AC/DC", PREFIX_NAME);
+        // name relation markers are not prefixes
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Raj S/O Kumar", PREFIX_NAME);
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Muthu a/l Raman", PREFIX_NAME);
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Priya a/p Raman", PREFIX_NAME);
+        ParserUtil.verifyNoUnsupportedPrefixes(" n/Mary w/o Tan", PREFIX_NAME);
     }
 
     @Test
@@ -47,6 +52,9 @@ public class ParserUtilTest {
             -> ParserUtil.verifyNoUnsupportedPrefixes("x/oops", PREFIX_NAME));
         assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "x/"), ()
             -> ParserUtil.verifyNoUnsupportedPrefixes(" n/John\tx/oops", PREFIX_NAME));
+        // a marker-like prefix without a following word is still a prefix
+        assertThrows(ParseException.class, String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, "a/"), ()
+            -> ParserUtil.verifyNoUnsupportedPrefixes(" n/Muthu a/l", PREFIX_NAME));
     }
 
     @Test
