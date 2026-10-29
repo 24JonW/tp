@@ -46,7 +46,8 @@ public class Phone {
     /**
      * Returns {@code phone} without spaces and hyphens.
      */
-    private static String removeSeparators(String phone) {
+    public static String removeSeparators(String phone) {
+        requireNonNull(phone);
         return phone.replaceAll("[ -]", "");
     }
 

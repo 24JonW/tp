@@ -529,9 +529,15 @@ the same client repeat those three fields.
 
       Use case resumes at step 2.
 
-* 3e. ShutterLink is unable to save the data.
+* 3e. All given values are the same as the engagement's current details.
 
-    * 3e1. ShutterLink shows an error message. The edit remains applied in memory for the current session. A failure
+    * 3e1. ShutterLink informs the user that no changes were made and keeps the current list.
+
+      Use case ends.
+
+* 3f. ShutterLink is unable to save the data.
+
+    * 3f1. ShutterLink shows an error message. The edit remains applied in memory for the current session. A failure
       detected before writing, such as insufficient permissions, leaves the data file unchanged; an interrupted write
       is not guaranteed to be recoverable.
 

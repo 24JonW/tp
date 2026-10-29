@@ -30,9 +30,9 @@ public class FindCommandParserTest {
         FindCommand expected = new FindCommand(
                 new PersonSearchPredicate(
                         PersonSearchPredicate.Field.PHONE,
-                        "91234567"));
+                        "+6591234567"));
 
-        assertParseSuccess(parser, " p/91234567", expected);
+        assertParseSuccess(parser, " p/+65 9123-4567", expected);
 
     }
 
@@ -64,6 +64,7 @@ public class FindCommandParserTest {
     @Test
     public void parse_emptyValue_throwsParseException() {
         assertParseFailure(parser, "n/", INVALID_FORMAT);
+        assertParseFailure(parser, "p/ - ", INVALID_FORMAT);
     }
 
     @Test

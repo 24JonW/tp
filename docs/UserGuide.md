@@ -140,7 +140,7 @@ Leading and trailing whitespace around values is ignored when commands are parse
 
 | Field | Prefix | Accepted format and stored value |
 | --- | --- | --- |
-| Name | `n/` | English letters (`A`–`Z`, `a`–`z`), digits, and spaces; the first character must be a letter or digit. Apostrophes, hyphens, and other characters are not supported in names in this version. |
+| Name | `n/` | Letters (including accented letters such as `é`), digits, spaces, apostrophes (`'`), hyphens (`-`), and periods (`.`); the first character must be a letter or digit. For example, `O'Connor`, `Anne-Marie Tan`, and `John Tan Jr.` are accepted. Repeated whitespace is stored as one space, so `Amy  Lim` is stored as `Amy Lim`. Slashes are not allowed because they mark parameters, so `Raj S/O Kumar` is rejected. |
 | Phone number | `p/` | 8–15 digits, with an optional leading `+`. Spaces and hyphens are accepted but removed when the number is stored and displayed. |
 | Email | `e/` | `local-part@domain`, up to 254 characters. The local part uses alphanumeric groups separated by `+`, `_`, `.`, or `-`; those special characters cannot start or end the local part or occur consecutively. The domain has at least two dot-separated labels, allows internal hyphens, and ends in a label of at least two characters. The address is stored in lowercase. |
 | Event type | `t/` | 1–40 letters, digits, spaces, or hyphens, with at least one letter or digit. Repeated whitespace is stored as one space. |
@@ -263,7 +263,8 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE] [
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * The stage may be moved forward or backward to any supported value.
-* Supplying a value identical to the current value is accepted and reported as a successful edit.
+* If every supplied value is the same as the current value, nothing is changed: ShutterLink reports
+  `No changes were made.` and keeps the current list.
 * A successful edit returns to the complete list in insertion order.
 * Empty supplied fields are rejected. Omitted fields are preserved, including the stage.
 * An edit that would make the engagement duplicate another one is rejected.
@@ -291,7 +292,8 @@ Example: `advance 2` advances the second displayed engagement by one stage.
 ### Finding engagements: `find`
 
 Find engagements whose selected field contains the search text. Matching is case-insensitive and accepts partial
-values; the search text itself is not required to satisfy that field's add/edit format.
+values; the search text itself is not required to satisfy that field's add/edit format. Spaces and hyphens in phone
+searches are ignored.
 
 Format:
 
@@ -317,7 +319,7 @@ Phone numbers are stored without spaces or hyphens, so searching with digits onl
 from all saved engagements and replaces the previous search or sort. The heading becomes `Engagements (N)`; edit,
 advance, and delete use the displayed result indexes. Use `list` to restore every engagement.
 
-The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Formatting characters in a phone search are not removed automatically, so `find p/9123 4567` may fail to match a stored `91234567`. With no matches, the list is empty and feedback is `No matching engagements found.`; run `list` to restore your records.
+The whole search value is matched as a substring: `find n/John Tan` looks for that phrase, rather than separate matches for `John` or `Tan`. `find p/9123` can match several engagements, including repeat clients. Spaces and hyphens are removed from phone searches, so `find p/9123 4567` and `find p/9123-4567` can match a stored `91234567`. With no matches, the list is empty and feedback is `No matching engagements found.`; run `list` to restore your records.
 
 | Invalid input | Reason |
 | --- | --- |
