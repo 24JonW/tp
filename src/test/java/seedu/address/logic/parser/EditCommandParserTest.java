@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_UNSUPPORTED_PARAMETER;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EVENT_DATE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EVENT_DATE_DESC_BOB;
@@ -66,7 +67,16 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "-5" + NAME_DESC_AMY, MESSAGE_INVALID_FORMAT);
         assertParseFailure(parser, "0" + NAME_DESC_AMY, MESSAGE_INVALID_FORMAT);
         assertParseFailure(parser, "1 some random string", MESSAGE_INVALID_FORMAT);
-        assertParseFailure(parser, "1 i/ string", MESSAGE_INVALID_FORMAT);
+    }
+
+    @Test
+    public void parse_unsupportedPrefix_failure() {
+        // unknown prefix instead of a field
+        assertParseFailure(parser, "1 i/ string", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "i/"));
+
+        // unknown prefix after a valid field
+        assertParseFailure(parser, "1" + NAME_DESC_AMY + " x/abc",
+                String.format(MESSAGE_UNSUPPORTED_PARAMETER, "x/"));
     }
 
     @Test

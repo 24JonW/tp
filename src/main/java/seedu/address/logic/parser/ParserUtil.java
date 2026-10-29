@@ -2,8 +2,15 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
+import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.EventDate;
@@ -18,6 +25,42 @@ import seedu.address.model.person.Stage;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+
+    private static final Pattern PREFIX_PATTERN = Pattern.compile("(?:^|[ \\t])([a-zA-Z]+/)");
+
+    /**
+     * Throws a {@code ParseException} naming the first prefix in {@code args} that is not one of
+     * {@code supportedPrefixes}. A prefix is a sequence of letters followed by {@code /} at the start of
+     * {@code args} or after a space or tab.
+     */
+    public static void verifyNoUnsupportedPrefixes(String args, Prefix... supportedPrefixes)
+            throws ParseException {
+        requireNonNull(args);
+        Set<String> supported = Stream.of(supportedPrefixes)
+                .map(Prefix::getPrefix)
+                .collect(Collectors.toSet());
+        Matcher matcher = PREFIX_PATTERN.matcher(args);
+        while (matcher.find()) {
+            String prefix = matcher.group(1);
+            if (!supported.contains(prefix)) {
+                throw new ParseException(String.format(Messages.MESSAGE_UNSUPPORTED_PARAMETER, prefix));
+            }
+        }
+    }
+
+    /**
+     * Throws a {@code ParseException} naming the first of {@code requiredPrefixes} that is absent from
+     * {@code argMultimap}, checked in the given order.
+     */
+    public static void verifyRequiredPrefixesPresent(ArgumentMultimap argMultimap, Prefix... requiredPrefixes)
+            throws ParseException {
+        requireNonNull(argMultimap);
+        for (Prefix prefix : requiredPrefixes) {
+            if (argMultimap.getValue(prefix).isEmpty()) {
+                throw new ParseException(String.format(Messages.MESSAGE_MISSING_PARAMETER, prefix));
+            }
+        }
+    }
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -34,17 +77,18 @@ public class ParserUtil {
 
     /**
      * Parses a {@code String name} into a {@code Name}.
-     * Leading and trailing whitespaces will be trimmed.
+     * Leading and trailing whitespaces will be trimmed, and consecutive spaces or tabs will be replaced by
+     * one space.
      *
      * @throws ParseException if the given {@code name} is invalid.
      */
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
-        String trimmedName = name.trim();
-        if (!Name.isValidName(trimmedName)) {
+        String normalizedName = StringUtil.normalizeWhitespace(name);
+        if (!Name.isValidName(normalizedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
-        return new Name(trimmedName);
+        return new Name(normalizedName);
     }
 
     /**

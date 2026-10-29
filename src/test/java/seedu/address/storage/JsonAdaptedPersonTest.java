@@ -43,6 +43,13 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_nameWithExtraWhitespace_returnsNormalizedName() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                " Amy  \tLim ", VALID_PHONE, VALID_EMAIL, VALID_EVENT_TYPE, VALID_EVENT_DATE, VALID_STAGE);
+        assertEquals(new Name("Amy Lim"), person.toModelType().getName());
+    }
+
+    @Test
     public void toModelType_nullName_throwsIllegalValueException() {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 null, VALID_PHONE, VALID_EMAIL, VALID_EVENT_TYPE, VALID_EVENT_DATE, VALID_STAGE);
