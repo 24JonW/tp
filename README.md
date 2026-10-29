@@ -22,7 +22,7 @@ through post-event delivery.
 
 ## Getting started
 
-1. Install Java 25 or later and download the latest `.jar` file from the project releases page.
+1. Install Java 25 and download the latest `.jar` file from the project releases page.
 2. Run it with:
 
    ```bash
