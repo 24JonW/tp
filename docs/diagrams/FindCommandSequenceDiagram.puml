@@ -5,7 +5,7 @@ hide footbox
 
 <style>
 participant {
-    Padding 10
+    Padding 25
 
 }
 </style>
