@@ -57,12 +57,14 @@ The screenshots below use fictional engagements in the current interface. Your r
 | **Command** | Type one command, then press Enter. Accepted commands clear the input; rejected commands retain the text for correction. |
 | **Feedback** | Read the command result or error. A possible-typo warning can appear after a successful add or edit. |
 | List heading | Check which view is active and how many engagements it contains. |
-| Engagement cards | Read each displayed index, client name, phone, email, event type, event date, and stage. Scroll to see additional cards. |
+| Engagement cards | Read each displayed index, client name, phone, email, event type, event date, and stage. Scroll to see additional cards. Double-click an engagement card to open a resizable dialog containing its complete details. |
 | **Help** | Open the command reference using the button, `help`, or F1. |
 
 The displayed index is a temporary position, not a permanent client ID. After a search, sort, add, edit, advance, or deletion, check the list again before choosing an index. `edit 1` affects the first engagement currently shown, which may be a different engagement from the first one in the full list.
 
-If columns or long values are clipped, widen the window and use the horizontal scrollbar where available. The overview screenshot uses a wider window to show all six columns.
+If a value is clipped in the engagement list, double-click the engagement card to view all its stored fields in a
+resizable details dialog. You can also widen the main window and use the horizontal scrollbar where available. The
+overview screenshot uses a wider window to show all six columns.
 
 ### Try a client workflow
 
