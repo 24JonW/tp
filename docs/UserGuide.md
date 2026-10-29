@@ -369,11 +369,11 @@ In the current version, trailing text after `exit` is ignored.
 
 ### Saving the data
 
-ShutterLink attempts to save after every successfully executed command except `list`, `upcoming`, `help`, and `exit`,
-which do not change engagement data. You do not need to save manually. Window settings are stored separately in
-`preferences.json` when you close the app.
+ShutterLink saves after successfully executed commands that can change engagement data. View-only commands such as
+`find`, `list`, `upcoming`, `help`, and `exit` do not rewrite the data file. You do not need to save manually. Window
+settings are stored separately in `preferences.json` when you close the app.
 
-If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, `find n/RELEVANT_NAME` attempts to save the current records again; `list` and `upcoming` do not retry saving. Replace `RELEVANT_NAME` with a name in your data.
+If saving fails after a data-changing command, ShutterLink reports an error, but the change remains in memory for the current session. A failed write is not a guarantee that the old file is intact. Check permissions and available disk space, preserve a copy of the existing file, and resolve the error before relying on a restart. After fixing the storage problem, execute a data-changing command to save the current records again; view-only commands do not retry saving.
 
 ### Backing up and restoring data
 
