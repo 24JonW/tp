@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_UNSUPPORTED_PARAMETER;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
@@ -14,6 +15,15 @@ public class FindCommandParserTest {
     private static final String INVALID_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE);
     private final FindCommandParser parser = new FindCommandParser();
+
+    @Test
+    public void parse_unsupportedPrefix_throwsParseException() {
+        assertParseFailure(parser, " n/Alice s/Booked", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "s/"));
+        assertParseFailure(parser, " n/Alice d/2026-12-20", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "d/"));
+        assertParseFailure(parser, " n/Alice x/oops", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "x/"));
+        assertParseFailure(parser, " x/oops n/Alice", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "x/"));
+        assertParseFailure(parser, " n/Alice\tx/oops", String.format(MESSAGE_UNSUPPORTED_PARAMETER, "x/"));
+    }
 
     @Test
     public void parse_name_success() throws Exception {
