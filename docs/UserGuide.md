@@ -64,8 +64,9 @@ The displayed index is a temporary position, not a permanent client ID. After a 
 If a value is clipped in the engagement list, double-click the engagement card to view all its stored fields in a
 resizable details dialog. To use the keyboard, press Tab until the engagement list is focused, select a row using
 the Up and Down arrow keys, and press Enter. Inside the dialog, use Tab to focus the details text for selection and
-copying, and press Escape to close it. You can also widen the main window and use the horizontal scrollbar where
-available. The overview screenshot uses a wider window to show all six columns.
+copying, or use **Copy details** to copy all fields to the clipboard. Press Escape to close the dialog. You can also
+widen the main window and use the horizontal scrollbar where available. The overview screenshot uses a wider window
+to show all six columns.
 
 ### Try a client workflow
 

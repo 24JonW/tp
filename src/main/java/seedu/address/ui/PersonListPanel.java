@@ -158,7 +158,6 @@ public class PersonListPanel extends UiPart<Region> {
         TextArea detailsText = new TextArea(formatPersonDetails(person));
         detailsText.setEditable(false);
         detailsText.setWrapText(true);
-        detailsText.setFocusTraversable(false);
         detailsText.setPrefColumnCount(50);
         detailsText.setPrefRowCount(8);
         detailsText.getStyleClass().add("engagement-details-text");
