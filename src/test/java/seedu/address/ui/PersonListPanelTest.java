@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -14,10 +16,15 @@ import org.testfx.framework.junit5.Start;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.Clipboard;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
@@ -63,7 +70,14 @@ class PersonListPanelTest {
         robot.doubleClickOn(personListCell);
 
         DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
-        TextArea detailsText = (TextArea) dialogPane.getContent();
+        VBox detailsContent = (VBox) dialogPane.getContent();
+        HBox metadataBar = (HBox) detailsContent.getChildren().get(0);
+        Label eventSummary = (Label) metadataBar.getChildren().get(0);
+        Label stageBadge = (Label) metadataBar.getChildren().get(1);
+        TextArea detailsText = (TextArea) detailsContent.getChildren().get(1);
+
+        assertEquals(person.getEventType() + "  •  " + person.getEventDate(), eventSummary.getText());
+        assertEquals(person.getStage().toString(), stageBadge.getText());
         assertEquals(PersonListPanel.formatPersonDetails(person), detailsText.getText());
         assertTrue(detailsText.getText().contains(LONG_EMAIL));
         assertTrue(detailsText.isWrapText());
@@ -72,6 +86,16 @@ class PersonListPanelTest {
         assertTrue(detailsText.getStyleClass().contains("engagement-details-text"));
         assertTrue(dialogPane.getStyleClass().contains("engagement-details-dialog"));
         assertNull(dialogPane.getGraphic());
+
+        Button copyDetailsButton = robot.lookup("Copy details").queryButton();
+        robot.clickOn(copyDetailsButton);
+
+        AtomicReference<String> copiedDetails = new AtomicReference<>();
+        robot.interact(() -> copiedDetails.set(Clipboard.getSystemClipboard().getString()));
+
+        assertEquals(PersonListPanel.formatPersonDetails(person), copiedDetails.get());
+        assertEquals("Copied!", copyDetailsButton.getText());
+        assertTrue(dialogPane.getScene().getWindow().isShowing());
 
         robot.clickOn("OK");
     }
