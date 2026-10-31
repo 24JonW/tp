@@ -185,7 +185,8 @@ public class PersonListPanel extends UiPart<Region> {
         detailsDialog.setResizable(true);
 
         ButtonType copyDetailsButtonType = new ButtonType("Copy details", ButtonBar.ButtonData.LEFT);
-        detailsDialog.getButtonTypes().add(0, copyDetailsButtonType);
+        ButtonType closeButtonType = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+        detailsDialog.getButtonTypes().setAll(copyDetailsButtonType, closeButtonType);
 
         Button copyDetailsButton = (Button) detailsDialog.getDialogPane().lookupButton(copyDetailsButtonType);
         copyDetailsButton.getStyleClass().add("copy-details-button");
