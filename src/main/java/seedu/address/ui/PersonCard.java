@@ -2,6 +2,7 @@ package seedu.address.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import seedu.address.model.person.Person;
@@ -53,5 +54,18 @@ public class PersonCard extends UiPart<Region> {
         email.setText(person.getEmail().value);
         eventDate.setText(person.getEventDate().toString());
         stage.setText("Stage: " + person.getStage());
+        addFullValueTooltips(name, phone, email, eventType, stage, eventDate);
+    }
+
+    /**
+     * Adds wrapped tooltips so clipped fields can be read without opening the details dialog.
+     */
+    private void addFullValueTooltips(Label... labels) {
+        for (Label label : labels) {
+            Tooltip tooltip = new Tooltip(label.getText());
+            tooltip.setWrapText(true);
+            tooltip.setMaxWidth(480);
+            label.setTooltip(tooltip);
+        }
     }
 }

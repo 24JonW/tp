@@ -61,7 +61,7 @@ The screenshots below use fictional engagements in the current interface. Your r
 
 The displayed index is a temporary position, not a permanent client ID. After a search, sort, add, edit, advance, or deletion, check the list again before choosing an index. `edit 1` affects the first engagement currently shown, which may be a different engagement from the first one in the full list.
 
-If a value is clipped in the engagement list, double-click the engagement card to view all its stored fields in a
+Hover over a clipped field to read its full value in a tooltip, or double-click the engagement card to view all fields in a
 resizable details dialog. To use the keyboard, press Tab until the engagement list is focused, select a row using
 the Up and Down arrow keys, and press Enter. Inside the dialog, use Tab to focus the details text for selection and
 copying, or use **Copy details** to copy all fields to the clipboard. Press Escape to close the dialog. You can also
