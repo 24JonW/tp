@@ -304,6 +304,76 @@ The following sequence diagram shows how a search command is parsed, converted i
 
 ![Find command sequence diagram](images/FindCommandSequenceDiagram.png)
 
+### Detecting duplicate engagements and possible typos
+
+A photographer often records several engagements for the same client, and contact details are typed by hand. ShutterLink
+therefore distinguishes three levels of "sameness" between two `Person` objects, all defined in `Person`:
+
+| Check | Fields compared | Used for |
+| --- | --- | --- |
+| `isSameClient` | name (ignoring case), phone, email | Deciding whether two engagements belong to the same client |
+| `isSameEngagement` | client identity, event type (ignoring case), event date | Rejecting duplicate engagements in `UniquePersonList` |
+| `hasSimilarContactDetails` | phone or email shared, but not the same client | Producing a possible-typo warning |
+
+The stage is deliberately not part of any check, so changing only the stage can neither create a duplicate nor hide one.
+
+**Normalization before comparison.** The checks compare stored values, so every value is normalized once, when it is
+parsed (`ParserUtil`) or loaded from the data file (`JsonAdaptedPerson`), rather than at every comparison:
+
+* `Phone` removes spaces and hyphens, so `9123 4567`, `9123-4567` and `91234567` are equal. A leading `+` is kept,
+  because inferring country codes would be guesswork.
+* `Email` is stored in lowercase.
+* `Name` and `EventType` values have leading and trailing whitespace removed and repeated spaces or tabs collapsed
+  into one space by `StringUtil#normalizeWhitespace`.
+
+**Duplicates are rejected.** `AddCommand` calls `Model#hasPerson` before adding, and `EditCommand` rejects an edit whose
+result has the identity of a *different* engagement. `UniquePersonList` enforces the same rule as a last line of
+defence and throws `DuplicatePersonException` if a command misses it. An edit that leaves every field unchanged returns
+`No changes were made.` before either check and keeps the current view.
+
+**Similar contacts produce a warning, not an error.** After a successful add, or an edit that changes the client's name,
+phone or email, the command shows the full list and calls `SimilarContactWarning#generate(displayedPersons, target)`.
+The activity diagram below summarizes how the warning is built.
+
+![Building the possible-typo warning](images/SimilarContactWarningActivityDiagram.png)
+
+* The warning is computed on the displayed list after it has been reset to all engagements, so the `#INDEX` values it
+  prints are exactly the indexes the user can pass to `edit` or `delete`.
+* A client with several engagements is listed once, at the index of its first engagement, by remembering the clients
+  already listed and comparing new matches with `isSameClient`.
+* At most `MAX_CONTACTS_LISTED` (3) clients are named; any others are summarized as `and N more`, keeping the feedback
+  short enough for the result display.
+* Each entry states what is shared (`same phone`, `same email` or `same phone and email`), so the user can tell which
+  record is likely mistyped.
+* An edit that changes only the event, the stage or the capitalization of the name does not warn again, because the
+  client details are unchanged.
+
+**Parsing names that contain slashes.** Legal names in Singapore and Malaysia can contain relation markers such as
+`s/o`, `d/o`, `a/l`, `a/p` and `w/o` (e.g. `Raj s/o Kumar`), which clash with the `s/` (stage) and `d/` (date) prefixes.
+`CliSyntax` defines these markers. `ArgumentTokenizer` skips a prefix match that starts a marker followed by
+whitespace, and also keeps a marker that ends the input directly after `n/` (as in `find n/Raj s/o`), so that the
+marker stays in the name. `ParserUtil#verifyNoUnsupportedPrefixes` also skips relation markers, so a marker is not reported as an
+unsupported parameter. A marker after any other prefix, as in `edit 1 s/o`, is still read as a prefix
+and fails stage validation.
+
+**Design considerations.**
+
+* **Aspect: how to treat engagements that share a phone number or email.**
+  * **Alternative 1 (current choice):** Accept the command and show a warning that names the similar engagements.
+    * Pros: Family members and businesses legitimately share phones and emails, and the user stays in control.
+    * Cons: A real typo is saved until the user corrects it.
+  * **Alternative 2:** Reject the command until the details are unique.
+    * Pros: Typos cannot be saved.
+    * Cons: Blocks legitimate records, and the user has no way to override it.
+* **Aspect: where client identity lives.**
+  * **Alternative 1 (current choice):** Each engagement stores its own copy of the client's details, and client
+    identity is derived by `isSameClient`.
+    * Pros: Keeps AB3's single-entity model and storage format, so commands, storage and UI need no new entity.
+    * Cons: Editing one engagement does not update the client's other engagements.
+  * **Alternative 2:** A separate `Client` entity referenced by engagements.
+    * Pros: Client details are stored once.
+    * Cons: Needs referential integrity in storage, new commands to manage clients, and a two-level UI.
+
 ### Persistence after commands
 
 The sequence diagram below shows how `LogicManager` saves the data after a command that may change it.
@@ -769,6 +839,9 @@ testers are expected to do more *exploratory* testing.
    Expected: The engagement is added and the feedback warns that it shares Alice's phone number.
 4. Add an engagement for Carol Lee with distinct details, then edit Carol's email to Alice's email.<br>
    Expected: The edit succeeds and the feedback warns that Carol now shares Alice's email address.
+5. Add an engagement with the name `Raj s/o Kumar`, then run `find n/Raj s/o`.<br>
+   Expected: The name is stored with `s/o`, and the search finds that engagement. `edit 1 s/o` is rejected with the
+   supported-stage constraint, because `s/` after the index is read as the stage prefix.
 
 ### Deleting an engagement
 
@@ -808,3 +881,43 @@ testers are expected to do more *exploratory* testing.
    1. Make the data file or its directory read-only, then run a data-changing command.<br>
       Expected: ShutterLink reports a save error. The change is visible in the current session, while the file retains
       its last saved contents. Restore write permission before continuing.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Effort**
+
+ShutterLink started from AB3 (a generic contact list) and was reworked into a workflow tool for freelance event
+photographers. Compared with AB3, the team's effort went into the following areas.
+
+**Reworking the domain model.** AB3's `Person` (name, phone, email, address, tags) became a photography *engagement*:
+address and tags were removed and three new value types were added: `EventType`, `EventDate` (a real ISO calendar
+date) and the `Stage` enum with an explicit workflow order. Every layer that touches `Person` (parsers, commands,
+JSON storage, UI cards, sample data and test utilities) had to be updated without breaking existing behaviour.
+
+**New commands and views.**
+* `advance` moves an engagement along the `Enquiry` → `Delivered` workflow; `edit` can set any stage directly.
+* `list sort/date` sorts the display by event date without reordering the saved records, which required wrapping
+  AB3's `FilteredList` in a `SortedList` and keeping index-based commands consistent with the displayed order.
+* `upcoming` shows the next seven calendar days using an injectable `Clock`, so date boundaries, time zones and
+  midnight roll-over are testable.
+* `find` was redesigned to search one chosen field (name, phone, email or event type) by case-insensitive substring,
+  with phone separators ignored.
+* The list heading always states the active view and its size, and an engagement's full details open in a keyboard
+  accessible dialog.
+
+**Data integrity and input handling.** This was harder than in AB3 because a client can have many engagements:
+* Duplicate detection distinguishes client identity, engagement identity and similar contact details
+  (see [Detecting duplicate engagements and possible typos](#detecting-duplicate-engagements-and-possible-typos)).
+  Shared phones or emails produce a warning that lists the affected records by their displayed indexes.
+* Phones, emails, names and event types are validated and normalized consistently on input and on loading the data
+  file, including international phone numbers, accented letters and apostrophes in names, and name relation markers
+  such as `s/o` that clash with command prefixes.
+* Parsers reject unsupported, repeated and missing parameters with messages that name the offending parameter, and
+  view-only commands never rewrite the data file.
+
+**Quality.** The project has more than 330 automated tests, including tests for date boundaries, storage failures and
+parser edge cases, and changes were integrated through pull requests (over 80 merged).
+
+**Reuse.** Apart from the AB3 code base and the libraries listed in the [Acknowledgements](#acknowledgements), no
+code was reused from other projects.
+
