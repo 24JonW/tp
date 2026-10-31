@@ -8,20 +8,30 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Person;
 
@@ -152,13 +162,42 @@ public class PersonListPanel extends UiPart<Region> {
         detailsText.setPrefRowCount(8);
         detailsText.getStyleClass().add("engagement-details-text");
 
+        Label eventSummary = new Label(person.getEventType() + "  •  " + person.getEventDate());
+        eventSummary.setMaxWidth(Double.MAX_VALUE);
+        eventSummary.getStyleClass().add("engagement-details-summary");
+
+        Label stageBadge = new Label(person.getStage().toString());
+        stageBadge.getStyleClass().add("engagement-details-stage");
+
+        HBox metadataBar = new HBox(12, eventSummary, stageBadge);
+        metadataBar.getStyleClass().add("engagement-details-metadata");
+        HBox.setHgrow(eventSummary, Priority.ALWAYS);
+
+        VBox detailsContent = new VBox(12, metadataBar, detailsText);
+        VBox.setVgrow(detailsText, Priority.ALWAYS);
+
         Alert detailsDialog = new Alert(AlertType.INFORMATION);
         detailsDialog.setTitle("Engagement details");
         detailsDialog.setHeaderText(person.getName().fullName);
-        detailsDialog.getDialogPane().setContent(detailsText);
+        detailsDialog.getDialogPane().setContent(detailsContent);
         detailsDialog.getDialogPane().setGraphic(null);
         detailsDialog.getDialogPane().getStyleClass().add("engagement-details-dialog");
         detailsDialog.setResizable(true);
+
+        ButtonType copyDetailsButtonType = new ButtonType("Copy details", ButtonBar.ButtonData.LEFT);
+        detailsDialog.getButtonTypes().add(0, copyDetailsButtonType);
+
+        Button copyDetailsButton = (Button) detailsDialog.getDialogPane().lookupButton(copyDetailsButtonType);
+        copyDetailsButton.getStyleClass().add("copy-details-button");
+        copyDetailsButton.setTooltip(new Tooltip("Copy all engagement details to the clipboard"));
+        copyDetailsButton.setAccessibleText("Copy all engagement details");
+        copyDetailsButton.addEventFilter(ActionEvent.ACTION, event -> {
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(detailsText.getText());
+            Clipboard.getSystemClipboard().setContent(clipboardContent);
+            copyDetailsButton.setText("Copied!");
+            event.consume();
+        });
 
         if (personListView.getScene() != null) {
             detailsDialog.initOwner(personListView.getScene().getWindow());

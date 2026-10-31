@@ -613,6 +613,33 @@
     -fx-background-color: #0ea5e9;
 }
 
+.engagement-details-metadata {
+    -fx-alignment: center-left;
+    -fx-padding: 2 0 2 0;
+}
+
+.engagement-details-summary {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #cbd5e1;
+}
+
+.engagement-details-stage {
+    -fx-background-color: #075985;
+    -fx-background-radius: 12px;
+    -fx-padding: 4px 10px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: #e0f2fe;
+}
+
+.engagement-details-dialog .copy-details-button {
+    -fx-background-color: #334155;
+}
+
+.engagement-details-dialog .copy-details-button:hover {
+    -fx-background-color: #475569;
+}
+
 /* Keep engagement headers and rows aligned. */
 .engagement-list {
     -fx-padding: 0;
