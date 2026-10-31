@@ -1,0 +1,29 @@
+@startuml
+skin rose
+skinparam ActivityFontSize 15
+skinparam ArrowFontSize 12
+
+start
+:Receive displayed list and target engagement;
+while (More engagements in the displayed list?) is ([yes])
+  :Take the next engagement p at index i;
+  if (p shares a phone or email with target,
+but is not the same client?) then ([yes])
+    if (A record of p's client
+is already listed?) then ([no])
+      :Record "#i NAME (shared details)"
+      and remember p's client;
+    else ([yes])
+    endif
+  else ([no])
+  endif
+endwhile ([no])
+if (Any similar clients found?) then ([yes])
+  :Join the first 3 descriptions,
+  adding "and N more" if needed;
+  :Return the warning text;
+else ([no])
+  :Return an empty string;
+endif
+stop
+@enduml

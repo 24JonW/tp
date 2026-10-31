@@ -20,7 +20,7 @@ We are a team based in the [School of Computing, National University of Singapor
 
 <img src="images/sonlexuan3000.png" width="200px">
 
-[[github](https://github.com/sonlexuan3000)]
+[[github](https://github.com/sonlexuan3000)] [[portfolio](team/sonlexuan3000.md)]
 
 * Role: Team Lead
 * Responsibilities: UI
