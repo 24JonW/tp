@@ -40,8 +40,12 @@ public class AddCommandParser implements Parser<AddCommand> {
         }
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
                 PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE, PREFIX_STAGE);
-        ParserUtil.verifyRequiredPrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+        try {
+            ParserUtil.verifyRequiredPrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
+                    PREFIX_EVENT_TYPE, PREFIX_EVENT_DATE);
+        } catch (ParseException pe) {
+            throw new ParseException(pe.getMessage() + "\n" + AddCommand.MESSAGE_USAGE, pe);
+        }
         Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get());

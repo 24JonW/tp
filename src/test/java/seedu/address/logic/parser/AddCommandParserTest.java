@@ -115,19 +115,23 @@ public class AddCommandParserTest {
         // missing other prefixes: the missing prefix is named
         assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB
                 + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
-                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_PHONE));
+                missingParameterMessage(PREFIX_PHONE));
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB
                 + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
-                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EMAIL));
+                missingParameterMessage(PREFIX_EMAIL));
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + VALID_EVENT_TYPE_BOB + EVENT_DATE_DESC_BOB,
-                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EVENT_TYPE));
+                missingParameterMessage(PREFIX_EVENT_TYPE));
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + EVENT_TYPE_DESC_BOB,
-                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_EVENT_DATE));
+                missingParameterMessage(PREFIX_EVENT_DATE));
+
+        // no arguments at all: the first required prefix is named
+        assertParseFailure(parser, "", missingParameterMessage(PREFIX_NAME));
+        assertParseFailure(parser, PREAMBLE_WHITESPACE, missingParameterMessage(PREFIX_NAME));
 
         // several prefixes missing: the first one in command-format order is named
         assertParseFailure(parser, NAME_DESC_BOB + EVENT_TYPE_DESC_BOB,
-                String.format(MESSAGE_MISSING_PARAMETER, PREFIX_PHONE));
+                missingParameterMessage(PREFIX_PHONE));
     }
 
     @Test
@@ -165,5 +169,12 @@ public class AddCommandParserTest {
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                         + EVENT_TYPE_DESC_BOB + EVENT_DATE_DESC_BOB,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+    }
+
+    /**
+     * Returns the expected error message when {@code prefix} is the first missing required prefix.
+     */
+    private static String missingParameterMessage(Prefix prefix) {
+        return String.format(MESSAGE_MISSING_PARAMETER, prefix) + "\n" + AddCommand.MESSAGE_USAGE;
     }
 }
